@@ -1,8 +1,9 @@
 from setuptools import find_packages, setup
+from nextgen import version
 
 setup(
     name="nextgen",
-    version='0.0.1',
+    version=version,
     description = "Automatizing the bioinformatic workflow in IZKF Genomic Core Facility.",
     long_description = "This command line tool is designed to simplifiy and automatize the bioinformatic workflow in IZKF Genomic Core Facility.",
     platforms = ["Linux"],
