@@ -3,10 +3,9 @@ import click
 import re
 import os
 import fnmatch
-from nextgen.nextgen import Nextgen
-from nextgen import version, APPLICATIONS
-# from nextgen.nextgen import Nextgen
-from nextgen.helpers import DisplayablePath
+from .nextgen import Nextgen
+from . import version, APPLICATIONS
+from .helpers import DisplayablePath
 from pathlib import Path
 import datetime
 import collections
@@ -20,7 +19,7 @@ helps = {"seqdate": 'Enter the date for sequencing (YYYY-MM-DD, such as 2021-02-
 
 
 def show_tree(base):
-    click.echo("The current status of the project directory:")
+    click.echo(click.style("The current status of the project directory:", fg='white'))
     paths = DisplayablePath.make_tree(Path(base))
     for path in paths:
         click.echo(path.displayable())
@@ -77,6 +76,14 @@ def init(seqdate, app, pi):
     
     nextgen = Nextgen(seqdate, app, PI)
     show_tree(nextgen.base)
+    
+    click.echo()
+    click.echo(click.style("Next steps:", fg='white'))
+    click.echo("1. Generate the sample sheet under nfcore directory. Ref: nextgen samplesheet")
+    click.echo("2. Check the nfcore/nextflow.config file.")
+    click.echo("3. Finish the command in nfcore/run_nfcore_"+app.lower()+".sh")
+ 
+#TODO: add reminder for sample sheet and nfcore config
 
 ###################################################################
 ## samplesheet

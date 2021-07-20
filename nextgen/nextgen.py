@@ -23,7 +23,8 @@ class Nextgen():
         self.write_project_config()
         
     def load_structure(self):
-        cfg_path = os.path.join(os.path.dirname(__file__), "structure.config")
+        data_dir = os.path.join(os.path.dirname(__file__), "data")
+        cfg_path = os.path.join(data_dir, "structure.config")
         with open(cfg_path) as config:
             for line in config:
                 if line.startswith("#"): continue
@@ -42,7 +43,8 @@ class Nextgen():
                     os.makedirs(target)
             else: # files
                 if s[2] == tag and (s[3]=="all" or s[3]==self.app):
-                    original = os.path.join(os.path.dirname(__file__), "scripts", s[1])
+                    data_dir = os.path.join(os.path.dirname(__file__), "data")
+                    original = os.path.join(data_dir, s[1])
                     target = os.path.join(self.base, s[0], s[1])
                     shutil.copyfile(original, target)
             
@@ -69,15 +71,12 @@ class Nextgen():
             Config.write(cfgfile)
             cfgfile.close()
         else:
-            click.echo("***** config.ini file exists already. Please remove it \n\
-                   ***** if you want to create a new one config.ini.")
+            click.echo("***** config.ini file exists already. Please remove it if you want to create a new one config.ini.")
             sys.exit()
     
     def update_config(self, action):
         if not os.path.isfile(self.config_path):
-            click.echo("***** config.ini file doesn't exist. Please make sure \n\
-                   ***** that you have initiated this project with \n\
-                   ***** nextgen init")
+            click.echo("***** config.ini file doesn't exist. Please make sure that you have initiated this project with nextgen init")
             sys.exit()
         else:
             Config = configparser.ConfigParser()

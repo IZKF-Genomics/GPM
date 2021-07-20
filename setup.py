@@ -12,12 +12,15 @@ setup(
     url="https://github.com/IZKF-Genomics/nextgen",
     license = "MIT",
     packages = find_packages(),
-    py_modules=['nextgen'],
+    # packages=['mypkg'],
+    package_dir = {'nextgen': 'nextgen'},
+    package_data = {'nextgen': ['data/*']},
+    py_modules = ['nextgen'],
     install_requires=[
         'Click',
     ],
     entry_points='''
         [console_scripts]
-        nextgen=nextgen:cli
+        nextgen=nextgen.main:main
     ''',
 )
