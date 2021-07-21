@@ -19,7 +19,7 @@ helps = {"seqdate": 'Enter the date for sequencing (YYYY-MM-DD, such as 2021-02-
 
 
 def show_tree(base):
-    click.echo(click.style("The current status of the project directory:", fg='white'))
+    click.echo(click.style("The current status of the project directory:", fg='bright_green'))
     paths = DisplayablePath.make_tree(Path(base))
     for path in paths:
         click.echo(path.displayable())
@@ -78,7 +78,7 @@ def init(seqdate, app, pi):
     show_tree(nextgen.base)
     
     click.echo()
-    click.echo(click.style("Next steps:", fg='white'))
+    click.echo(click.style("Next steps:", fg='bright_green'))
     click.echo("1. Generate the sample sheet under nfcore directory. Ref: nextgen samplesheet")
     click.echo("2. Check the nfcore/nextflow.config file.")
     click.echo("3. Finish the command in nfcore/run_nfcore_"+app.lower()+".sh")
