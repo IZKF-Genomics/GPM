@@ -117,7 +117,7 @@ def samplesheet(base, fastq):
         PE_dict = {}
         for file in fastqs_filenames:
             for tag in tags_pe:
-                if fnmatch.fnmatch(fastqs_filenames[0], tag):
+                if fnmatch.fnmatch(file, tag):
                     l = file.split(".")
                     ll = [x for x in l if x not in ["fastq", "fq", "gz"]]
                     r = re.compile("."+tag)
