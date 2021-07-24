@@ -107,7 +107,7 @@ def samplesheet(base, fastq):
     fastqs_filenames.sort()
     
     # Process names and pairs
-    tags_pe = [r"*read[1-2]*"]
+    tags_pe = [r"*read[1-2]*", r"*R[1-2]*"]
     for tag in tags_pe:
         # print(fnmatch.fnmatch(fastqs_filenames[0], tag))
         if fnmatch.fnmatch(fastqs_filenames[0], tag):
