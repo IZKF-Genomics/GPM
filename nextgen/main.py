@@ -5,7 +5,7 @@ import os
 import fnmatch
 from .nextgen import Nextgen
 from . import version, APPLICATIONS
-from .helpers import DisplayablePath
+from .helpers import DisplayablePath, generate_samples
 from pathlib import Path
 import datetime
 import collections
@@ -87,72 +87,24 @@ def init(seqdate, app, pi):
 
 ###################################################################
 ## samplesheet
+# help="Define the project folder where the config.ini file ist."
+# , help="Folder containing raw FastQ files."
 ###################################################################
 @main.command()
-@click.option('--base', default=".", help=helps["base"])
-@click.option('--fastq', help=helps["fastq"])
-def samplesheet(base, fastq):
-    """Generate the sample sheet for FASTQ files."""
-    PE = False
-    if os.path.isfile(os.path.join(base, 'config.ini')):
-        path_samplesheet = os.path.join(base, "nfcore", "samplesheet.csv")
-    else:
-        click.echo("config.ini is not found in the base directory. You either defined the wrong base directory or didn't do nextgen init command yet.")
-        sys.exit()
-    
-    fastqs_filenames = []
-    for file in os.listdir(fastq):
-        if fnmatch.fnmatch(file, '*.fastq.gz') or fnmatch.fnmatch(file, '*.fq.gz'):
-            fastqs_filenames.append(file)
-    fastqs_filenames.sort()
-    
-    # Process names and pairs
-    tags_pe = [r"*read[1-2]*", r"*R[1-2]*"]
-    for tag in tags_pe:
-        # print(fnmatch.fnmatch(fastqs_filenames[0], tag))
-        if fnmatch.fnmatch(fastqs_filenames[0], tag):
-            PE =  True
-
-    if PE:
-        PE_dict = {}
-        for file in fastqs_filenames:
-            for tag in tags_pe:
-                if fnmatch.fnmatch(file, tag):
-                    l = file.split(".")
-                    ll = [x for x in l if x not in ["fastq", "fq", "gz"]]
-                    r = re.compile("."+tag)
-                    t = list(filter(r.match, ll))[0]
-                    # ll.remove(t)
-                    # ll = [x for x in ll if x != t]
-                    # print(t)
-                    # print(ll)
-
-                    if ll[0] not in PE_dict.keys():
-                        PE_dict[ll[0]] = {}
-                    PE_dict[ll[0]][t] = os.path.join(fastq, file)
-        PE_dict = collections.OrderedDict(sorted(PE_dict.items()))
-        for lab in PE_dict.keys():
-            PE_dict[lab] = collections.OrderedDict(sorted(PE_dict[lab].items()))
-        with open(path_samplesheet, "w") as f:
-            print("sample,fastq_1,fastq_2,strandedness", file=f)
-            for k, v in PE_dict.items():
-                l = list(v.values())
-                print(",".join([k, l[0], l[1], "unstranded"]), file=f)
-    else:
-        with open(path_samplesheet, "w") as f:
-            print("sample,fastq_1,fastq_2,strandedness", file=f)
-            for file in fastqs_filenames:
-                l = file.split(".")
-                ll = [x for x in l if x not in ["fastq", "fq", "gz"]]
-                print(",".join([".".join(ll), 
-                                os.path.join(fastq, file), 
-                                "", "unstranded"]), file=f)
-            
-
+@click.argument('samplesheet')
+@click.argument('fastq_dir')
+@click.option('-st', default="unstranded", show_default=True, help="Value for 'strandedness' in samplesheet. Must be one of 'unstranded', 'forward', 'reverse'.")
+@click.option('-r1', default="_R1_001.fastq.gz", show_default=True, help="File extension for read 1.")
+@click.option('-r2', default="_R2_001.fastq.gz", show_default=True, help="File extension for read 2.")
+@click.option('-se', default=False, show_default=True, help="Single-end information will be auto-detected but this option forces paired-end FastQ files to be treated as single-end so only read 1 information is included in the samplesheet.")
+@click.option('-sn', default=False, show_default=True, help="Whether to further sanitise FastQ file name to get sample id. Used in conjunction with --sanitise_name_delimiter and --sanitise_name_index.")
+@click.option('-sd', default="_", show_default=True, help="Delimiter to use to sanitise sample name.")
+@click.option('-si', default=1, show_default=True, help="After splitting FastQ file name by --sanitise_name_delimiter all elements before this index (1-based) will be joined to create final sample name.")
+def samplesheet(samplesheet, fastq_dir, st, r1, r2, se, 
+                     sn, sd, si):
+    generate_samples(st, fastq_dir, samplesheet, 
+                     r1, r2, se, sn, sd, si)
 
 
 if __name__ == '__main__':
-    # args = sys.argv
-    # if "--help" in args or len(args) == 1:
-    #     print("CVE")
     main()
