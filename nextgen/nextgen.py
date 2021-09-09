@@ -6,14 +6,16 @@ from nextgen import version, APPLICATIONS
 import sys
 import shutil
 import click
-
+from .helpers import DisplayablePath
+from pathlib import Path
 
 class Nextgen():
-    def __init__(self, seqdate, application, provider, piname, bcl_dir, name):
+    def __init__(self, seqdate, application, provider, piname, institute, bcl_dir, name):
         self.date = seqdate
         self.PI = piname
         self.name = name
         self.provider = provider
+        self.institute = institute
         self.bcl_dir = bcl_dir
         self.base = os.path.join(os.getcwd(), self.name)
         assert application in APPLICATIONS
@@ -56,7 +58,9 @@ class Nextgen():
             Config = configparser.ConfigParser()
             Config.add_section("Project")
             Config.set("Project", "Sequencing Date", self.date)
-            Config.set("Project", "PI", self.PI)
+            Config.set("Project", "Principal investigator", self.PI)
+            Config.set("Project", "Sample Provider", self.provider)
+            Config.set("Project", "Institute", self.institute)
             Config.set("Project", "Application", self.app)
             today = date.today()
             Config.set("Project", "Created Date", today.isoformat())
@@ -65,7 +69,8 @@ class Nextgen():
             Config.set("Project", "Nextgen Version", version)
             username = getpass.getuser()
             Config.set("Project", "User", username)
-            Config.set("Project", "Path", self.base)
+            Config.set("Project", "FlowCell Path", self.bcl_dir)
+            Config.set("Project", "Analysis Path", self.base)
 
             Config.add_section("Log")
             Config.set("Log", now.strftime("%Y-%m-%d %H:%M:%S"), username + " created " + self.base)
@@ -82,7 +87,7 @@ class Nextgen():
             sys.exit()
         else:
             Config = configparser.ConfigParser()
-            Config.read('self.config_path')
+            Config.read(self.config_path)
             now = datetime.now()
             # username = getpass.getuser()
             Config.set("Log", now.strftime("%Y-%m-%d %H:%M:%S"), action)
@@ -90,10 +95,39 @@ class Nextgen():
             Config.write(cfgfile)
             cfgfile.close()
 
+    def show_config(self):
+        """Show config file in the terminal"""
+        click.echo(click.style("Config file:", fg='bright_green'))
+        click.echo(self.config_path)
+        Config = configparser.ConfigParser()
+        Config.read(self.config_path)
+        for each_section in Config.sections():
+            for (each_key, each_val) in Config.items(each_section):
+                click.echo("\t".join([each_key, each_val]))
 
+    def show_tree(self):
+        click.echo(click.style("The current status of the project directory:", fg='bright_green'))
+        paths = DisplayablePath.make_tree(Path(self.base))
+        for path in paths:
+            click.echo(path.displayable())
             
-            
-            
-            
+    def write_file_run_bcl2fastq(self):
+        data_dir = os.path.join(os.path.dirname(__file__), "data")
+        original = os.path.join(data_dir, "run_bcl2fastq.sh")
+        target = os.path.join(self.base, "fastq", "run_bcl2fastq.sh")
+        with open(original) as f1:
+            contents = [l.strip() for l in f1.readlines()]
+        
+        modifier = {"FLOWCELL_DIR": self.bcl_dir,
+                    "OUTPUT_DIR": os.path.join(self.base, "fastq")}
+        for i,line in enumerate(contents):
+            for old, new in modifier.items():
+                if old in line:
+                    contents[i] = line.replace(old, new)
+
+        with open(target, "w") as f2:
+            for line in contents:
+                print(line, file=f2)
+
 
 

@@ -5,7 +5,7 @@ import os
 import fnmatch
 from .nextgen import Nextgen
 from . import version, APPLICATIONS
-from .helpers import DisplayablePath, generate_samples
+from .helpers import generate_samples
 from pathlib import Path
 import datetime
 import collections
@@ -17,11 +17,7 @@ helps = {"raw": 'Enter the path to the directory for the BCL raw data, e.g. 2109
          "base": "Define the base directory of the project"}
 
 
-def show_tree(base):
-    click.echo(click.style("The current status of the project directory:", fg='bright_green'))
-    paths = DisplayablePath.make_tree(Path(base))
-    for path in paths:
-        click.echo(path.displayable())
+
 
 ###################################################################
 ## Main function
@@ -36,9 +32,9 @@ def main():
 ## init
 ###################################################################
 @main.command()
-@click.option('--raw', default=None, help=helps["raw"])
-@click.option('--name', default=None, help=helps["name"])
-def init(raw, app, name):
+@click.option('-r', '--raw', help=helps["raw"], required=True)
+@click.option('-n', '--name', help=helps["name"], required=True)
+def init(raw, name):
     """Initiate a new project."""
     split_name = name.split("_")
     # seqdate
@@ -49,7 +45,7 @@ def init(raw, app, name):
         click.echo("This is the incorrect date string format. It should be YYMMDD")
         sys.exit()
     # app
-    app = split_name[3]
+    app = split_name[4]
     if app not in APPLICATIONS:
         click.echo("Please type exactly the app name in the list: "+" ".join(APPLICATIONS))
         sys.exit()
@@ -57,10 +53,15 @@ def init(raw, app, name):
     # surnames
     provider = split_name[1].capitalize()
     piname = split_name[2].capitalize()
+    institute = split_name[3]
+    nextgen = Nextgen(seqdate=seqdate, application=app, 
+                      provider=provider, piname=piname, institute=institute,
+                      bcl_dir=raw, name=name)
     
-    nextgen = Nextgen(seqdate, app, provider, piname, bcl_dir=raw, name=name)
-    show_tree(nextgen.base)
-    
+    nextgen.show_config()
+    nextgen.show_tree()
+
+    nextgen.write_file_run_bcl2fastq()
     # Todo 
     click.echo()
     click.echo(click.style("Next steps:", fg='bright_green'))
