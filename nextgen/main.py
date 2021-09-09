@@ -11,10 +11,9 @@ import datetime
 import collections
 
 
-helps = {"seqdate": 'Enter the date for sequencing (YYYY-MM-DD, such as 2021-02-28)',
+helps = {"raw": 'Enter the path to the directory for the BCL raw data, e.g. 210903_NB501289_0495_AHLLHTBGXJ',
          "app": "Choose the application ("+" ".join(APPLICATIONS)+")",
-         "pi": "Enter the surname of the PI",
-         "fastq": "Define the path to the fastq files",
+         "name": "Enter the name of the new project in the format of YYMMDD_ProviderSurname_PISurname_Institute_Application",
          "base": "Define the base directory of the project"}
 
 
@@ -37,46 +36,32 @@ def main():
 ## init
 ###################################################################
 @main.command()
-@click.option('--seqdate', default=None, help=helps["seqdate"])
-@click.option('--app', default=None, help=helps["app"])
-@click.option('--pi', default=None, help=helps["pi"])
-def init(seqdate, app, pi):
+@click.option('--raw', default=None, help=helps["raw"])
+@click.option('--name', default=None, help=helps["name"])
+def init(raw, app, name):
     """Initiate a new project."""
+    split_name = name.split("_")
     # seqdate
-    if not seqdate:
-        click.echo('> '+helps["seqdate"]+":")
-        seqdate = input()
+    seqdate = split_name[0]
     try:
-        datetime.datetime.strptime(seqdate, "%Y-%m-%d")
+        datetime.datetime.strptime(seqdate, "%y%m%d")
     except ValueError:
-        click.echo("This is the incorrect date string format. It should be YYYY-MM-DD")
+        click.echo("This is the incorrect date string format. It should be YYMMDD")
         sys.exit()
     # app
-    if not app:
-        click.echo('> Choose the application by entering the number:')
-        for i,ap in enumerate(APPLICATIONS):
-            click.echo("\t".join(['\t', str(i+1), ap]))
-        app = input()
-        try:
-            app = APPLICATIONS[int(app)-1]
-        except:
-            click.echo("Error. Please enter a number between 1 and "+str(len(APPLICATIONS)))
-            sys.exit()
-    else:
-        if app not in APPLICATIONS:
-            click.echo("Please type exactly the app name in the list: "+" ".join(APPLICATIONS))
-            sys.exit()
+    app = split_name[3]
+    if app not in APPLICATIONS:
+        click.echo("Please type exactly the app name in the list: "+" ".join(APPLICATIONS))
+        sys.exit()
     
-    # PI
-    if not pi:
-        click.echo('> '+helps["pi"]+":")
-        PI = input().capitalize()
-    else:
-        PI = pi.capitalize()
+    # surnames
+    provider = split_name[1].capitalize()
+    piname = split_name[2].capitalize()
     
-    nextgen = Nextgen(seqdate, app, PI)
+    nextgen = Nextgen(seqdate, app, provider, piname, bcl_dir=raw, name=name)
     show_tree(nextgen.base)
     
+    # Todo 
     click.echo()
     click.echo(click.style("Next steps:", fg='bright_green'))
     click.echo("1. Generate the sample sheet under nfcore directory. Ref: nextgen samplesheet")

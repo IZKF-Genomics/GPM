@@ -9,10 +9,12 @@ import click
 
 
 class Nextgen():
-    def __init__(self, seq_date, application, PI):
-        self.date = seq_date
-        self.PI = PI
-        self.name = "_".join([seq_date, PI, application])
+    def __init__(self, seqdate, application, provider, piname, bcl_dir, name):
+        self.date = seqdate
+        self.PI = piname
+        self.name = name
+        self.provider = provider
+        self.bcl_dir = bcl_dir
         self.base = os.path.join(os.getcwd(), self.name)
         assert application in APPLICATIONS
         self.app = application
@@ -71,7 +73,7 @@ class Nextgen():
             Config.write(cfgfile)
             cfgfile.close()
         else:
-            click.echo("***** config.ini file exists already. Please remove it if you want to create a new one config.ini.")
+            click.echo("***** config.ini file exists already. Please remove it if you want to create a new config.ini.")
             sys.exit()
     
     def update_config(self, action):
