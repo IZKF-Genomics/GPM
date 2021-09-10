@@ -198,7 +198,7 @@ def write_file_run_bcl2fastq(rawfolder, targetfolder):
 def copyfromdata(filename, targetdir):
     data_dir = os.path.join(os.path.dirname(__file__), "data")
     original = os.path.join(data_dir, filename)
-    target = os.path.join(targetdir, filename)
+    target = os.path.join(targetdir, filename.split("/")[-1])
     shutil.copyfile(original, target)
 
 def show_tree(base):
