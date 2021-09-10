@@ -10,13 +10,13 @@ from .helpers import DisplayablePath
 from pathlib import Path
 
 class Nextgen():
-    def __init__(self, seqdate, application, provider, piname, institute, bcl_dir, name):
+    def __init__(self, seqdate, application, provider, piname, institute, fastq, name):
         self.date = seqdate
         self.PI = piname
         self.name = name
         self.provider = provider
         self.institute = institute
-        self.bcl_dir = bcl_dir
+        self.fastq = fastq
         self.base = os.path.join(os.getcwd(), self.name)
         assert application in APPLICATIONS
         self.app = application
@@ -69,7 +69,7 @@ class Nextgen():
             Config.set("Project", "Nextgen Version", version)
             username = getpass.getuser()
             Config.set("Project", "User", username)
-            Config.set("Project", "FlowCell Path", self.bcl_dir)
+            Config.set("Project", "FASTQ Path", self.fastq)
             Config.set("Project", "Analysis Path", self.base)
 
             Config.add_section("Log")

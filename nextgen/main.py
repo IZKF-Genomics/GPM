@@ -15,7 +15,8 @@ helps = {"raw": 'Enter the path to the directory for the BCL raw data, e.g. 2109
          "app": "Choose the application ("+" ".join(APPLICATIONS)+")",
          "name": "Enter the name of the new project in the format of YYMMDD_ProviderSurname_PISurname_Institute_Application",
          "base": "Define the base directory of the project",
-         "bcl2fastq_output": "Define the output directory for bcl2fastq. This folder should have the same name as run folder."}
+         "bcl2fastq_output": "Define the output directory for bcl2fastq. This folder should have the same name as run folder.",
+         "fastq": "Define the directory to the FASTQ files."}
 
 ###################################################################
 ## Main function
@@ -27,7 +28,7 @@ def main():
     pass
 
 ###################################################################
-## bcl2fastq
+## bcl2fastq: Demultiplexing
 ###################################################################
 @main.command()
 @click.option('-r', '--raw', help=helps["raw"], required=True)
@@ -58,12 +59,12 @@ def bcl2fastq(raw, output):
 
 
 ###################################################################
-## init
+## init: Initiate a new project for analyses
 ###################################################################
 @main.command()
-@click.option('-r', '--raw', help=helps["raw"], required=True)
+@click.option('-fq', '--fastq', help=helps["fastq"], required=True)
 @click.option('-n', '--name', help=helps["name"], required=True)
-def init(raw, name):
+def init(fastq, name):
     """Initiate a new project."""
     split_name = name.split("_")
     # seqdate
@@ -85,12 +86,11 @@ def init(raw, name):
     institute = split_name[3]
     nextgen = Nextgen(seqdate=seqdate, application=app, 
                       provider=provider, piname=piname, institute=institute,
-                      bcl_dir=raw, name=name)
+                      fastq=fastq, name=name)
     
     nextgen.show_config()
     nextgen.show_tree()
 
-    nextgen.write_file_run_bcl2fastq()
     # Todo 
     click.echo()
     click.echo(click.style("Next steps:", fg='bright_green'))
