@@ -54,7 +54,7 @@ def bcl2fastq(raw, output):
     click.echo("1. Modify samplesheet.csv with the proper information. Please add Sample_Project with the correct format (YYMMDD_Provider_PI_Institute_App).")
     click.echo("2. Modify run_bcl2fastq.sh especially --use-bases-mask.")
     click.echo("3. Run run_bcl2fastq.sh with the command below:")
-    click.echo("\t\tnohup bash run_bcl2fastq.sh &")
+    click.echo("\tnohup bash run_bcl2fastq.sh &")
 
 
 ###################################################################

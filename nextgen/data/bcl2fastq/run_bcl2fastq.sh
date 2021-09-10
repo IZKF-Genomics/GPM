@@ -3,6 +3,7 @@
 # nohup bash run_bcl2fastq.sh
 
 bcl2fastq --use-bases-mask=Y,I8,I8,Y \
+  --no-lane-splitting \
   --runfolder-dir FLOWCELL_DIR \
   --output-dir OUTPUT_DIR \
   --interop-dir OUTPUT_DIR/InterOp/ \
