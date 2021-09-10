@@ -31,7 +31,7 @@ def main():
 ###################################################################
 @main.command()
 @click.option('-r', '--raw', help=helps["raw"], required=True)
-@click.option('-o', '--output', help=helps["bcl2fastq_output"], equired=True)
+@click.option('-o', '--output', help=helps["bcl2fastq_output"], required=True)
 def bcl2fastq(raw, output):
     """A wrapper of bcl2fastq programm."""
     if not output:
@@ -47,7 +47,7 @@ def bcl2fastq(raw, output):
     
     write_file_run_bcl2fastq(raw, output)
     copyfromdata("bcl2fastq/samplesheet.csv", output)
-    
+
     show_tree(output)
     click.echo()
     click.echo(click.style("Next steps:", fg='bright_green'))
