@@ -3,6 +3,7 @@ import os
 import sys
 import glob
 import shutil
+import click
 
 class DisplayablePath(object):
     display_filename_prefix_middle = '├──'
@@ -177,7 +178,7 @@ def generate_samples(STRANDEDNESS, FASTQ_DIR, SAMPLESHEET_FILE,
     )
 
 def write_file_run_bcl2fastq(rawfolder, targetfolder):
-    data_dir = os.path.join(os.path.dirname(__file__), "data")
+    data_dir = os.path.join(os.path.dirname(__file__), "data", "bcl2fastq")
     original = os.path.join(data_dir, "run_bcl2fastq.sh")
     target = os.path.join(targetfolder, "run_bcl2fastq.sh")
     with open(original) as f1:
@@ -199,3 +200,9 @@ def copyfromdata(filename, targetdir):
     original = os.path.join(data_dir, filename)
     target = os.path.join(targetdir, filename)
     shutil.copyfile(original, target)
+
+def show_tree(base):
+    click.echo(click.style("The current status of the project directory:", fg='bright_green'))
+    paths = DisplayablePath.make_tree(Path(base))
+    for path in paths:
+        click.echo(path.displayable())

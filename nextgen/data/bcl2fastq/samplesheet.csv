@@ -1,0 +1,26 @@
+[Header]
+EMFileVersion,4
+Investigator Name,
+Date,
+Workflow,GenerateFASTQ
+Application,NextSeq FASTQ Only
+Instrument Type,NextSeq/MiniSeq
+Description,nextseq sample sheet
+Chemistry,Default
+
+[Reads]
+76
+76
+
+[Settings]
+Adapter,AGATCGGAAGAGCACACGTCTGAACTCCAGTCA
+AdapterRead2,AGATCGGAAGAGCGTCGTGTAGGGAAAGAGT
+
+[Data]
+Lane,Sample_ID,Sample_Name,index,index2,Sample_Project
+,Sample1_A,Sample1_A,GCGTTAGA,GTATGCTG,YYMMDD_Provider_PI_Institute_RNAseq
+,Sample1_B,Sample1_B,ATCTGACC,AAGTCGAG,YYMMDD_Provider_PI_Institute_RNAseq
+,Sample1_C,Sample1_C,AACCAGAG,AACCGAAG,YYMMDD_Provider_PI_Institute_RNAseq
+,Sample2_A,Sample2_A,GTACCACA,TGTTGTGG,YYMMDD_Provider_PI_Institute_RNAseq
+,Sample2_B,Sample2_B,GGTATAGG,CTGGAGTA,YYMMDD_Provider_PI_Institute_RNAseq
+,Sample2_C,Sample2_C,CGAGAGAA,TCTCTTCC,YYMMDD_Provider_PI_Institute_RNAseq
