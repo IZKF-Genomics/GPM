@@ -111,23 +111,7 @@ class Nextgen():
         for path in paths:
             click.echo(path.displayable())
             
-    def write_file_run_bcl2fastq(self):
-        data_dir = os.path.join(os.path.dirname(__file__), "data")
-        original = os.path.join(data_dir, "run_bcl2fastq.sh")
-        target = os.path.join(self.base, "fastq", "run_bcl2fastq.sh")
-        with open(original) as f1:
-            contents = [l.strip() for l in f1.readlines()]
-        
-        modifier = {"FLOWCELL_DIR": self.bcl_dir,
-                    "OUTPUT_DIR": os.path.join(self.base, "fastq")}
-        for i,line in enumerate(contents):
-            for old, new in modifier.items():
-                if old in line:
-                    contents[i] = line.replace(old, new)
-
-        with open(target, "w") as f2:
-            for line in contents:
-                print(line, file=f2)
+    
 
 
 

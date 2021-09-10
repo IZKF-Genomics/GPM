@@ -5,7 +5,7 @@ import os
 import fnmatch
 from .nextgen import Nextgen
 from . import version, APPLICATIONS
-from .helpers import generate_samples
+from .helpers import generate_samples, write_file_run_bcl2fastq, copyfromdata
 from pathlib import Path
 import datetime
 import collections
@@ -14,10 +14,8 @@ import collections
 helps = {"raw": 'Enter the path to the directory for the BCL raw data, e.g. 210903_NB501289_0495_AHLLHTBGXJ',
          "app": "Choose the application ("+" ".join(APPLICATIONS)+")",
          "name": "Enter the name of the new project in the format of YYMMDD_ProviderSurname_PISurname_Institute_Application",
-         "base": "Define the base directory of the project"}
-
-
-
+         "base": "Define the base directory of the project",
+         "bcl2fastq_output": "Define the output directory for bcl2fastq. By default, the folder with the same name as run folder will be generated under /fastq"}
 
 ###################################################################
 ## Main function
@@ -27,6 +25,28 @@ helps = {"raw": 'Enter the path to the directory for the BCL raw data, e.g. 2109
 def main():
     """A project management CLI for bioinformatic workflows."""
     pass
+
+###################################################################
+## bcl2fastq
+###################################################################
+@main.command()
+@click.option('-r', '--raw', help=helps["raw"], required=True)
+@click.option('-o', '--output', help=helps["bcl2fastq_output"], default=None)
+def bcl2fastq(raw, output):
+    """A wrapper of bcl2fastq programm."""
+    if not output:
+        rawname = os.path.basename(raw)
+        output = os.path.join("/fastq", rawname)
+
+    if not os.path.exists(output):
+        os.makedirs(output)
+    else:
+        click.echo("The defined output directory exists.")
+        click.echo(output)
+        sys.exit()
+    
+    write_file_run_bcl2fastq(raw, output)
+    copyfromdata("bcl2fastq_samplesheet.csv", output)
 
 ###################################################################
 ## init
