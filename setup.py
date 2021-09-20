@@ -14,7 +14,7 @@ setup(
     packages = find_packages(),
     # packages=['mypkg'],
     package_dir = {'nextgen': 'nextgen'},
-    package_data = {'nextgen': ['data/*', 'data/bcl2fastq/*']},
+    package_data = {'nextgen': ['data/*', 'data/bcl2fastq/*', 'data/nfcore/*']},
     py_modules = ['nextgen'],
     install_requires=[
         'Click',
