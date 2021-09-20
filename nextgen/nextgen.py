@@ -49,7 +49,7 @@ class Nextgen():
                 if s[2] == tag and (s[3]=="all" or s[3]==self.app):
                     data_dir = os.path.join(os.path.dirname(__file__), "data")
                     original = os.path.join(data_dir, s[1])
-                    target = os.path.join(self.base, s[0], s[1])
+                    target = os.path.join(self.base, s[0], os.path.basename(s[1]))
                     shutil.copyfile(original, target)
             
     def write_project_config(self):
