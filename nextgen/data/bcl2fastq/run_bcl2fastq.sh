@@ -1,13 +1,15 @@
 # Please make sure bcl2fastq V.2 is available in your environment
 # You should review the paramenters and run:
-# nohup bash run_bcl2fastq.sh
+# nohup bash run_bcl2fastq.sh &
+# Or use screen command
 
+# Please execute this command in the directory OUTPUT_DIR
 bcl2fastq \
   --no-lane-splitting \
   --runfolder-dir FLOWCELL_DIR \
-  --output-dir OUTPUT_DIR \
-  --interop-dir OUTPUT_DIR/InterOp/ \
-  --sample-sheet OUTPUT_DIR/samplesheet.csv
+  --output-dir . \
+  --interop-dir ./InterOp/ \
+  --sample-sheet ./samplesheet.csv
 
   # --use-bases-mask=Y,I8,I8,Y
   # --create-fastq-for-index-reads \

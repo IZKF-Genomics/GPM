@@ -5,7 +5,7 @@ import os
 import fnmatch
 from .nextgen import Nextgen
 from . import version, APPLICATIONS
-from .helpers import generate_samples, write_file_run_bcl2fastq, copyfromdata, show_tree
+from .helpers import generate_samples, write_file_run_bcl2fastq, copyfromdata, show_tree, move_igv
 from pathlib import Path
 import datetime
 import collections
@@ -117,9 +117,19 @@ def init(fastq, name):
 @click.option('-si', default=1, show_default=True, help="After splitting FastQ file name by --sanitise_name_delimiter all elements before this index (1-based) will be joined to create final sample name.")
 def samplesheet(samplesheet, fastq_dir, st, r1, r2, se, 
                      sn, sd, si):
+    """Generate sample sheet for nf-core RNAseq pipeline."""
     generate_samples(st, fastq_dir, samplesheet, 
                      r1, r2, se, sn, sd, si)
 
+
+###################################################################
+## igv session
+###################################################################
+@main.command()
+@click.argument('igv_session')
+def igv(igv_session):
+    """Make IGV session accessible via ssh -X by moving the target igv_session.xml to ../../ and remove ../.. in all the paths."""
+    move_igv(igv_session)
 
 if __name__ == '__main__':
     main()

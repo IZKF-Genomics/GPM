@@ -206,3 +206,19 @@ def show_tree(base):
     paths = DisplayablePath.make_tree(Path(base))
     for path in paths:
         click.echo(path.displayable())
+
+def move_igv(igv_session):
+    # define path
+    igv_path = os.path.abspath(igv_session)
+    # copy the file
+    result_dir = os.path.abspath(os.path.join(igv_path ,"../../.."))
+    target = os.path.join(result_dir, "igv_session.xml")
+    shutil.copyfile(igv_path, target)
+    # remove relative path
+    fin = open(target, "rt")
+    data = fin.read()
+    data = data.replace('../..', '')
+    fin.close()
+    fin = open(target, "wt")
+    fin.write(data)
+    fin.close()
