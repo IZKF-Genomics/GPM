@@ -128,7 +128,7 @@ def samplesheet(samplesheet, fastq_dir, st, r1, r2, se,
 @main.command()
 @click.argument('igv_session')
 def igv(igv_session):
-    """Make IGV session accessible via ssh -X by moving the target igv_session.xml to ../../ and remove ../.. in all the paths."""
+    """Make IGV session accessible via ssh -X by moving the target igv_session.xml to ../../ and remove ../.. in all the paths. This is mainly for nf-core chipseq pipeline."""
     move_igv(igv_session)
 
 if __name__ == '__main__':
