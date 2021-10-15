@@ -10,21 +10,24 @@ from .helpers import DisplayablePath
 from pathlib import Path
 
 class Nextgen():
-    def __init__(self, seqdate, application, provider, piname, institute, fastq, name):
-        self.date = seqdate
-        self.PI = piname
-        self.name = name
-        self.provider = provider
-        self.institute = institute
-        self.fastq = fastq
-        self.base = os.path.join(os.getcwd(), self.name)
-        assert application in APPLICATIONS
-        self.app = application
-        self.config_path = os.path.join(self.base, "config.ini")
-        self.structure = []
-        self.load_structure()
-        self.populate_files()
-        self.write_project_config()
+    def __init__(self, seqdate, application, provider, piname, institute, fastq, name, load_config=False):
+        if load_config:
+            self.load_config(load_config)
+        else:
+            self.date = seqdate
+            self.PI = piname
+            self.name = name
+            self.provider = provider
+            self.institute = institute
+            self.fastq = fastq
+            self.base = os.path.join(os.getcwd(), self.name)
+            assert application in APPLICATIONS
+            self.app = application
+            self.config_path = os.path.join(self.base, "config.ini")
+            self.structure = []
+            self.load_structure()
+            self.populate_files()
+            self.write_project_config()
         
     def load_structure(self):
         data_dir = os.path.join(os.path.dirname(__file__), "data")
@@ -57,6 +60,7 @@ class Nextgen():
             cfgfile = open(self.config_path, "w")
             Config = configparser.ConfigParser()
             Config.add_section("Project")
+            Config.set("Project", "Name", self.name)
             Config.set("Project", "Sequencing Date", self.date)
             Config.set("Project", "Principal investigator", self.PI)
             Config.set("Project", "Sample Provider", self.provider)
@@ -110,8 +114,36 @@ class Nextgen():
         paths = DisplayablePath.make_tree(Path(self.base))
         for path in paths:
             click.echo(path.displayable())
-            
-    
 
+    def load_config(self, config_path):
+        self.config_path = config_path
+        Config = configparser.ConfigParser()
+        Config.read(self.config_path)
+        self.date = Config["Project"]["Sequencing Date"]
+        self.PI = Config["Project"]["Principal investigator"]
+        self.name = Config["Project"]["Name"]
+        self.provider = Config["Project"]["Sample Provider"]
+        self.institute = Config["Project"]["Institute"]
+        self.fastq = Config["Project"]["FASTQ Path"]
+        self.base = Config["Project"]["Analysis Path"]
+        self.app = Config["Project"]["Application"]
+        
+    def load_export_config(self):
+        self.export_structure = []
+        data_dir = os.path.join(os.path.dirname(__file__), "data")
+        cfg_path = os.path.join(data_dir, "export", "export_config.csv")
+        with open(cfg_path) as config:
+            for line in config:
+                if line.startswith("#"): continue
+                else:
+                    ll = [l.strip("\t") for l in line.split()]
+                    if len(ll) == 3:
+                        self.export_structure.append(ll)
+
+    def export(self):
+        self.load_export_config()
+        for entry in self.export_structure
+            if entry[0] == "all" or entry
+        
 
 
