@@ -24,7 +24,7 @@ helps = {"raw": 'Enter the path to the directory for the BCL raw data, e.g. 2109
 @click.group()
 @click.version_option(version)
 def main():
-    """A project management CLI for bioinformatic workflows."""
+    """A project management CLI for bioinformatic workflows of. """
     pass
 
 ###################################################################

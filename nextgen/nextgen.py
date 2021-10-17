@@ -6,6 +6,7 @@ from nextgen import version, APPLICATIONS
 import sys
 import shutil
 import click
+import glob
 from .helpers import DisplayablePath
 from pathlib import Path
 
@@ -36,24 +37,28 @@ class Nextgen():
             for line in config:
                 if line.startswith("#"): continue
                 else:
-                    ll = [l.strip(";") for l in line.split()]
-                    if len(ll) == 4:
+                    ll = [l.strip() for l in line.split(";")]
+                    if len(ll) == 5:
                         self.structure.append(ll)
 
-    def populate_files(self, tag="init"):   
+    def populate_files(self, command="init"):   
         if not os.path.exists(self.base):
             os.makedirs(self.base)
         for s in self.structure:
-            if "." not in s[1]: # directories
-                target = os.path.join(self.base, s[0], s[1])
+            if s[2]: # file
+                if s[1] == command and (s[0]=="all" or s[0]==self.app):
+                    data_dir = os.path.join(os.path.dirname(__file__), "data")
+                    original = os.path.join(data_dir, s[2])
+                    if not s[4]: # no rename
+                        target = os.path.join(self.base, s[3], os.path.basename(s[2]))
+                    else:
+                        target = os.path.join(self.base, s[3], s[4])
+                    shutil.copyfile(original, target)
+                
+            else: # directory
+                target = os.path.join(self.base, s[3])
                 if not os.path.exists(target):
                     os.makedirs(target)
-            else: # files
-                if s[2] == tag and (s[3]=="all" or s[3]==self.app):
-                    data_dir = os.path.join(os.path.dirname(__file__), "data")
-                    original = os.path.join(data_dir, s[1])
-                    target = os.path.join(self.base, s[0], os.path.basename(s[1]))
-                    shutil.copyfile(original, target)
             
     def write_project_config(self):
         if not os.path.isfile(self.config_path):
@@ -140,10 +145,10 @@ class Nextgen():
                     if len(ll) == 3:
                         self.export_structure.append(ll)
 
-    def export(self):
-        self.load_export_config()
-        for entry in self.export_structure
-            if entry[0] == "all" or entry
+    # def export(self):
+    #     self.load_export_config()
+    #     for entry in self.export_structure
+    #         if entry[0] == "all" or entry
         
 
 
