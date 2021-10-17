@@ -1,5 +1,5 @@
 ################## test script ##################
-# nextflow run nf-core/chipseq -profile test,docker
+# nextflow run nf-core/atacseq -profile test,docker
 
 ################## ~/.nextflow/config ##################
 # Please add the following lines in your ~/.nextflow/config
@@ -10,7 +10,7 @@
 #   email = 'xxxx@ukaachen.de'
 # }
 
-nextflow run nf-core/chipseq -profile docker \
+nextflow run nf-core/atacseq -profile docker \
      --input design.csv \
      --single_end \
      --genome gencode_hg38 # Please define the genome ID: hg38, mm10
