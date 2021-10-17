@@ -2,13 +2,39 @@
 # nextflow run nf-core/chipseq -profile test,docker
 
 ################## ~/.nextflow/config ##################
+# Please add the following lines in your ~/.nextflow/config
 # params {
 #   config_profile_description = 'Nextgen3 IZKF'
-#   config_profile_contact = 'Chao-Chung Kuo'
+#   config_profile_contact = 'Full name'
 #   config_profile_url = 'http://genomics.rwth-aachen.de'
-#   email = 'ckuo@ukaachen.de'
+#   email = 'xxxx@ukaachen.de'
 # }
 
 nextflow run nf-core/chipseq -profile docker \
      --input samplesheet.csv \
-     --genome GRCh38 # Please define the genome ID: hg38, mm10
+     --single_end \
+     --genome gencode_hg38 # Please define the genome ID: hg38, mm10
+     -name YYMMDD...
+
+# Other optional parameters:
+# --narrow_peak
+# --save_macs_pileup
+
+# Narrow Peak Calling
+# If your target protein is a transcription factor, you should probably choose narrow peak calling. You can also try the narrow peak calling workflows for the following histone marks:
+# H3K4me3
+# H3K4me2
+# H3K9-14ac
+# H3K27ac
+# H2A.Z
+
+# Broad Peak Calling
+# You should try the broad peak calling workflows for the following histone marks:
+# H3K36me3
+# H3K79me2
+# H3K27me3
+# H3K9me3
+# H3K9me1
+
+# Special Cases
+# In some scenarios, H3K4me1, H3K9me2 and H3K9me3 might behave between narrow and broad shape, you might need to look into each peak region and consult experts.
