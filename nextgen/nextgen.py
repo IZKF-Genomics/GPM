@@ -136,19 +136,59 @@ class Nextgen():
     def load_export_config(self):
         self.export_structure = []
         data_dir = os.path.join(os.path.dirname(__file__), "data")
-        cfg_path = os.path.join(data_dir, "export", "export_config.csv")
+        cfg_path = os.path.join(data_dir, "export", "export.config")
         with open(cfg_path) as config:
             for line in config:
                 if line.startswith("#"): continue
                 else:
-                    ll = [l.strip("\t") for l in line.split()]
-                    if len(ll) == 3:
-                        self.export_structure.append(ll)
+                    ll = [l.strip() for l in line.split(";")]
+                    if len(ll) == 4:
+                        if ll[0] == "all" or ll[0] == self.app:
+                            if ll[1] == "FASTQ":
+                                ll[1] = self.fastq
+                            self.export_structure.append(ll)
 
-    # def export(self):
-    #     self.load_export_config()
-    #     for entry in self.export_structure
-    #         if entry[0] == "all" or entry
+    def export(self, export_dir):
+        def handle_rename(export_dir, entry):
+            print(os.path.basename(entry[1]))
+            if entry[3]:
+                target = os.path.join(export_dir, entry[2], entry[3])
+            else:
+                target = os.path.join(export_dir, entry[2], os.path.basename(entry[1]))
+            return target
+        
+        export_dir = os.path.abspath(export_dir)
+
+        # Create the target folder
+        if not os.path.exists(export_dir):
+            os.makedirs(export_dir)
+        # Creating soft links of the files
+        self.load_export_config()
+        for entry in self.export_structure:
+            print(entry)
+            if not entry[1]:
+                target = os.path.join(export_dir, entry[2])
+                if not os.path.exists(target):
+                    os.makedirs(target)
+            else:
+                origin_file = os.path.join(self.base, entry[1])
+                # A directory
+                if os.path.isdir(origin_file):  
+                    target = handle_rename(export_dir, entry)
+                    os.symlink(origin_file, target, target_is_directory=True)
+                # A file
+                elif os.path.isfile(origin_file):  
+                    target = handle_rename(export_dir, entry)
+                    os.symlink(origin_file, target, target_is_directory=False)
+                # A pattern for many files
+                else:
+                    target_dir = os.path.join(export_dir, entry[2])
+                    if not os.path.exists(target_dir):
+                        os.makedirs(target_dir)
+                    for matching_file in glob.glob(origin_file):
+                        target = os.path.join(target_dir, os.path.basename(matching_file))
+                        os.symlink(matching_file, target, target_is_directory=False)
+
         
 
 

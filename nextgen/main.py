@@ -131,5 +131,21 @@ def igv(igv_session):
     """Make IGV session accessible via ssh -X by moving the target igv_session.xml to ../../ and remove ../.. in all the paths. This is mainly for nf-core chipseq pipeline."""
     move_igv(igv_session)
 
+###################################################################
+## export
+###################################################################
+@main.command()
+@click.argument('config_file')
+@click.argument('export_dir')
+def export(config_file, export_dir):
+    """Export the raw data, processed data and reports to the export directory by creating soft links without moving around the big files."""
+    nextgen = Nextgen(load_config=config_file,
+                      seqdate=None, application=None, 
+                      provider=None, piname=None, institute=None,
+                      fastq=None, name=None)
+
+    nextgen.export(export_dir)
+
+
 if __name__ == '__main__':
     main()
