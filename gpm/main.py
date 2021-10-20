@@ -139,6 +139,7 @@ def igv(igv_session):
 @main.command()
 @click.argument('config_file')
 @click.argument('export_dir')
+@click.option('--tar', default=False, show_default=True, help="If --tar is True, three seperate tar files will be generated for 1_Raw_data, 2_Processed_data and 3_Reports.")
 def export(config_file, export_dir):
     """Export the raw data, processed data and reports to the export directory by creating soft links without moving around the big files."""
     gpm = GPM(load_config=config_file,
@@ -146,8 +147,7 @@ def export(config_file, export_dir):
                       provider=None, piname=None, institute=None,
                       fastq=None, name=None)
 
-    gpm.export(export_dir)
-
+    gpm.export(export_dir, tar)
 
 if __name__ == '__main__':
     main()
