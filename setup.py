@@ -1,26 +1,26 @@
 from setuptools import find_packages, setup
-from nextgen import version
+from gpm import version
 
 setup(
-    name="nextgen",
+    name="gpm",
     version=version,
-    description = "Automatizing the bioinformatic workflow in IZKF Genomic Core Facility.",
+    description = "Genomic Project Manager for automatizing the bioinformatic workflow in IZKF Genomic Core Facility.",
     long_description = "This command line tool is designed to simplifiy and automatize the bioinformatic workflow in IZKF Genomic Core Facility.",
     platforms = ["Linux"],
     author="Chao-Chung Kuo",
     author_email="chao-chung.kuo@rwth-aachen.de",
-    url="https://github.com/IZKF-Genomics/nextgen",
+    url="https://github.com/IZKF-Genomics/gpm",
     license = "MIT",
     packages = find_packages(),
     # packages=['mypkg'],
-    package_dir = {'nextgen': 'nextgen'},
-    package_data = {'nextgen': ['data/*', 'data/bcl2fastq/*', 'data/nfcore/*', 'data/export/*']},
-    py_modules = ['nextgen'],
+    package_dir = {'gpm': 'gpm'},
+    package_data = {'gpm': ['data/*', 'data/bcl2fastq/*', 'data/nfcore/*', 'data/export/*']},
+    py_modules = ['gpm'],
     install_requires=[
         'Click',
     ],
     entry_points='''
         [console_scripts]
-        nextgen=nextgen.main:main
+        gpm=gpm.main:main
     ''',
 )

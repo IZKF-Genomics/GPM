@@ -4,6 +4,8 @@ import sys
 import glob
 import shutil
 import click
+import tarfile
+import subprocess
 
 class DisplayablePath(object):
     display_filename_prefix_middle = '├──'
@@ -222,3 +224,8 @@ def move_igv(igv_session):
     fin = open(target, "wt")
     fin.write(data)
     fin.close()
+
+
+def tardir(path, tar_name):
+    cmd = " ".join(["tar","-hcvf",tar_name,path])
+    returned_value = subprocess.call(cmd, shell=True)

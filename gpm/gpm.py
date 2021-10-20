@@ -2,15 +2,15 @@ import os
 import configparser
 from datetime import date, datetime
 import getpass
-from nextgen import version, APPLICATIONS
+from gpm import version, APPLICATIONS
 import sys
 import shutil
 import click
 import glob
-from .helpers import DisplayablePath
+from .helpers import DisplayablePath, tardir
 from pathlib import Path
 
-class Nextgen():
+class GPM():
     def __init__(self, seqdate, application, provider, piname, institute, fastq, name, load_config=False):
         if load_config:
             self.load_config(load_config)
@@ -75,7 +75,7 @@ class Nextgen():
             Config.set("Project", "Created Date", today.isoformat())
             now = datetime.now()
             Config.set("Project", "Created Time", now.strftime("%H:%M:%S"))
-            Config.set("Project", "Nextgen Version", version)
+            Config.set("Project", "GPM Version", version)
             username = getpass.getuser()
             Config.set("Project", "User", username)
             Config.set("Project", "FASTQ Path", self.fastq)
@@ -92,7 +92,7 @@ class Nextgen():
     
     def update_config(self, action):
         if not os.path.isfile(self.config_path):
-            click.echo("***** config.ini file doesn't exist. Please make sure that you have initiated this project with nextgen init")
+            click.echo("***** config.ini file doesn't exist. Please make sure that you have initiated this project with gpm init")
             sys.exit()
         else:
             Config = configparser.ConfigParser()
@@ -148,7 +148,7 @@ class Nextgen():
                                 ll[1] = self.fastq
                             self.export_structure.append(ll)
 
-    def export(self, export_dir):
+    def export(self, export_dir, tar=False):
         def handle_rename(export_dir, entry):
             print(os.path.basename(entry[1]))
             if entry[3]:
@@ -188,7 +188,10 @@ class Nextgen():
                     for matching_file in glob.glob(origin_file):
                         target = os.path.join(target_dir, os.path.basename(matching_file))
                         os.symlink(matching_file, target, target_is_directory=False)
-
+        if tar:
+            tardir(os.path.join(export_dir, "1_Raw_data"), os.path.join(export_dir, self.name+"_1_Raw_data.tar"))
+            tardir(os.path.join(export_dir, "2_Processed_data"), os.path.join(export_dir, self.name+"_2_Processed_data.tar"))
+            tardir(os.path.join(export_dir, "3_Reports"), os.path.join(export_dir, self.name+"_3_Reports.tar"))
         
 
 

@@ -3,7 +3,7 @@ import click
 import re
 import os
 import fnmatch
-from .nextgen import Nextgen
+from .gpm import GPM
 from . import version, APPLICATIONS
 from .helpers import generate_samples, write_file_run_bcl2fastq, copyfromdata, show_tree, move_igv
 from pathlib import Path
@@ -24,7 +24,9 @@ helps = {"raw": 'Enter the path to the directory for the BCL raw data, e.g. 2109
 @click.group()
 @click.version_option(version)
 def main():
-    """A project management CLI for bioinformatic workflows of. """
+    """Genomic Project Manager is a project management CLI for bioinformatic workflows of IZKF Genomic Core Facility.
+       Contact: ckuo@ukaachen.de 
+    """
     pass
 
 ###################################################################
@@ -34,7 +36,7 @@ def main():
 @click.option('-r', '--raw', help=helps["raw"], required=True)
 @click.option('-o', '--output', help=helps["bcl2fastq_output"], required=True)
 def bcl2fastq(raw, output):
-    """A wrapper of bcl2fastq programm."""
+    """A wrapper of bcl2fastq programm for demultiplexing."""
     if not output:
         rawname = os.path.basename(raw)
         output = os.path.join("/fastq", rawname)
@@ -84,17 +86,17 @@ def init(fastq, name):
     provider = split_name[1].capitalize()
     piname = split_name[2].capitalize()
     institute = split_name[3]
-    nextgen = Nextgen(seqdate=seqdate, application=app, 
+    gpm = GPM(seqdate=seqdate, application=app, 
                       provider=provider, piname=piname, institute=institute,
                       fastq=fastq, name=name)
     
-    nextgen.show_config()
-    nextgen.show_tree()
+    gpm.show_config()
+    gpm.show_tree()
 
     # Todo 
     click.echo()
     click.echo(click.style("Next steps:", fg='bright_green'))
-    click.echo("1. Generate the sample sheet under nfcore directory. Ref: nextgen samplesheet")
+    click.echo("1. Generate the sample sheet under nfcore directory. Ref: gpm samplesheet")
     click.echo("2. Check the nfcore/nextflow.config file.")
     click.echo("3. Finish the command in nfcore/run_nfcore_"+app.lower()+".sh")
  
@@ -139,12 +141,12 @@ def igv(igv_session):
 @click.argument('export_dir')
 def export(config_file, export_dir):
     """Export the raw data, processed data and reports to the export directory by creating soft links without moving around the big files."""
-    nextgen = Nextgen(load_config=config_file,
+    gpm = GPM(load_config=config_file,
                       seqdate=None, application=None, 
                       provider=None, piname=None, institute=None,
                       fastq=None, name=None)
 
-    nextgen.export(export_dir)
+    gpm.export(export_dir)
 
 
 if __name__ == '__main__':
