@@ -5,7 +5,7 @@ import os
 import fnmatch
 from .gpm import GPM
 from . import version, APPLICATIONS
-from .helpers import generate_samples, write_file_run_bcl2fastq, copyfromdata, show_tree, move_igv
+from .helpers import generate_samples, write_file_run_bcl2fastq, write_file_run_cellranger_mkfastq, copyfromdata, show_tree, move_igv
 from pathlib import Path
 import datetime
 import collections
@@ -30,16 +30,16 @@ def main():
     pass
 
 ###################################################################
-## bcl2fastq: Demultiplexing
+## demultiplex
 ###################################################################
 @main.command()
 @click.option('-r', '--raw', help=helps["raw"], required=True)
-@click.option('-o', '--output', help=helps["bcl2fastq_output"], required=True)
-def bcl2fastq(raw, output):
-    """A wrapper of bcl2fastq programm for demultiplexing."""
-    if not output:
-        rawname = os.path.basename(raw)
-        output = os.path.join("/fastq", rawname)
+@click.option('-o', '--output', help=helps["demultiplex_output"], required=True)
+def demultiplex(raw, output):
+    """A wrapper of bcl2fastq programm and cellranger mkfastq for demultiplexing."""
+    # if not output:
+    #     rawname = os.path.basename(raw)
+    #     output = os.path.join("/fastq", rawname)
 
     if not os.path.exists(output):
         os.makedirs(output)
@@ -47,17 +47,19 @@ def bcl2fastq(raw, output):
         click.echo("The defined output directory exists.")
         click.echo(output)
         sys.exit()
-    
+
     write_file_run_bcl2fastq(raw, output)
+    write_file_run_cellranger_mkfastq(raw, output)
     copyfromdata("bcl2fastq/samplesheet.csv", output)
 
     show_tree(output)
     click.echo()
     click.echo(click.style("Next steps:", fg='bright_green'))
     click.echo("1. Modify samplesheet.csv with the proper information. Please add Sample_Project with the correct format (YYMMDD_Provider_PI_Institute_App).")
-    click.echo("2. Modify run_bcl2fastq.sh especially --use-bases-mask.")
-    click.echo("3. Run run_bcl2fastq.sh with the command below:")
-    click.echo("\tnohup bash run_bcl2fastq.sh &")
+    click.echo("2. Check and modify run_bcl2fastq.sh (bulk sequencing) or run_cellranger.sh (single cell sequencing)")
+    click.echo("3. Run run_bcl2fastq.sh (bulk sequencing) or run_cellranger.sh (single cell sequencing) with the command below: (Recommend to run it in screen session)")
+    click.echo("\tbash run_bcl2fastq.sh")
+    click.echo("\tbash run_cellranger.sh")
 
 
 ###################################################################

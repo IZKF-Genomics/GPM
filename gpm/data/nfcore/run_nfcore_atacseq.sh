@@ -14,7 +14,7 @@ nextflow run nf-core/atacseq -profile docker \
      --input design.csv \
      --single_end \
      --genome gencode_hg38 # Please define the genome ID: hg38, mm10
-     -name YYMMDD...
+     -name TITLE_NAME
 
 # Other optional parameters:
 # --narrow_peak

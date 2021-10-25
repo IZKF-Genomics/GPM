@@ -10,9 +10,7 @@ bcl2fastq \
   --output-dir . \
   --interop-dir ./InterOp/ \
   --sample-sheet ./samplesheet.csv \
-  --processing-threads 30 \
-  --loading-threads 2
-  --writing-threads 2
+  --processing-threads 30
 
 
   # --use-bases-mask=Y,I8,I8,Y

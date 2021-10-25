@@ -197,6 +197,24 @@ def write_file_run_bcl2fastq(rawfolder, targetfolder):
         for line in contents:
             print(line, file=f2)
 
+def write_file_run_cellranger_mkfastq(rawfolder, targetfolder):
+    data_dir = os.path.join(os.path.dirname(__file__), "data", "bcl2fastq")
+    original = os.path.join(data_dir, "run_cellranger.sh")
+    target = os.path.join(targetfolder, "run_cellranger.sh")
+    with open(original) as f1:
+        contents = [l.strip() for l in f1.readlines()]
+    
+    modifier = {"FLOWCELL_DIR": rawfolder,
+                "OUTPUT_DIR": targetfolder}
+    for i,line in enumerate(contents):
+        for old, new in modifier.items():
+            if old in line:
+                contents[i] = line.replace(old, new)
+
+    with open(target, "w") as f2:
+        for line in contents:
+            print(line, file=f2)
+
 def copyfromdata(filename, targetdir):
     data_dir = os.path.join(os.path.dirname(__file__), "data")
     original = os.path.join(data_dir, filename)

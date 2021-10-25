@@ -41,6 +41,22 @@ class GPM():
                     if len(ll) == 5:
                         self.structure.append(ll)
 
+    def copy_file_replace_vairalbles(self, original, target):
+        with open(original) as f1:
+            contents = [l.strip() for l in f1.readlines()]
+    
+        modifier = {"FASTQ_DIR": self.fastq,
+                    "TITLE_NAME": self.name}
+
+        for i,line in enumerate(contents):
+            for old, new in modifier.items():
+                if old in line:
+                    contents[i] = line.replace(old, new)
+
+        with open(target, "w") as f2:
+            for line in contents:
+                print(line, file=f2)
+
     def populate_files(self, command="init"):   
         if not os.path.exists(self.base):
             os.makedirs(self.base)
@@ -53,7 +69,8 @@ class GPM():
                         target = os.path.join(self.base, s[3], os.path.basename(s[2]))
                     else:
                         target = os.path.join(self.base, s[3], s[4])
-                    shutil.copyfile(original, target)
+                    self.copy_file_replace_vairalbles(original, target)
+
                 
             else: # directory
                 target = os.path.join(self.base, s[3])
@@ -165,7 +182,7 @@ class GPM():
         # Creating soft links of the files
         self.load_export_config()
         for entry in self.export_structure:
-            print(entry)
+            # print(entry)
             if not entry[1]:
                 target = os.path.join(export_dir, entry[2])
                 if not os.path.exists(target):
