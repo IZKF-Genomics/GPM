@@ -12,6 +12,6 @@
 nextflow run nf-core/rnaseq -profile docker \
      --pseudo_aligner salmon \
      --input samplesheet.csv \
-     --genome gencode_hg38 # Please define the genome ID: hg38, mm10
+     --genome gencode_hg38 \ # Please define the genome ID: hg38, mm10
      --multiqc_title TITLE_NAME
 
