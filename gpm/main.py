@@ -15,7 +15,7 @@ helps = {"raw": 'Enter the path to the directory for the BCL raw data, e.g. 2109
          "app": "Choose the application ("+" ".join(APPLICATIONS)+")",
          "name": "Enter the name of the new project in the format of YYMMDD_ProviderSurname_PISurname_Institute_Application",
          "base": "Define the base directory of the project",
-         "bcl2fastq_output": "Define the output directory for bcl2fastq. This folder should have the same name as run folder.",
+         "demultiplex_output": "Define the output directory for bcl2fastq. This folder should have the same name as run folder.",
          "fastq": "Define the directory to the FASTQ files."}
 
 ###################################################################

@@ -9,9 +9,10 @@ cellranger mkfastq --id=mkfastq \
                    --csv=./samplesheet.csv
 
 # Below script can be used to run cellranger count by modifying sample names and adding project name.
+# 
 # TRANSCRIPTOME="/data/shared_env/10xGenomics/refdata-gex-GRCh38-2020-A"
 # SAMPLES=""
 # for sample in $SAMPLES; do
-# cellranger count --id=$sample --transcriptome $TRANSCRIPTOME --fastqs mkfastq/outs/fastq_path/PROJECT_NAME/$sample --sample=$sample
+# cellranger count --id=count --transcriptome $TRANSCRIPTOME --fastqs mkfastq/outs/fastq_path/PROJECT_NAME/$sample --sample=$sample
 # done
 
