@@ -2,7 +2,7 @@ import os
 import configparser
 from datetime import date, datetime
 import getpass
-from gpm import version, APPLICATIONS
+from gpm import version, APPLICATIONS, EXPORT_URL
 import sys
 import shutil
 import click
@@ -12,6 +12,7 @@ from pathlib import Path
 
 class GPM():
     def __init__(self, seqdate, application, provider, piname, institute, fastq, name, load_config=False):
+        self.structure = []
         if load_config:
             self.load_config(load_config)
         else:
@@ -25,9 +26,8 @@ class GPM():
             assert application in APPLICATIONS
             self.app = application
             self.config_path = os.path.join(self.base, "config.ini")
-            self.structure = []
             self.load_structure()
-            self.populate_files()
+            self.populate_files(command="init")
             self.write_project_config()
         
     def load_structure(self):
@@ -43,10 +43,15 @@ class GPM():
 
     def copy_file_replace_vairalbles(self, original, target):
         with open(original) as f1:
-            contents = [l.strip() for l in f1.readlines()]
+            contents = [l.rstrip() for l in f1.readlines()]
     
         modifier = {"FASTQ_DIR": self.fastq,
-                    "TITLE_NAME": self.name}
+                    "TITLE_NAME": self.name,
+                    "GPM_PROJECTNAME": self.name.replace("_", " "),
+                    "GPM_URL_1_Raw_data": os.path.join(EXPORT_URL, self.name, "1_Raw_data"),
+                    "GPM_URL_2_Processed_data": os.path.join(EXPORT_URL, self.name, "2_Processed_data"),
+                    "GPM_URL_3_Reports": os.path.join(EXPORT_URL, self.name, "3_Reports"),
+                    "GPM_URL_TAR": os.path.join(EXPORT_URL, self.name, "compressed_tars")}
 
         for i,line in enumerate(contents):
             for old, new in modifier.items():
@@ -57,7 +62,7 @@ class GPM():
             for line in contents:
                 print(line, file=f2)
 
-    def populate_files(self, command="init"):   
+    def populate_files(self, command):   
         if not os.path.exists(self.base):
             os.makedirs(self.base)
         for s in self.structure:
@@ -80,7 +85,7 @@ class GPM():
     def write_project_config(self):
         if not os.path.isfile(self.config_path):
             cfgfile = open(self.config_path, "w")
-            Config = configparser.ConfigParser()
+            Config = configparser.ConfigParser(strict=False)
             Config.add_section("Project")
             Config.set("Project", "Name", self.name)
             Config.set("Project", "Sequencing Date", self.date)
@@ -96,10 +101,10 @@ class GPM():
             username = getpass.getuser()
             Config.set("Project", "User", username)
             Config.set("Project", "FASTQ Path", self.fastq)
-            Config.set("Project", "Analysis Path", self.base)
+            Config.set("Project", "Base Path", self.base)
 
             Config.add_section("Log")
-            Config.set("Log", now.strftime("%Y-%m-%d %H:%M:%S"), username + " created " + self.base)
+            Config.set("Log", now.strftime("%Y-%m-%d %H-%M-%S"), username + " gpm init " + self.base)
 
             Config.write(cfgfile)
             cfgfile.close()
@@ -112,11 +117,11 @@ class GPM():
             click.echo("***** config.ini file doesn't exist. Please make sure that you have initiated this project with gpm init")
             sys.exit()
         else:
-            Config = configparser.ConfigParser()
+            Config = configparser.ConfigParser(strict=False)
             Config.read(self.config_path)
             now = datetime.now()
-            # username = getpass.getuser()
-            Config.set("Log", now.strftime("%Y-%m-%d %H:%M:%S"), action)
+            username = getpass.getuser()
+            Config.set("Log", now.strftime("%Y-%m-%d %H-%M-%S"), username + " " + action)
             cfgfile = open(self.config_path, "w")
             Config.write(cfgfile)
             cfgfile.close()
@@ -147,9 +152,14 @@ class GPM():
         self.provider = Config["Project"]["Sample Provider"]
         self.institute = Config["Project"]["Institute"]
         self.fastq = Config["Project"]["FASTQ Path"]
-        self.base = Config["Project"]["Analysis Path"]
+        self.base = Config["Project"]["Base Path"]
         self.app = Config["Project"]["Application"]
-        
+    
+    def analysis(self):
+        self.load_structure()
+        self.populate_files(command="analysis")
+        self.update_config("gpm analysis")
+
     def load_export_config(self):
         self.export_structure = []
         data_dir = os.path.join(os.path.dirname(__file__), "data")
@@ -174,6 +184,7 @@ class GPM():
                 target = os.path.join(export_dir, entry[2], os.path.basename(entry[1]))
             return target
         
+        self.update_config("gpm export")
         export_dir = os.path.abspath(export_dir)
 
         # Create the target folder

@@ -99,11 +99,9 @@ def init(fastq, name):
     click.echo()
     click.echo(click.style("Next steps:", fg='bright_green'))
     click.echo("1. Generate the sample sheet under nfcore directory. Ref: gpm samplesheet")
-    click.echo("2. Check the nfcore/nextflow.config file.")
-    click.echo("3. Finish the command in nfcore/run_nfcore_"+app.lower()+".sh")
+    click.echo("2. Check the command in nfcore/run_nfcore_"+app.lower()+".sh")
+    click.echo("3. Run the command in screen session with bash nfcore/run_nfcore_"+app.lower()+".sh")
  
-#TODO: add reminder for sample sheet and nfcore config
-
 ###################################################################
 ## samplesheet
 # help="Define the project folder where the config.ini file ist."
@@ -126,14 +124,19 @@ def samplesheet(samplesheet, fastq_dir, st, r1, r2, se,
                      r1, r2, se, sn, sd, si)
 
 
+
+
 ###################################################################
-## igv session
+## analysis
 ###################################################################
 @main.command()
-@click.argument('igv_session')
-def igv(igv_session):
-    """Make IGV session accessible via ssh -X by moving the target igv_session.xml to ../../ and remove ../.. in all the paths. This is mainly for nf-core chipseq pipeline."""
-    move_igv(igv_session)
+@click.argument('config_file')
+def analysis(config_file):
+    """Prepare the Rmd templates for basic analysis"""
+    gpm = GPM(load_config=config_file, seqdate=None, application=None, 
+              provider=None, piname=None, institute=None, fastq=None, name=None)
+    gpm.analysis()
+    gpm.show_tree()
 
 ###################################################################
 ## export
@@ -144,12 +147,18 @@ def igv(igv_session):
 @click.option('--tar', is_flag=True, help="If --tar is set, three seperate tar files will be generated for 1_Raw_data, 2_Processed_data and 3_Reports.")
 def export(config_file, export_dir, tar):
     """Export the raw data, processed data and reports to the export directory by creating soft links without moving around the big files."""
-    gpm = GPM(load_config=config_file,
-                      seqdate=None, application=None, 
-                      provider=None, piname=None, institute=None,
-                      fastq=None, name=None)
-
+    gpm = GPM(load_config=config_file, seqdate=None, application=None, 
+              provider=None, piname=None, institute=None, fastq=None, name=None)
     gpm.export(export_dir, tar)
+
+###################################################################
+## igv session for nf-core ChIP-Seq
+###################################################################
+@main.command()
+@click.argument('igv_session')
+def igv(igv_session):
+    """Make IGV session accessible via ssh -X by moving the target igv_session.xml to ../../ and remove ../.. in all the paths. This is mainly for nf-core chipseq pipeline."""
+    move_igv(igv_session)
 
 if __name__ == '__main__':
     main()

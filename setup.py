@@ -14,7 +14,7 @@ setup(
     packages = find_packages(),
     # packages=['mypkg'],
     package_dir = {'gpm': 'gpm'},
-    package_data = {'gpm': ['data/*', 'data/bcl2fastq/*', 'data/nfcore/*', 'data/export/*']},
+    package_data = {'gpm': ['data/*', 'data/bcl2fastq/*', 'data/nfcore/*', 'data/export/*', 'data/analysis/*']},
     py_modules = ['gpm'],
     install_requires=[
         'Click',
