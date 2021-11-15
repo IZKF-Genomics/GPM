@@ -12,7 +12,8 @@ class DisplayablePath(object):
     display_filename_prefix_last = '└──'
     display_parent_prefix_middle = '    '
     display_parent_prefix_last = '│   '
-
+    
+    
     def __init__(self, path, parent_path, is_last):
         self.path = Path(str(path))
         self.parent = parent_path
@@ -21,6 +22,9 @@ class DisplayablePath(object):
             self.depth = self.parent.depth + 1
         else:
             self.depth = 0
+
+        
+
 
     @property
     def displayname(self):
@@ -40,9 +44,16 @@ class DisplayablePath(object):
                                for path in root.iterdir()
                                if criteria(path)),
                           key=lambda s: str(s).lower())
+
+        ignore_paths = ["nfcore/results/", "nfcore/work/"]
+        new_children = []
+        for child in children:
+            for p in ignore_paths:
+                if p not in child:
+                    new_children.append(child)
         count = 1
-        for path in children:
-            is_last = count == len(children)
+        for path in new_children:
+            is_last = count == len(new_children)
             if path.is_dir():
                 yield from cls.make_tree(path,
                                          parent=displayable_root,
