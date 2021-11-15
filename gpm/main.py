@@ -133,7 +133,8 @@ def samplesheet(samplesheet, fastq_dir, st, r1, r2, se,
 @click.argument('config_file')
 def analysis(config_file):
     """Prepare the Rmd templates for basic analysis"""
-    gpm = GPM(load_config=config_file, seqdate=None, application=None, 
+    path_config = os.path.join(os.getcwd(), config_file)
+    gpm = GPM(load_config=path_config, seqdate=None, application=None, 
               provider=None, piname=None, institute=None, fastq=None, name=None)
     gpm.analysis()
     gpm.show_tree()
