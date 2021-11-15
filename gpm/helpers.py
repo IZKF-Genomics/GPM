@@ -41,7 +41,7 @@ class DisplayablePath(object):
                                if criteria(path)),
                           key=lambda s: str(s).lower())
 
-        ignore_paths = ["nfcore/results/", "nfcore/work/"]
+        ignore_paths = ["nfcore/results/", "nfcore/work/", "nfcore/.nextflow/"]
         new_children = []
         for child in children:
             # print(child)
