@@ -134,7 +134,6 @@ def samplesheet(samplesheet, fastq_dir, st, r1, r2, se,
 def analysis(config_file):
     """Prepare the Rmd templates for basic analysis"""
     path_config = os.path.join(os.getcwd(), config_file)
-    print(path_config)
     gpm = GPM(load_config=path_config, seqdate=None, application=None, 
               provider=None, piname=None, institute=None, fastq=None, name=None)
     gpm.analysis()

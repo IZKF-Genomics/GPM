@@ -13,7 +13,6 @@ class DisplayablePath(object):
     display_parent_prefix_middle = '    '
     display_parent_prefix_last = '│   '
     
-    
     def __init__(self, path, parent_path, is_last):
         self.path = Path(str(path))
         self.parent = parent_path
@@ -22,9 +21,6 @@ class DisplayablePath(object):
             self.depth = self.parent.depth + 1
         else:
             self.depth = 0
-
-        
-
 
     @property
     def displayname(self):
@@ -48,9 +44,13 @@ class DisplayablePath(object):
         ignore_paths = ["nfcore/results/", "nfcore/work/"]
         new_children = []
         for child in children:
+            # print(child)
+            tag_ignore = False
             for p in ignore_paths:
-                if p not in child:
-                    new_children.append(child)
+                if p in str(child):
+                    tag_ignore = True
+            if not tag_ignore: new_children.append(child)
+
         count = 1
         for path in new_children:
             is_last = count == len(new_children)

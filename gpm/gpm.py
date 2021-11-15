@@ -140,8 +140,8 @@ class GPM():
         click.echo(click.style("The current status of the project directory:", fg='bright_green'))
         paths = DisplayablePath.make_tree(Path(self.base))
         for path in paths:
-            print(path)
-            # click.echo(path.displayable())
+            # print(str(path))
+            click.echo(path.displayable())
 
     def load_config(self, config_path):
         self.config_path = config_path
