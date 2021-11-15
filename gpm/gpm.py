@@ -48,6 +48,7 @@ class GPM():
         modifier = {"FASTQ_DIR": self.fastq,
                     "TITLE_NAME": self.name,
                     "GPM_PROJECTNAME": self.name.replace("_", " "),
+                    "GPM_DIR_BASE": self.base,
                     "GPM_URL_1_Raw_data": os.path.join(EXPORT_URL, self.name, "1_Raw_data"),
                     "GPM_URL_2_Processed_data": os.path.join(EXPORT_URL, self.name, "2_Processed_data"),
                     "GPM_URL_3_Reports": os.path.join(EXPORT_URL, self.name, "3_Reports"),
