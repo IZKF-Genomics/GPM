@@ -7,7 +7,7 @@ import sys
 import shutil
 import click
 import glob
-from .helpers import DisplayablePath, tardir
+from .helpers import DisplayablePath, tardir, htpasswd_create_user
 from pathlib import Path
 
 class GPM():
@@ -219,9 +219,13 @@ class GPM():
                         target = os.path.join(target_dir, os.path.basename(matching_file))
                         os.symlink(matching_file, target, target_is_directory=False)
         if tar:
-            tardir(os.path.join(export_dir, "1_Raw_data"), os.path.join(export_dir, self.name+"_1_Raw_data.tar"))
-            tardir(os.path.join(export_dir, "2_Processed_data"), os.path.join(export_dir, self.name+"_2_Processed_data.tar"))
-            tardir(os.path.join(export_dir, "3_Reports"), os.path.join(export_dir, self.name+"_3_Reports.tar"))
+            compressed_folder = "compressed_tars"
+            tardir(os.path.join(export_dir, "1_Raw_data"), os.path.join(export_dir, compressed_folder, self.name+"_1_Raw_data.tar"))
+            tardir(os.path.join(export_dir, "2_Processed_data"), os.path.join(export_dir, compressed_folder, self.name+"_2_Processed_data.tar"))
+            tardir(os.path.join(export_dir, "3_Reports"), os.path.join(export_dir, compressed_folder, self.name+"_3_Reports.tar"))
         
+    def create_user(self, export_dir):
+        export_URL = os.path.join(EXPORT_URL, self.name)
+        htpasswd_create_user(export_dir, export_URL, self.provider.lower())
 
 

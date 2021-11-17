@@ -145,12 +145,12 @@ def analysis(config_file):
 @main.command()
 @click.argument('config_file')
 @click.argument('export_dir')
-@click.option('--tar', is_flag=True, help="If --tar is set, three seperate tar files will be generated for 1_Raw_data, 2_Processed_data and 3_Reports.")
-def export(config_file, export_dir, tar):
+def export(config_file, export_dir):
     """Export the raw data, processed data and reports to the export directory by creating soft links without moving around the big files."""
     gpm = GPM(load_config=config_file, seqdate=None, application=None, 
               provider=None, piname=None, institute=None, fastq=None, name=None)
-    gpm.export(export_dir, tar)
+    gpm.export(export_dir, tar=True)
+    gpm.create_user(export_dir)
 
 ###################################################################
 ## igv session for nf-core ChIP-Seq

@@ -6,7 +6,7 @@
 # params {
 #   config_profile_description = 'Nextgen3 IZKF'
 #   config_profile_contact = 'Full name'
-#   config_profile_url = 'http://genomics.rwth-aachen.de'
+#   config_profile_url = 'https://genomics.rwth-aachen.de'
 #   email = 'xxxx@ukaachen.de'
 # }
 

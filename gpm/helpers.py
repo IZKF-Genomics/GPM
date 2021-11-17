@@ -6,6 +6,8 @@ import shutil
 import click
 import tarfile
 import subprocess
+import random
+import string
 
 class DisplayablePath(object):
     display_filename_prefix_middle = '├──'
@@ -258,3 +260,21 @@ def move_igv(igv_session):
 def tardir(path, tar_name):
     cmd = " ".join(["tar","-hcvf",tar_name,path])
     returned_value = subprocess.call(cmd, shell=True)
+
+def htpasswd_create_user(target_dir, url, username):
+    """Create the new user in the target directory with password"""
+    password = generate_password()
+    cmd = " ".join(["htpasswd", "-c", os.path.join(target_dir,".htpasswd"), username, password])
+    returned_value = subprocess.call(cmd, shell=True)
+    click.echo()
+    click.echo(click.style("Create new user for export directory:", fg='bright_green'))
+    click.echo("Directory:\t" + target_dir)
+    click.echo("URL:\t" + url)
+    click.echo("user:\t" + username)
+    click.echo("password:\t" + password)
+
+
+def generate_password():
+    source = string.ascii_letters + string.digits
+    result_str = ''.join((random.choice(source) for i in range(8)))
+    return result_str

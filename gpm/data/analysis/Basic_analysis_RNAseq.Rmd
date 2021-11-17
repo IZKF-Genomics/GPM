@@ -34,11 +34,11 @@ library(here)
 options(warn = -1)
 
 DIR_base <- "GPM_DIR_BASE"
-DIR_project <- paste0(DIR_base, "analysis")
+DIR_project <- paste0(DIR_base, "analysis/")
 DIR_salmon <- paste0(DIR_base, "nfcore/results/star_salmon/")
 FILE_scaled_ct <- paste0(DIR_base, "nfcore/results/star_salmon/salmon.merged.gene_counts_scaled.tsv")
 
-source(paste0(DIR_project, "functions_RNAseq.R"))
+source(paste0(DIR_project, "functions.R"))
 
 FILE_tx2gene <- "/data/genomes/tx2gene/gencode.v28.annotation.tx2gene.csv"
 
@@ -179,6 +179,7 @@ table_all_normalized_quantified_values(deseq_output$norm_count)
 # References
 
 <div id="refs"></div>
+
 
 
 ```{r info, echo=FALSE, results='markup', warning=FALSE, message=TRUE}
