@@ -2,7 +2,7 @@ import os
 import configparser
 from datetime import date, datetime
 import getpass
-from gpm import version, APPLICATIONS, EXPORT_URL
+from gpm import version, APPLICATIONS, EXPORT_URL, SYMLINK_From_Web
 import sys
 import shutil
 import click
@@ -203,7 +203,7 @@ class GPM():
                 if not os.path.exists(target):
                     os.makedirs(target)
             else:
-                origin_file = os.path.join(self.base, entry[1])
+                origin_file = os.path.join(SYMLINK_From_Web, self.base, entry[1])
                 # A directory
                 if os.path.isdir(origin_file):  
                     target = handle_rename(export_dir, entry)
