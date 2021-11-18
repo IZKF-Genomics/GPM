@@ -163,6 +163,7 @@ class GPM():
         self.update_config("gpm analysis")
 
     def load_export_config(self):
+        convert_list = {"GPM_FASTQ": self.fastq}
         self.export_structure = []
         data_dir = os.path.join(os.path.dirname(__file__), "data")
         cfg_path = os.path.join(data_dir, "export", "export.config")
@@ -173,8 +174,9 @@ class GPM():
                     ll = [l.strip() for l in line.split(";")]
                     if len(ll) == 4:
                         if ll[0] == "all" or ll[0] == self.app:
-                            if ll[1] == "FASTQ":
-                                ll[1] = self.fastq
+                            for k, v in convert_list.items():
+                                if ll[1] == k:
+                                    ll[1] = v
                             self.export_structure.append(ll)
 
     def export(self, export_dir, tar=False):
@@ -219,10 +221,10 @@ class GPM():
                         target = os.path.join(target_dir, os.path.basename(matching_file))
                         os.symlink(matching_file, target, target_is_directory=False)
         if tar:
-            compressed_folder = "compressed_tars"
-            tardir(os.path.join(export_dir, "1_Raw_data"), os.path.join(export_dir, compressed_folder, self.name+"_1_Raw_data.tar"))
-            tardir(os.path.join(export_dir, "2_Processed_data"), os.path.join(export_dir, compressed_folder, self.name+"_2_Processed_data.tar"))
-            tardir(os.path.join(export_dir, "3_Reports"), os.path.join(export_dir, compressed_folder, self.name+"_3_Reports.tar"))
+            compressed_folder = os.path.join(export_dir, "compressed_tars")
+            tardir(os.path.join(export_dir, "1_Raw_data"), os.path.join(compressed_folder, self.name+"_1_Raw_data.tar"))
+            tardir(os.path.join(export_dir, "2_Processed_data"), os.path.join(compressed_folder, self.name+"_2_Processed_data.tar"))
+            tardir(os.path.join(export_dir, "3_Reports"), os.path.join(compressed_folder, self.name+"_3_Reports.tar"))
         
     def create_user(self, export_dir):
         export_URL = os.path.join(EXPORT_URL, self.name)
