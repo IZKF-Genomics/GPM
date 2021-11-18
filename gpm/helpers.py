@@ -272,7 +272,7 @@ def htpasswd_create_user(target_dir, url, username):
     password = generate_password()
     cmd = " ".join(["htpasswd", "-c", os.path.join(target_dir,".htpasswd"), username, password])
     # returned_value = subprocess.call(cmd, shell=True)
-    print(cmd)
+    # print(cmd)
     subprocess.run(cmd, shell=True)
     click.echo()
     click.echo(click.style("Create new user for export directory:", fg='bright_green'))
@@ -284,5 +284,5 @@ def htpasswd_create_user(target_dir, url, username):
 
 def generate_password():
     source = string.ascii_letters + string.digits
-    result_str = ''.join((random.choice(source) for i in range(8)))
+    result_str = ''.join((random.choice(source) for i in range(12)))
     return result_str

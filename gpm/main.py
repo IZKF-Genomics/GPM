@@ -151,6 +151,7 @@ def export(config_file, export_dir, tar):
     gpm = GPM(load_config=config_file, seqdate=None, application=None, 
               provider=None, piname=None, institute=None, fastq=None, name=None)
     gpm.export(export_dir, tar=tar)
+    gpm.add_htaccess(export_dir)
     gpm.create_user(export_dir)
 
 ###################################################################
