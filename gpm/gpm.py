@@ -9,6 +9,7 @@ import click
 import glob
 from .helpers import DisplayablePath, tardir, htpasswd_create_user
 from pathlib import Path
+import glob
 
 class GPM():
     def __init__(self, seqdate, application, provider, piname, institute, fastq, name, load_config=False):
@@ -235,4 +236,8 @@ class GPM():
         htaccess_path = os.path.join(data_dir, "export", "htaccess")
         self.copy_file_replace_vairalbles(htaccess_path, os.path.join(export_dir, ".htaccess"))
 
-
+    def generate_index_html(self, export_dir):
+        index_path = os.path.join(export_dir, "index.html")
+        
+for name in glob.glob('dir/*'):
+    print name
