@@ -203,15 +203,17 @@ class GPM():
                 if not os.path.exists(target):
                     os.makedirs(target)
             else:
-                origin_file = os.path.join(SYMLINK_From_Web, self.base, entry[1])
+                origin_file = os.path.join(self.base, entry[1])
                 # A directory
                 if os.path.isdir(origin_file):  
                     target = handle_rename(export_dir, entry)
-                    os.symlink(origin_file, target, target_is_directory=True)
+                    os.symlink(os.path.join(SYMLINK_From_Web, origin_file), 
+                               target, target_is_directory=True)
                 # A file
                 elif os.path.isfile(origin_file):  
                     target = handle_rename(export_dir, entry)
-                    os.symlink(origin_file, target, target_is_directory=False)
+                    os.symlink(os.path.join(SYMLINK_From_Web, origin_file), 
+                               target, target_is_directory=False)
                 # A pattern for many files
                 else:
                     target_dir = os.path.join(export_dir, entry[2])
@@ -219,7 +221,8 @@ class GPM():
                         os.makedirs(target_dir)
                     for matching_file in glob.glob(origin_file):
                         target = os.path.join(target_dir, os.path.basename(matching_file))
-                        os.symlink(matching_file, target, target_is_directory=False)
+                        os.symlink(os.path.join(SYMLINK_From_Web, matching_file), 
+                                   target, target_is_directory=False)
         if tar:
             compressed_folder = os.path.join(export_dir, "compressed_tars")
             tardir(os.path.join(export_dir, "1_Raw_data"), os.path.join(compressed_folder, self.name+"_1_Raw_data.tar"))
