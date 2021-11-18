@@ -258,14 +258,14 @@ def move_igv(igv_session):
 
 
 def tardir(path, tar_name):
-    subprocess.run(["SOURCE="+'\"'+path+'\"'], shell=True)
-    subprocess.run(['SOURCE_SIZE=$(du -sk \"${SOURCE}\" | cut -f1)'], shell=True)
-    subprocess.run(['tar -hcf - \"${SOURCE}\" | pv -p -s \"${SOURCE_SIZE}k\" > '+tar_name], shell=True)
+    # subprocess.run(["SOURCE="+'\"'+path+'\"'], shell=True)
+    # subprocess.run(['SOURCE_SIZE=$(du -sk \"${SOURCE}\" | cut -f1)'], shell=True)
+    # subprocess.run(['tar -hcf - \"${SOURCE}\" | pv -p -s \"${SOURCE_SIZE}k\" > '+tar_name], shell=True)
     # archive and compress
     # tar -cf - "${SOURCE}" | pv -p -s "${SOURCE_SIZE}k" | xz -6 --threads=6 -c -
 
-    # cmd = " ".join(["tar","-hcvf",tar_name,path])
-    # returned_value = subprocess.call(cmd, shell=True)
+    cmd = " ".join(["tar","-hcf",tar_name,path])
+    returned_value = subprocess.call(cmd, shell=True)
 
 def htpasswd_create_user(target_dir, url, username):
     """Create the new user in the target directory with password"""

@@ -230,4 +230,9 @@ class GPM():
         export_URL = os.path.join(EXPORT_URL, self.name)
         htpasswd_create_user(export_dir, export_URL, self.provider.lower())
 
+    def add_htaccess(self, export_dir):
+        data_dir = os.path.join(os.path.dirname(__file__), "data")
+        htaccess_path = os.path.join(data_dir, "export", ".htaccess")
+        shutil.copyfile(htaccess_path, os.path.join(export_dir, ".htaccess"))
+
 
