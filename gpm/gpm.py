@@ -2,7 +2,7 @@ import os
 import configparser
 from datetime import date, datetime
 import getpass
-from gpm import version, APPLICATIONS, EXPORT_URL, SYMLINK_From_Web
+from gpm import version, APPLICATIONS, EXPORT_URL
 import sys
 import shutil
 import click
@@ -207,13 +207,11 @@ class GPM():
                 # A directory
                 if os.path.isdir(origin_file):  
                     target = handle_rename(export_dir, entry)
-                    os.symlink(os.path.join(SYMLINK_From_Web, origin_file), 
-                               target, target_is_directory=True)
+                    os.symlink(origin_file, target, target_is_directory=True)
                 # A file
                 elif os.path.isfile(origin_file):  
                     target = handle_rename(export_dir, entry)
-                    os.symlink(os.path.join(SYMLINK_From_Web, origin_file), 
-                               target, target_is_directory=False)
+                    os.symlink(origin_file, target, target_is_directory=False)
                 # A pattern for many files
                 else:
                     target_dir = os.path.join(export_dir, entry[2])
@@ -221,8 +219,7 @@ class GPM():
                         os.makedirs(target_dir)
                     for matching_file in glob.glob(origin_file):
                         target = os.path.join(target_dir, os.path.basename(matching_file))
-                        os.symlink(os.path.join(SYMLINK_From_Web, matching_file), 
-                                   target, target_is_directory=False)
+                        os.symlink(matching_file, target, target_is_directory=False)
         if tar:
             compressed_folder = os.path.join(export_dir, "compressed_tars")
             tardir(os.path.join(export_dir, "1_Raw_data"), os.path.join(compressed_folder, self.name+"_1_Raw_data.tar"))
@@ -236,6 +233,6 @@ class GPM():
     def add_htaccess(self, export_dir):
         data_dir = os.path.join(os.path.dirname(__file__), "data")
         htaccess_path = os.path.join(data_dir, "export", "htaccess")
-        shutil.copyfile(htaccess_path, os.path.join(export_dir, ".htaccess"))
+        self.copy_file_replace_vairalbles(htaccess_path, os.path.join(export_dir, ".htaccess"))
 
 
