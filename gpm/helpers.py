@@ -258,7 +258,7 @@ def move_igv(igv_session):
 
 
 def tardir(path, tar_name):
-    subprocess.run(["SOURCE=", '\"'+path+'\"'])
+    subprocess.run(["SOURCE="+'\"'+path+'\"'])
     subprocess.run(['SOURCE_SIZE=$(du -sk \"${SOURCE}\" | cut -f1)'])
     subprocess.run(['tar -hcf - \"${SOURCE}\" | pv -p -s \"${SOURCE_SIZE}k\" > '+tar_name])
     # archive and compress
