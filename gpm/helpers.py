@@ -271,7 +271,9 @@ def htpasswd_create_user(target_dir, url, username):
     """Create the new user in the target directory with password"""
     password = generate_password()
     cmd = " ".join(["htpasswd", "-c", os.path.join(target_dir,".htpasswd"), username, password])
-    returned_value = subprocess.call(cmd, shell=True)
+    # returned_value = subprocess.call(cmd, shell=True)
+    print(cmd)
+    subprocess.run(cmd, shell=True)
     click.echo()
     click.echo(click.style("Create new user for export directory:", fg='bright_green'))
     click.echo("Directory:\t" + target_dir)
