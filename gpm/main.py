@@ -145,11 +145,12 @@ def analysis(config_file):
 @main.command()
 @click.argument('config_file')
 @click.argument('export_dir')
-def export(config_file, export_dir):
+@click.option('--tar', default=False, show_default=True,  show_default=True, help="Tar the files in compressed_tars folder")
+def export(config_file, export_dir, tar):
     """Export the raw data, processed data and reports to the export directory by creating soft links without moving around the big files."""
     gpm = GPM(load_config=config_file, seqdate=None, application=None, 
               provider=None, piname=None, institute=None, fastq=None, name=None)
-    gpm.export(export_dir, tar=True)
+    gpm.export(export_dir, tar=tar)
     gpm.create_user(export_dir)
 
 ###################################################################
