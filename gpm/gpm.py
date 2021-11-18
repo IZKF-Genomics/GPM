@@ -9,7 +9,7 @@ import click
 import glob
 from .helpers import DisplayablePath, tardir, htpasswd_create_user
 from pathlib import Path
-import glob
+
 
 class GPM():
     def __init__(self, seqdate, application, provider, piname, institute, fastq, name, load_config=False):
@@ -239,5 +239,5 @@ class GPM():
     def generate_index_html(self, export_dir):
         index_path = os.path.join(export_dir, "index.html")
         
-for name in glob.glob('dir/*'):
-    print name
+        for name in glob.glob(export_dir+'/Basic_analysis_*.html'):
+            shutil.copy(name, index_path)
