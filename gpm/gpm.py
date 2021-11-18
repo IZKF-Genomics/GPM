@@ -239,6 +239,6 @@ class GPM():
     def generate_index_html(self, export_dir):
         index_path = os.path.join(export_dir, "index.html")
         print(index_path)
-        for report_html in glob.glob(export_dir+'/Basic_analysis_*.html'):
+        for report_html in glob.glob(export_dir+'/3_Reports/Basic_analysis_*.html'):
             print(report_html)
             shutil.copy(report_html, index_path)
