@@ -273,7 +273,7 @@ def htpasswd_create_user(target_dir, url, username):
     shutil.copy(os.path.join(export_base_path, ".htpasswd"), 
                 os.path.join(target_dir, ".htpasswd"))
     password = generate_password()
-    cmd = " ".join(["htpasswd", "-bp", os.path.join(target_dir,".htpasswd"), username, password])
+    cmd = " ".join(["htpasswd", "-b", os.path.join(target_dir,".htpasswd"), username, password])
     # returned_value = subprocess.call(cmd, shell=True)
     # print(cmd)
     subprocess.run(cmd, shell=True)
