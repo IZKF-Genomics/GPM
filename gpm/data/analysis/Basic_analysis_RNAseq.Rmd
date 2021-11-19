@@ -17,20 +17,8 @@ bibliography: references.bib
 ---
 
 ```{r conig, echo=FALSE, results="hide", warning=FALSE, message=FALSE}
-library(plotly)
-library(stats)
 library("heatmaply")
-library(tidyverse)
-library(data.table)
-require(dplyr)
-require(DT)
-library(ggplot2)
-library(stringr)
-library(DESeq2)
-library("tximport")
 library("readr")
-library("tximportData")
-library(here)
 options(warn = -1)
 
 DIR_base <- "GPM_DIR_BASE"
@@ -40,7 +28,7 @@ FILE_scaled_ct <- paste0(DIR_base, "nfcore/results/star_salmon/salmon.merged.gen
 
 source(paste0(DIR_project, "functions.R"))
 
-FILE_tx2gene <- "/data/genomes/tx2gene/gencode.v28.annotation.tx2gene.csv"
+FILE_tx2gene <- "/data/genomes/tx2gene/gencode.v38.annotation.tx2gene.csv"
 
 Fig_width <- 600
 Fig_height <- 400
@@ -51,11 +39,6 @@ CUTOFF_ADJP <- 0.05
 ## Load sample sheets from nf-core configuration
 samples <- read.table(file.path(DIR_base,"/nfcore/samplesheet.csv"), header=TRUE, sep = ",")
 rownames(samples) <- samples$sample
-
-## Please assign the groups for comparison into labels_group variable and confirm the direction of comparison by level parameter in the function factor, here is just an example
-labels_group <- c("control", "control", "control", "control", "treatment", "treatment", "treatment", "treatment")
-samples$group <- factor(labels_group, levels = c("control","treatment"))
-
 ```
 
 
@@ -94,7 +77,7 @@ Please click the hyperlinked list below:
     * BigWig files after normalization
     * Quantification tables from the counts of reads or quantification of the expressions
 3. [Reports](GPM_URL_3_Reports):
-    * MultiQC reports for the quality check
+    * [MultiQC reports](GPM_URL_3_Reports/multiqc/TITLE_NAME_multiqc_report.html) for the quality check
     * Basic analysis of the Genomics Facility (This report)
 4. [Compressed files for download](GPM_URL_TAR):
     * Three tar files are available for download for the above three folders.
@@ -111,13 +94,14 @@ Please make sure that you store these data in a lab-wise level. Genomics Facilit
 
 FASTQ files were generated using bcl2fastq (Illumina). To facilitate reproducible analysis, samples were processed using the publicly available nf-core/RNA-seq pipeline version 3.4 [@ewels2020nf] implemented in Nextflow 21.04.0 [@di2017nextflow] using Docker 20.10.8 [@merkel2014docker] with the minimal command. In brief, lane-level reads were trimmed using Trim Galore 0.6.7 [@felix_krueger_2021_5127899] and aligned to the human genome (GRCh38.p13) using STAR 2.7.9a [@dobin2013star]. Gene-level assignment was then performed using featureCounts 1.6.457 [@liao2014featurecounts] and transcript-level quantification was done by Salmon v1.5.2 [@patro2017salmon]. All analysis was performed using custom scripts in R version 4.1.1 using the DESeq2 v.1.32.0 framework [@love2014moderated]. 
 
+
+# Correlation
+
 ```{r load, echo=FALSE, results="hide", warning=FALSE, message=FALSE}
 scaled_ct <- read_tsv(FILE_scaled_ct)
 scaled_ct2 <- aggregate(x=scaled_ct[, c(-1,-2)], by=list(scaled_ct$gene_name), FUN=mean)
 colnames(scaled_ct2)[1] <- "Gene_symbol"
 ```
-
-# Correlation
 
 ```{r correlation, echo=FALSE, results="asis", warning=FALSE, message=FALSE}
 fig <- heatmaply_cor(cor(scaled_ct[,c(-1,-2)]), width = Fig_width, height = Fig_height,
@@ -129,58 +113,24 @@ fig
 
 # Differential expression analysis
 
-Differential expression analysis is done with DESEQ2 package in R [@love2014moderated] and follows the instruction for Salmon quantification ([Analyzing RNA-seq data with DESeq2](https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html)).
+```{r saveobjects, echo=FALSE, results="hide", warning=FALSE, message=FALSE}
+save(DIR_base,DIR_project,DIR_salmon,
+     FILE_scaled_ct,FILE_tx2gene,Fig_width,Fig_height,CUTOFF_Quantification,CUTOFF_ADJP,
+     samples, scaled_ct, scaled_ct2, file = paste0(DIR_project, "data.RData"))
 
-## Figures {.tabset}
-
-```{r deseq2, echo=FALSE, results="hide", warning=FALSE, message=FALSE}
-samples2 <- samples[!(is.na(samples$group)),]
-deseq_output <- run_deseq_salmon(samples2)
+rmarkdown::render('diffexp_comparison_1.Rmd', output_format = 'html_document',
+                  output_file = "diffexp_comparison_1.html")
 ```
 
-### PCA
+## [Comparison 1](diffexp_comparison_1.html) 
 
-```{r, echo=FALSE, results='asis', warning=FALSE, message=FALSE}
-PCA_after_deseq2(deseq_output$norm_count, samples2)
-```
-
-### Volcano plot
-
-```{r, echo=FALSE, results="asis", warning=FALSE, message=FALSE}
-volcano_plot(deseq_output$deseq2res)
-```
-
-### Heatmap
-
-```{r, echo=FALSE, results="asis", warning=FALSE, message=FALSE}
-heatmap_expression(deseq_output$deseq2res)
-```
-
-## Tables {.tabset}
-
-### Sig. genes
-
-```{r, layout="l-body-outset", echo=FALSE, results='asis', warning=FALSE, message=FALSE}
-table_sig_genes(deseq_output$deseq2res_sig)
-```
-
-### Statistics
-
-```{r, layout="l-body-outset", echo=FALSE, results='asis', warning=FALSE, message=FALSE}
-table_diffexp_statistics(deseq_output$deseq2res)
-```
-
-### All genes
-
-```{r, layout="l-body-outset", echo=FALSE, results='asis', warning=FALSE, message=FALSE}
-table_all_normalized_quantified_values(deseq_output$norm_count)
-```
 
 # References
 
 <div id="refs"></div>
 
 
+# R session information
 
 ```{r info, echo=FALSE, results='markup', warning=FALSE, message=TRUE}
 sessionInfo()
