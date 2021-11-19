@@ -152,7 +152,7 @@ def export(config_file, export_dir, tar):
               provider=None, piname=None, institute=None, fastq=None, name=None)
     if not tar:
         gpm.export(export_dir)
-        gpm.generate_index_html(export_dir)
+        # gpm.generate_index_html(export_dir)
         gpm.add_htaccess(export_dir)
         gpm.create_user(export_dir)
     else:

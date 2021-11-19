@@ -280,7 +280,7 @@ def htpasswd_create_user(target_dir, url, username):
     click.echo()
     click.echo(click.style("Create new user for export directory:", fg='bright_green'))
     click.echo("Directory:\t" + target_dir)
-    click.echo("URL:\t" + url)
+    click.echo("URL:\t" + url + "/3_Reports/index.html")
     click.echo("user:\t" + username)
     click.echo("password:\t" + password)
 
