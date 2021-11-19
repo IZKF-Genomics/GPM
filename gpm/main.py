@@ -150,10 +150,13 @@ def export(config_file, export_dir, tar):
     """Export the raw data, processed data and reports to the export directory by creating soft links without moving around the big files."""
     gpm = GPM(load_config=config_file, seqdate=None, application=None, 
               provider=None, piname=None, institute=None, fastq=None, name=None)
-    gpm.export(export_dir, tar=tar)
-    gpm.generate_index_html(export_dir)
-    gpm.add_htaccess(export_dir)
-    gpm.create_user(export_dir)
+    if not tar:
+        gpm.export(export_dir)
+        gpm.generate_index_html(export_dir)
+        gpm.add_htaccess(export_dir)
+        gpm.create_user(export_dir)
+    else:
+        gpm.tar_exports(export_dir)
 
 ###################################################################
 ## igv session for nf-core ChIP-Seq
