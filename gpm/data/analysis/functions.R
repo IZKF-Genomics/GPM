@@ -1,16 +1,41 @@
-PCA_all_samples <- function(scaled_ct) {
-  t <- t(scaled_ct[, c(-1,-2)])
+PCA_all_samples <- function(scaled_ct, colors) {
+  t <- t(scaled_ct[, c(-1)])
   prin_comp <- prcomp(t, rank. = 2)
   components <- prin_comp[["x"]]
   components <- data.frame(components)
   components <- cbind(components, rownames(t))
   components$PC2 <- -components$PC2
 
-  fig <- plot_ly(components, x = ~PC1, y = ~PC2, color = cells, width = Fig_width, height = Fig_height,
+  fig <- plot_ly(components, x = ~PC1, y = ~PC2, color = colors, 
+                 width = Fig_width, height = Fig_height,
                  type = 'scatter', mode = 'markers', text = components$`rownames(t)`)
   fig
 }
-run_deseq_salmon <- function(samplesheet) {
+
+process_dds_res <- function(tx2gene, dds) {
+  ensembl_genes <- data.frame(gene_id=tx2gene$gene_id, gene_name=tx2gene$gene_name)
+  ensembl_genes <- ensembl_genes[!duplicated(ensembl_genes), ]
+  
+  normalized_counts <- counts(dds, normalized=TRUE)
+  normalized_counts <- merge(ensembl_genes, normalized_counts, by.x="gene_id", by.y="row.names")
+  
+  res <- results(dds)
+  res_combined <- merge(ensembl_genes, as.data.frame(res), by.x= "gene_id", by.y="row.names", all.x=F, all.y=T)
+  res_combined <- merge(res_combined, normalized_counts, by=c("gene_id", "gene_name"), all.x=T, all.y=F)
+  res_combined <- res_combined[complete.cases(res_combined), ]
+  res_combined$sig <- "Non-sig."
+  res_combined$sig[res_combined$padj < CUTOFF_ADJP] <- "Sig. genes"
+  
+  res_combined_sig <- res_combined[res_combined$padj < CUTOFF_ADJP,]
+  
+  output <- list(norm_count=normalized_counts,
+                 deseq2res=res_combined,
+                 deseq2res_sig=res_combined_sig
+  )
+  return(output)
+}
+
+run_deseq_salmon <- function(samplesheet, exp_matrix) {
   files <- file.path(DIR_salmon, samplesheet$sample, "quant.sf")
   names(files) <- samplesheet$sample
   tx2gene <- read_csv(FILE_tx2gene)
@@ -22,22 +47,22 @@ run_deseq_salmon <- function(samplesheet) {
                                      design = ~ group)
 
   dds <- DESeq(ddsTxi)
-  normalized_counts <- counts(dds, normalized=TRUE)
-  normalized_counts2 <- merge(scaled_ct[,1:2], normalized_counts, by.x="gene_id", by.y="row.names")
+  output <- process_dds_res(tx2gene, dds)
+  return(output)
+}
 
-  res <- results(dds)
-  res_combined <- merge(res, normalized_counts, by="row.names", all.x=T, all.y=F)
-  res_combined <- res_combined[complete.cases(res_combined), ]
-  res_combined <- merge(scaled_ct[,1:2], res_combined, by.x="gene_id", by.y="Row.names")
-  res_combined <- res_combined[complete.cases(res_combined), ]
-
-  res_combined_sig <- res_combined[res_combined$padj < CUTOFF_ADJP,]
-  res_combined$sig <- "Non-sig."
-  res_combined$sig[res_combined$padj < CUTOFF_ADJP] <- "Sig. genes"
-  output <- list(norm_count=normalized_counts2,
-                 deseq2res=res_combined,
-                 deseq2res_sig=res_combined_sig
-  )
+run_deseq_salmon_batch <- function(samplesheet, exp_matrix) {
+  files <- file.path(DIR_salmon, samplesheet$sample, "quant.sf")
+  names(files) <- samplesheet$sample
+  tx2gene <- read_csv(FILE_tx2gene)
+  
+  txi <- tximport(files, type="salmon", tx2gene=tx2gene)
+  
+  ddsTxi <- DESeqDataSetFromTximport(txi,
+                                     colData = samplesheet,
+                                     design = ~batch + group)
+  dds <- DESeq(ddsTxi)
+  output <- process_dds_res(tx2gene, dds)
   return(output)
 }
 
@@ -47,8 +72,6 @@ PCA_after_deseq2 <- function(normalized_counts2, samples) {
   components <- prin_comp[["x"]]
   components <- data.frame(components)
   components <- cbind(components, rownames(t))
-  # components$PC2 <- -components$PC2
-
   labels <- samples$sample
   labels_group <- samples$group
   fig <- plot_ly(components, x = ~PC1, y = ~PC2, color = labels_group, text = labels,

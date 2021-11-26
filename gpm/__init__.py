@@ -1,9 +1,9 @@
-version_info = (0,2,0)
+version_info = (0,2,1)
 version = ".".join([str(c) for c in version_info])
 
 APPLICATIONS = ["RNAseq", "totalRNAseq", "mRNAseq", "3mRNAseq",
                 "ChIPseq", "ATACseq", "Ampseq",
-                "scRNAseq",
+                "scRNAseq", "miRNAseq",
                 "WGS", "WES"]
 
 EXPORT_URL = "https://genomics.rwth-aachen.de/data/"

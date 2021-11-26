@@ -7,7 +7,7 @@ import sys
 import shutil
 import click
 import glob
-from .helpers import DisplayablePath, tardir, htpasswd_create_user
+from .helpers import DisplayablePath, tardir, htpasswd_create_user, add_htaccess
 from pathlib import Path
 
 
