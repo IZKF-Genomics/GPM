@@ -256,6 +256,10 @@ def move_igv(igv_session):
     fin.write(data)
     fin.close()
 
+def add_htaccess(self, export_dir):
+    data_dir = os.path.join(os.path.dirname(__file__), "data")
+    htaccess_path = os.path.join(data_dir, "export", "htaccess")
+    self.copy_file_replace_vairalbles(htaccess_path, os.path.join(export_dir, ".htaccess"))
 
 def tardir(path, tar_name):
     # subprocess.run(["SOURCE="+'\"'+path+'\"'], shell=True)
@@ -267,6 +271,12 @@ def tardir(path, tar_name):
     cmd = " ".join(["tar","-hcf",tar_name,path])
     returned_value = subprocess.call(cmd, shell=True)
 
+def tar_exports(self, export_dir):
+    compressed_folder = os.path.join(export_dir, "compressed_tars")
+    tardir(os.path.join(export_dir, "1_Raw_data"), os.path.join(compressed_folder, self.name+"_1_Raw_data.tar"))
+    tardir(os.path.join(export_dir, "2_Processed_data"), os.path.join(compressed_folder, self.name+"_2_Processed_data.tar"))
+    tardir(os.path.join(export_dir, "3_Reports"), os.path.join(compressed_folder, self.name+"_3_Reports.tar"))
+        
 def htpasswd_create_user(target_dir, url, username, app):
     """Create the new user in the target directory with password"""
     export_base_path = Path(target_dir).parent.absolute()
@@ -282,9 +292,13 @@ def htpasswd_create_user(target_dir, url, username, app):
     click.echo("Directory:\t" + target_dir)
     if "RNAseq" in app:
         click.echo("URL:\t" + url + "/3_Reports/basic_analysis_RNAseq.html")
+    else:
+        click.echo("URL:\t" + url)
     click.echo("user:\t" + username)
     click.echo("password:\t" + password)
 
+def create_user(export_dir, export_URL, username):
+    htpasswd_create_user(export_dir, export_URL, username, None)
 
 def generate_password():
     source = string.ascii_letters + string.digits

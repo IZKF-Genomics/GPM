@@ -5,7 +5,7 @@ import os
 import fnmatch
 from .gpm import GPM
 from . import version, APPLICATIONS
-from .helpers import generate_samples, write_file_run_bcl2fastq, write_file_run_cellranger_mkfastq, copyfromdata, show_tree, move_igv
+from .helpers import generate_samples, write_file_run_bcl2fastq, write_file_run_cellranger_mkfastq, copyfromdata, show_tree, move_igv, tar_exports, add_htaccess, create_user
 from pathlib import Path
 import datetime
 import collections
@@ -145,18 +145,33 @@ def analysis(config_file):
 @main.command()
 @click.argument('config_file')
 @click.argument('export_dir')
-@click.option('-tar', default=False, show_default=True, help="Tar the files in compressed_tars folder")
-def export(config_file, export_dir, tar):
+def export(config_file, export_dir):
     """Export the raw data, processed data and reports to the export directory by creating soft links without moving around the big files."""
     gpm = GPM(load_config=config_file, seqdate=None, application=None, 
               provider=None, piname=None, institute=None, fastq=None, name=None)
-    if not tar:
-        gpm.export(export_dir)
-        # gpm.generate_index_html(export_dir)
-        gpm.add_htaccess(export_dir)
-        gpm.create_user(export_dir)
-    else:
-        gpm.tar_exports(export_dir)
+    gpm.export(export_dir)
+    gpm.add_htaccess(export_dir)
+    gpm.create_user(export_dir)
+
+###################################################################
+## tar export with symlinks
+###################################################################
+@main.command()
+@click.argument('export_dir')
+def tar_export(export_dir):
+    """Tar the three folders (Raw data, Processed data, and Reports) under the export directory with symlinks."""
+    tar_exports(export_dir)
+
+###################################################################
+## create an empty export
+###################################################################
+@main.command()
+@click.argument('export_dir')
+@click.argument('client')
+def mkexport(export_dir, client):
+    """Create an empty export folder with configuration of access"""
+    add_htaccess(export_dir)
+    create_user(export_dir)
 
 ###################################################################
 ## igv session for nf-core ChIP-Seq
