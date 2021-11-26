@@ -256,10 +256,6 @@ def move_igv(igv_session):
     fin.write(data)
     fin.close()
 
-def add_htaccess(self, export_dir):
-    data_dir = os.path.join(os.path.dirname(__file__), "data")
-    htaccess_path = os.path.join(data_dir, "export", "htaccess")
-    self.copy_file_replace_vairalbles(htaccess_path, os.path.join(export_dir, ".htaccess"))
 
 def tardir(path, tar_name):
     # subprocess.run(["SOURCE="+'\"'+path+'\"'], shell=True)
@@ -291,7 +287,7 @@ def htpasswd_create_user(target_dir, url, username, app):
     click.echo(click.style("Create new user for export directory:", fg='bright_green'))
     click.echo("Directory:\t" + target_dir)
     if "RNAseq" in app:
-        click.echo("URL:\t" + url + "/3_Reports/basic_analysis_RNAseq.html")
+        click.echo("URL:\t" + url + "/3_Reports/Basic_analysis_RNAseq.html")
     else:
         click.echo("URL:\t" + url)
     click.echo("user:\t" + username)
