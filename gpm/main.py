@@ -145,7 +145,7 @@ def analysis(config_file):
 @main.command()
 @click.argument('config_file')
 @click.argument('export_dir')
-@click.option('-tar', default=False, show_default=True, help="Tar the files in compressed_tars folder")
+@click.option('--tar/--no-tar', default=False, show_default=True, help="Tar the files in compressed_tars folder")
 def export(config_file, export_dir, tar):
     """Export the raw data, processed data and reports to the export directory by creating soft links without moving around the big files."""
     gpm = GPM(load_config=config_file, seqdate=None, application=None, 
@@ -157,6 +157,17 @@ def export(config_file, export_dir, tar):
         gpm.create_user(export_dir)
     else:
         gpm.tar_exports(export_dir)
+
+###################################################################
+## export BCL
+###################################################################
+@main.command()
+@click.argument('BCL_path')
+@click.argument('export_dir')
+@click.option('--tar/--no-tar', default=False, show_default=True, help="Tar the files in compressed_tars folder")
+def exportBCL(BCL_path, export_dir, tar):
+    """Export the raw data by creating soft links without moving around the big files."""
+    pass
 
 ###################################################################
 ## igv session for nf-core ChIP-Seq
