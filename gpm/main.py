@@ -124,8 +124,6 @@ def samplesheet(samplesheet, fastq_dir, st, r1, r2, se,
                      r1, r2, se, sn, sd, si)
 
 
-
-
 ###################################################################
 ## analysis
 ###################################################################
@@ -172,17 +170,6 @@ def mkexport(export_dir, client):
     """Create an empty export folder with configuration of access"""
     add_htaccess(export_dir)
     create_user(export_dir)
-
-###################################################################
-## export BCL
-###################################################################
-@main.command()
-@click.argument('BCL_path')
-@click.argument('export_dir')
-@click.option('--tar/--no-tar', default=False, show_default=True, help="Tar the files in compressed_tars folder")
-def exportBCL(BCL_path, export_dir, tar):
-    """Export the raw data by creating soft links without moving around the big files."""
-    pass
 
 ###################################################################
 ## igv session for nf-core ChIP-Seq
