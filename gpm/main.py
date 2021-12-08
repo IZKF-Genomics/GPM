@@ -5,7 +5,7 @@ import os
 import fnmatch
 from .gpm import GPM
 from . import version, APPLICATIONS
-from .helpers import generate_samples, write_file_run_bcl2fastq, write_file_run_cellranger_mkfastq, copyfromdata, show_tree, move_igv, tar_exports, add_htaccess, create_user
+from .helpers import generate_samples, write_file_run_bcl2fastq, write_file_run_cellranger_mkfastq, copyfromdata, show_tree, move_igv, tar_exports, create_user
 from pathlib import Path
 import datetime
 import collections
