@@ -267,11 +267,12 @@ def tardir(path, tar_name):
     cmd = " ".join(["tar","-hcf",tar_name,path])
     returned_value = subprocess.call(cmd, shell=True)
 
-def tar_exports(self, export_dir):
+def tar_exports(export_dir):
+    name = os.path.basename(export_dir)
     compressed_folder = os.path.join(export_dir, "compressed_tars")
-    tardir(os.path.join(export_dir, "1_Raw_data"), os.path.join(compressed_folder, self.name+"_1_Raw_data.tar"))
-    tardir(os.path.join(export_dir, "2_Processed_data"), os.path.join(compressed_folder, self.name+"_2_Processed_data.tar"))
-    tardir(os.path.join(export_dir, "3_Reports"), os.path.join(compressed_folder, self.name+"_3_Reports.tar"))
+    tardir(os.path.join(export_dir, "1_Raw_data"), os.path.join(compressed_folder, name+"_1_Raw_data.tar"))
+    tardir(os.path.join(export_dir, "2_Processed_data"), os.path.join(compressed_folder, name+"_2_Processed_data.tar"))
+    tardir(os.path.join(export_dir, "3_Reports"), os.path.join(compressed_folder, name+"_3_Reports.tar"))
         
 def htpasswd_create_user(target_dir, url, username, app):
     """Create the new user in the target directory with password"""
