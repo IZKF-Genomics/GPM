@@ -250,7 +250,7 @@ def move_igv(igv_session):
     # remove relative path
     fin = open(target, "rt")
     data = fin.read()
-    data = data.replace('../..', '')
+    data = data.replace('../../', './')
     fin.close()
     fin = open(target, "wt")
     fin.write(data)
