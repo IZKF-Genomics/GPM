@@ -78,7 +78,7 @@ Please click the hyperlinked list below:
     * BigWig files after normalization
     * Quantification tables from the counts of reads or quantification of the expressions
 3. [Reports](GPM_URL_3_Reports):
-    * [MultiQC reports](GPM_URL_3_Reports/multiqc/TITLE_NAME_multiqc_report.html) for the quality check
+    * [MultiQC reports](GPM_URL_3_Reports/multiqc/GPM_TITLE_NAME_multiqc_report.html) for the quality check
     * Basic analysis of the Genomics Facility (This report)
 4. [Compressed files for download](GPM_URL_TAR):
     * Three tar files are available for download for the above three folders.

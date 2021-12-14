@@ -47,7 +47,7 @@ class GPM():
             contents = [l.rstrip() for l in f1.readlines()]
     
         modifier = {"FASTQ_DIR": self.fastq,
-                    "TITLE_NAME": self.name,
+                    "GPM_TITLE_NAME": self.name,
                     "GPM_PROJECTNAME": self.name.replace("_", " "),
                     "GPM_DIR_BASE": self.base,
                     "GPM_URL_1_Raw_data": os.path.join(EXPORT_URL, self.name, "1_Raw_data"),
