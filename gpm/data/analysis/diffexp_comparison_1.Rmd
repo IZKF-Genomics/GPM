@@ -34,7 +34,10 @@ source(paste0(DIR_project, "functions.R"))
 
 load(paste0(DIR_project, "data.RData"))
 
+Tag_this_analysis <- "M0_WT_vs_KO"
+
 ## Please assign the groups for comparison into labels_group variable and confirm the direction of comparison by level parameter in the function factor, here is just an example
+# Manually define the grouping
 labels_group <- c("control","control",
                   FALSE,FALSE,
                   FALSE,FALSE,
@@ -42,10 +45,13 @@ labels_group <- c("control","control",
                   FALSE,FALSE,
                   FALSE,FALSE)
 samples$group <- factor(labels_group, levels = c("control","knockdown"))
+# Select by columns
+# samples <- samples[samples$macrophages=="M0",]
+# samples$group <- factor(samples$genotype, levels = c("WT","KO"))
 
 ```
 
-### [Back to front page](basic_analysis_RNAseq.html)
+### [Back to front page](Basic_analysis_RNAseq.html)
 
 Differential expression analysis is done with DESEQ2 package in R [@love2014moderated] and follows the instruction for Salmon quantification ([Analyzing RNA-seq data with DESeq2](https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html)).
 
@@ -82,17 +88,29 @@ heatmap_expression(deseq_output$deseq2res)
 table_sig_genes(deseq_output$deseq2res_sig)
 ```
 
-## Statistics
+## Up genes
 
 ```{r, layout="l-body-outset", echo=FALSE, results='asis', warning=FALSE, message=FALSE}
-table_diffexp_statistics(deseq_output$deseq2res)
+table_sig_genes(deseq_output$deseq2res_sig[deseq_output$deseq2res_sig$log2FoldChange > 0,])
 ```
 
-## All genes
+## Down genes
 
 ```{r, layout="l-body-outset", echo=FALSE, results='asis', warning=FALSE, message=FALSE}
-table_all_normalized_quantified_values(deseq_output$norm_count)
+table_sig_genes(deseq_output$deseq2res_sig[deseq_output$deseq2res_sig$log2FoldChange < 0,])
 ```
+
+```{r, echo=FALSE, results='asis', warning=FALSE, message=FALSE}
+# download_table()
+write.csv(deseq_output$deseq2res,paste0(DIR_project, paste0('Diff_Exp_genes_stats_',Tag_this_analysis,'.csv')))
+write.csv(deseq_output$norm_count,paste0(DIR_project, paste0('normalized_expression_quantification_',Tag_this_analysis,'.csv')))
+```
+
+
+# Download statistics
+
+* Download CSV file for the statistics of all valid genes in differential expression analysis: [`r paste0('Diff_Exp_genes_stats_',Tag_this_analysis,'.csv')`](`r paste0('Diff_Exp_genes_stats_',Tag_this_analysis,'.csv')`)
+* Download CSV file for the expression quantification of all genes: [`r paste0('normalized_expression_quantification_',Tag_this_analysis,'.csv')`](`r paste0('normalized_expression_quantification_',Tag_this_analysis,'.csv')`)
 
 
 # References
