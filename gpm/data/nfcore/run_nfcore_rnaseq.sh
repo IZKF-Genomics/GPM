@@ -9,11 +9,11 @@
 #   email = 'ckuo@ukaachen.de'
 # }
 
-nextflow run nf-core/rnaseq -profile docker \
+nextflow run nf-core/rnaseq -r 3.5 -profile docker \
      --pseudo_aligner salmon \
      --input samplesheet.csv \
-     --genome gencode_hg38 --gencode \ 
-     --multiqc_title TITLE_NAME
+     --genome gencode_hg38 --gencode --featurecounts_group_type gene_type \ 
+     --multiqc_title GPM_TITLE_NAME
 
 # Options for --genome:
 # gencode_hg38, gencode_mm10, hg38, mm10
