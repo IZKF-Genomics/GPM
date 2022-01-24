@@ -9,3 +9,4 @@ APPLICATIONS = ["RNAseq", "totalRNAseq", "mRNAseq", "3mRNAseq",
 
 EXPORT_URL = "https://genomics.rwth-aachen.de/data/"
 SYMLINK_From_Web = "/mnt/nextgen3/"
+GROUPNAME = "genomics"
