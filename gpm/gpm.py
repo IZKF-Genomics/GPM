@@ -195,7 +195,7 @@ class GPM():
         # Create the target folder
         if not os.path.exists(export_dir):
             os.makedirs(export_dir)
-            shutil.chown(export_dir, group=GROUPNAME)
+            # shutil.chown(export_dir, group=GROUPNAME)
         # Creating soft links of the files
         self.load_export_config()
         for entry in self.export_structure:
@@ -231,7 +231,7 @@ class GPM():
         data_dir = os.path.join(os.path.dirname(__file__), "data")
         htaccess_path = os.path.join(data_dir, "export", "htaccess")
         self.copy_file_replace_vairalbles(htaccess_path, os.path.join(export_dir, ".htaccess"))
-        shutil.chown(os.path.join(export_dir, ".htaccess"), group=GROUPNAME)
+        # shutil.chown(os.path.join(export_dir, ".htaccess"), group=GROUPNAME)
 
     def generate_index_html(self, export_dir):
         index_path = os.path.join(export_dir, "index.html")
