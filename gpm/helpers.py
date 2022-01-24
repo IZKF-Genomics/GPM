@@ -319,4 +319,5 @@ def export_empty_folder(export_URL, export_dir, config, user):
         for line in contents:
             print(line, file=f2)
     # Create user
-    htpasswd_create_user(export_dir, export_URL, user.lower(), "customized")
+    htpasswd_create_user(export_dir, os.path.join(export_URL, os.path.basename(export_dir)), 
+                         user.lower(), "customized")
