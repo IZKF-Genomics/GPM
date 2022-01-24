@@ -20,6 +20,3 @@ nextflow run nf-core/rnaseq -r 3.5 -profile docker \
 # Options for --genome:
 # gencode_hg38, gencode_mm10, hg38, mm10
 # Useful options: --removeRiboRNA
-
-# QuantSeq 3’ mRNA-Seq Library Prep Kits!
-# --clip_r1 12
