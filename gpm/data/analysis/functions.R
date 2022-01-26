@@ -148,7 +148,8 @@ table_diffexp_statistics <- function(deseq2res) {
 }
 
 table_sig_genes <- function(res_sig) {
-  datatable( res_sig ,
+  res <- subset(res_sig, select = -c(sig) )
+  datatable( res ,
              extensions = c("Buttons" , "FixedColumns"),
              filter = 'top',
              options = list( autoWidth = TRUE ,
