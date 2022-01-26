@@ -163,13 +163,13 @@ def tar_export(export_dir):
 ###################################################################
 ## create an empty export
 ###################################################################
-@main.command()
-@click.argument('export_dir')
-@click.argument('client')
-def mkexport(export_dir, client):
-    """Create an empty export folder with configuration of access"""
-    add_htaccess(export_dir)
-    create_user(export_dir)
+# @main.command()
+# @click.argument('export_dir')
+# @click.argument('client')
+# def mkexport(export_dir, client):
+#     """Create an empty export folder with configuration of access"""
+#     add_htaccess(export_dir)
+#     create_user(export_dir)
 
 ###################################################################
 ## igv session for nf-core ChIP-Seq
