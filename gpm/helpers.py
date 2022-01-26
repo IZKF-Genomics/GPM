@@ -288,7 +288,7 @@ def htpasswd_create_user(target_dir, url, username, app):
     click.echo(click.style("Create new user for export directory:", fg='bright_green'))
     click.echo("Directory:\t" + target_dir)
     if "RNAseq" in app:
-        click.echo("URL:\t" + url + "/3_Reports/Basic_analysis_RNAseq.html")
+        click.echo("URL:\t" + url + "/3_Reports/analysis/Basic_analysis_RNAseq.html")
     else:
         click.echo("URL:\t" + url)
     click.echo("user:\t" + username)
@@ -301,3 +301,23 @@ def generate_password():
     source = string.ascii_letters + string.digits
     result_str = ''.join((random.choice(source) for i in range(12)))
     return result_str
+
+def export_empty_folder(export_URL, export_dir, config, user):
+    export_dir = os.path.abspath(export_dir)
+    if not os.path.exists(export_dir):
+        os.makedirs(export_dir)
+    # Add htaccess
+    data_dir = os.path.join(os.path.dirname(__file__), "data")
+    htaccess_path = os.path.join(data_dir, "export", "htaccess")
+    with open(htaccess_path) as f1:
+        contents = [l.rstrip() for l in f1.readlines()]
+    for i,line in enumerate(contents):
+        if "GPM_TITLE_NAME" in line:
+            contents[i] = line.replace("GPM_TITLE_NAME", os.path.basename(export_dir))
+
+    with open(os.path.join(export_dir, ".htaccess"), "w") as f2:
+        for line in contents:
+            print(line, file=f2)
+    # Create user
+    htpasswd_create_user(export_dir, os.path.join(export_URL, os.path.basename(export_dir)), 
+                         user.lower(), "customized")

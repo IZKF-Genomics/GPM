@@ -4,8 +4,8 @@ import re
 import os
 import fnmatch
 from .gpm import GPM
-from . import version, APPLICATIONS
-from .helpers import generate_samples, write_file_run_bcl2fastq, write_file_run_cellranger_mkfastq, copyfromdata, show_tree, move_igv, tar_exports, create_user
+from . import version, APPLICATIONS, EXPORT_URL
+from .helpers import generate_samples, write_file_run_bcl2fastq, write_file_run_cellranger_mkfastq, copyfromdata, show_tree, move_igv, tar_exports, export_empty_folder
 from pathlib import Path
 import datetime
 import collections
@@ -24,7 +24,7 @@ helps = {"raw": 'Enter the path to the directory for the BCL raw data, e.g. 2109
 @click.group()
 @click.version_option(version)
 def main():
-    """Genomic Project Manager is a project management CLI for bioinformatic workflows of IZKF Genomic Core Facility.
+    """Genomic Project Manager is a project management CLI for bioinformatic workflows of IZKF Genomic Facility.
        Contact: ckuo@ukaachen.de 
     """
     pass
@@ -141,15 +141,21 @@ def analysis(config_file):
 ## export
 ###################################################################
 @main.command()
-@click.argument('config_file')
 @click.argument('export_dir')
-def export(config_file, export_dir):
+@click.option('-config', default="", show_default=True, help="Define the config.ini file of an existed project. If FALSE, -user needs to be defined to create an empty export folder.")
+@click.option('-user', default="user", show_default=True, help="Define the user name for creating an empty export folder.")
+def export(export_dir, config, user):
     """Export the raw data, processed data and reports to the export directory by creating soft links without moving around the big files."""
-    gpm = GPM(load_config=config_file, seqdate=None, application=None, 
-              provider=None, piname=None, institute=None, fastq=None, name=None)
-    gpm.export(export_dir)
-    gpm.add_htaccess(export_dir)
-    gpm.create_user(export_dir)
+    if os.path.isfile(config):
+        gpm = GPM(load_config=config, seqdate=None, application=None, 
+                provider=None, piname=None, institute=None, fastq=None, name=None)
+        gpm.export(export_dir)
+        gpm.add_htaccess(export_dir)
+        gpm.create_user(export_dir)
+    else:
+        export_empty_folder(EXPORT_URL, export_dir, config, user)
+
+    
 
 ###################################################################
 ## tar export with symlinks

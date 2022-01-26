@@ -23,3 +23,5 @@ bcl2fastq \
   # --ignore-missing-bcls \
   # --loading-threads 2 \
   # --writing-threads 2 \
+  # Other amazing parameter
+  
