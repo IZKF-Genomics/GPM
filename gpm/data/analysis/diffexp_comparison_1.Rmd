@@ -1,8 +1,8 @@
 ---
 title: "Comparison of 1"
 author:
-  - "Gan Lin, Genomics Core Facility, lgan@ukaachen.de"
-  - "Chao-Chung Kuo, Genomics Core Facility, ckuo@ukaachen.de"
+  - "Gan Lin, Genomics Facility, lgan@ukaachen.de"
+  - "Chao-Chung Kuo, Genomics Facility, ckuo@ukaachen.de"
 date: "Last compiled on `r format(Sys.time(), '%d %B, %Y')`"
 output:
   html_document:

@@ -4,8 +4,8 @@ from gpm import version
 setup(
     name="gpm",
     version=version,
-    description = "Genomic Project Manager for automatizing the bioinformatic workflow in IZKF Genomic Core Facility.",
-    long_description = "This command line tool is designed to simplifiy and automatize the bioinformatic workflow in IZKF Genomic Core Facility.",
+    description = "Genomic Project Manager for automatizing the bioinformatic workflow in IZKF Genomic Facility.",
+    long_description = "This command line tool is designed to simplifiy and automatize the bioinformatic workflow in IZKF Genomic Facility.",
     platforms = ["Linux"],
     author="Chao-Chung Kuo",
     author_email="chao-chung.kuo@rwth-aachen.de",

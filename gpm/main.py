@@ -24,7 +24,7 @@ helps = {"raw": 'Enter the path to the directory for the BCL raw data, e.g. 2109
 @click.group()
 @click.version_option(version)
 def main():
-    """Genomic Project Manager is a project management CLI for bioinformatic workflows of IZKF Genomic Core Facility.
+    """Genomic Project Manager is a project management CLI for bioinformatic workflows of IZKF Genomic Facility.
        Contact: ckuo@ukaachen.de 
     """
     pass
