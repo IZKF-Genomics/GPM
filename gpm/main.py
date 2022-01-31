@@ -145,8 +145,8 @@ def analysis(config_file):
 @click.option('-config', default="", show_default=True, help="Define the config.ini file of an existed project. If FALSE, -user needs to be defined to create an empty export folder.")
 @click.option('-user', default="user", show_default=True, help="Define the user name for creating an empty export folder.")
 @click.option('-analysis', default="", show_default=True, help="Define the source of analysis folder for soft linking.")
-@click.option('-BCL', default="", show_default=True, help="Define the source of BCL folder for soft linking.")
-def export(export_dir, config, user, analysis, BCL):
+@click.option('-bcl', default="", show_default=True, help="Define the source of BCL folder for soft linking.")
+def export(export_dir, config, user, analysis, bcl):
     """Export the raw data, processed data and reports to the export directory by creating soft links without moving around the big files."""
     if os.path.isfile(config):
         gpm = GPM(load_config=config, seqdate=None, application=None, 
@@ -160,8 +160,8 @@ def export(export_dir, config, user, analysis, BCL):
         # if not os.path.exists(os.path.join(export_dir,"analysis")):
         #     os.makedirs(os.path.join(export_dir,"analysis"))
         os.symlink(analysis, os.path.join(export_dir,"analysis"), target_is_directory=True)
-    if BCL:
-        os.symlink(BCL, os.path.join(export_dir,"1_Raw_data", "BCL"), target_is_directory=True)
+    if bcl:
+        os.symlink(bcl, os.path.join(export_dir,"1_Raw_data", "BCL"), target_is_directory=True)
 
     
 
