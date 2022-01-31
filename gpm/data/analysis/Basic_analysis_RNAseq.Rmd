@@ -19,6 +19,7 @@ bibliography: references.bib
 ```{r conig, echo=FALSE, results="hide", warning=FALSE, message=FALSE}
 library("heatmaply")
 library("readr")
+library(tidyr)
 options(warn = -1)
 
 DIR_base <- "GPM_DIR_BASE/"
@@ -40,6 +41,14 @@ CUTOFF_ADJP <- 0.05
 ## Load sample sheets from nf-core configuration
 samples <- read.table(file.path(DIR_base,"/nfcore/samplesheet.csv"), header=TRUE, sep = ",")
 rownames(samples) <- samples$sample
+
+# labels_group <- c("GLP2", "CTRL", "GLP2", "Sham", "GLP2", "Sham", "GLP2", "CTRL", "Sham",
+#                   "GLP2", "CTRL", "CTRL", "GLP2", "Sham", "GLP2", "CTRL", "Sham")
+# samples$group <- labels_group
+# d <- samples %>% separate(sample, c("cell", "rest"))
+# samples$cell <- d$cell
+# samples$rename <- paste0(samples$group, "_", samples$sample)
+
 ```
 
 
@@ -105,6 +114,12 @@ colnames(scaled_ct2)[1] <- "Gene_symbol"
 ```
 
 ```{r correlation, echo=FALSE, results="asis", warning=FALSE, message=FALSE}
+# rowvariance <- apply(scaled_ct2[,c(-1)], 1, var)
+# 
+# corrmatrix <- scaled_ct2[,c(-1)][order(rowvariance, decreasing = TRUE), ]
+# fig <- heatmaply_cor(cor(corrmatrix[1:1000,], method="spearman"), width = Fig_width, height = Fig_height,
+#                      main = "Correlation of all genes",
+#                      key.title = "Correlation")
 fig <- heatmaply_cor(cor(scaled_ct[,c(-1,-2)]), width = Fig_width, height = Fig_height,
                      main = "Correlation of all genes",
                      key.title = "Correlation")
