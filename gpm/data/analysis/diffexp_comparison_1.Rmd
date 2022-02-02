@@ -61,7 +61,7 @@ Differential expression analysis is done with DESEQ2 package in R [@love2014mode
 
 ```{r, echo=FALSE, results="hide", warning=FALSE, message=FALSE}
 samples2 <- samples[!(is.na(samples$group)),]
-deseq_output <- run_deseq_salmon(samples2, scaled_ct2)
+deseq_output <- run_deseq_salmon(samples2)
 # samples2$sample <- samples2$rename
 ```
 

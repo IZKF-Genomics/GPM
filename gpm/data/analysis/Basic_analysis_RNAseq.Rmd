@@ -31,6 +31,7 @@ FILE_scaled_ct <- paste0(DIR_salmon, "salmon.merged.gene_counts_scaled.tsv")
 source(paste0(DIR_project, "functions.R"))
 
 FILE_tx2gene <- "/data/genomes/tx2gene/gencode.v38.annotation.tx2gene.csv"
+# FILE_tx2gene <- "/data/genomes/tx2gene/gencode.vM27.annotation.tx2gene.csv"
 
 Fig_width <- 600
 Fig_height <- 400
@@ -103,7 +104,7 @@ Please make sure that you store these data in a lab-wise level. Genomics Facilit
 # Method description
 
 FASTQ files were generated using bcl2fastq (Illumina). To facilitate reproducible analysis, samples were processed using the publicly available nf-core/RNA-seq pipeline version 3.4 [@ewels2020nf] implemented in Nextflow 21.04.0 [@di2017nextflow] using Docker 20.10.8 [@merkel2014docker] with the minimal command. In brief, lane-level reads were trimmed using Trim Galore 0.6.7 [@felix_krueger_2021_5127899] and aligned to the human genome (GRCh38.p13) using STAR 2.7.9a [@dobin2013star]. Gene-level assignment was then performed using featureCounts 1.6.457 [@liao2014featurecounts] and transcript-level quantification was done by Salmon v1.5.2 [@patro2017salmon]. All analysis was performed using custom scripts in R version 4.1.1 using the DESeq2 v.1.32.0 framework [@love2014moderated]. 
-
+<!-- mouse genome (GRCm38) -->
 
 # Correlation
 
