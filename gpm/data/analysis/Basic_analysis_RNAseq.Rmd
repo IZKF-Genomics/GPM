@@ -22,22 +22,31 @@ library("readr")
 library(tidyr)
 options(warn = -1)
 
+################# File paths #####################################################
 DIR_base <- "GPM_DIR_BASE/"
 DIR_project <- paste0(DIR_base, "analysis/")
 DIR_salmon <- paste0(DIR_base, "nfcore/results/salmon/")
 FILE_scaled_ct <- paste0(DIR_salmon, "salmon.merged.gene_counts_scaled.tsv")
-# FILE_scaled_ct <- paste0(DIR_salmon, "salmon.merged.gene_counts.tsv")
 
 source(paste0(DIR_project, "functions.R"))
 
-FILE_tx2gene <- "/data/genomes/tx2gene/gencode.v38.annotation.tx2gene.csv"
-
+################# Parameters #####################################################
 Fig_width <- 600
 Fig_height <- 400
-
 CUTOFF_Quantification <- 20
 CUTOFF_ADJP <- 0.05
 
+# organism <- "hsapiens"
+# organism <- "mmusculus"
+if (organism == "hsapiens") {
+  FILE_tx2gene <- "/data/genomes/tx2gene/gencode.v38.annotation.tx2gene.csv"
+  method_des <- "human genome (GRCh38.p13)"
+} else if (organism == "mmusculus") {
+  FILE_tx2gene <- "/data/genomes/tx2gene/gencode.vM27.annotation.tx2gene.csv"
+  method_des <- "mouse genome (GRCm39)"
+}
+
+################# Loading samples ################################################
 ## Load sample sheets from nf-core configuration
 samples <- read.table(file.path(DIR_base,"/nfcore/samplesheet.csv"), header=TRUE, sep = ",")
 rownames(samples) <- samples$sample
@@ -102,7 +111,7 @@ Please make sure that you store these data in a lab-wise level. Genomics Facilit
 
 # Method description
 
-FASTQ files were generated using bcl2fastq (Illumina). To facilitate reproducible analysis, samples were processed using the publicly available nf-core/RNA-seq pipeline version 3.4 [@ewels2020nf] implemented in Nextflow 21.04.0 [@di2017nextflow] using Docker 20.10.8 [@merkel2014docker] with the minimal command. In brief, lane-level reads were trimmed using Trim Galore 0.6.7 [@felix_krueger_2021_5127899] and aligned to the human genome (GRCh38.p13) using STAR 2.7.9a [@dobin2013star]. Gene-level assignment was then performed using featureCounts 1.6.457 [@liao2014featurecounts] and transcript-level quantification was done by Salmon v1.5.2 [@patro2017salmon]. All analysis was performed using custom scripts in R version 4.1.1 using the DESeq2 v.1.32.0 framework [@love2014moderated]. 
+FASTQ files were generated using bcl2fastq (Illumina). To facilitate reproducible analysis, samples were processed using the publicly available nf-core/RNA-seq pipeline version 3.4 [@ewels2020nf] implemented in Nextflow 21.04.0 [@di2017nextflow] using Docker 20.10.8 [@merkel2014docker] with the minimal command. In brief, lane-level reads were trimmed using Trim Galore 0.6.7 [@felix_krueger_2021_5127899] and aligned to the `r method_des` using STAR 2.7.9a [@dobin2013star]. Gene-level assignment was then performed using featureCounts 1.6.457 [@liao2014featurecounts] and transcript-level quantification was done by Salmon v1.5.2 [@patro2017salmon]. All analysis was performed using custom scripts in R version 4.1.1 using the DESeq2 v.1.32.0 framework [@love2014moderated]. 
 
 
 # Correlation
@@ -131,7 +140,10 @@ fig
 
 ```{r saveobjects, echo=FALSE, results="hide", warning=FALSE, message=FALSE}
 save(DIR_base,DIR_project,DIR_salmon,
-     FILE_scaled_ct,FILE_tx2gene,Fig_width,Fig_height,CUTOFF_Quantification,CUTOFF_ADJP,
+     FILE_scaled_ct,FILE_tx2gene,
+     organism, 
+     Fig_width,Fig_height,
+     CUTOFF_Quantification, CUTOFF_ADJP,
      samples, scaled_ct, scaled_ct2, file = paste0(DIR_project, "data.RData"))
 
 rmarkdown::render('diffexp_comparison_1.Rmd', output_format = 'html_document',

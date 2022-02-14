@@ -2,7 +2,7 @@
 title: "Comparison of 1"
 author:
   - "Gan Lin, Genomics Facility, lgan@ukaachen.de"
-  - "Chao-Chung Kuo, Genomics Facility, ckuo@ukaachen.de"
+  - "Dr. Chao-Chung Kuo, Genomics Facility, ckuo@ukaachen.de"
 date: "Last compiled on `r format(Sys.time(), '%d %B, %Y')`"
 output:
   html_document:
@@ -25,7 +25,7 @@ library(DESeq2)
 library("tximport")
 library("readr")
 library("tximportData")
-library(org.Hs.eg.db)
+
 library(AnnotationDbi, warn.conflicts = FALSE)
 options(warn = -1)
 
@@ -35,6 +35,12 @@ DIR_project <- paste0(DIR_base, "analysis/")
 source(paste0(DIR_project, "functions.R"))
 
 load(paste0(DIR_project, "data.RData"))
+
+if (organism == "hsapiens") {
+  library(org.Hs.eg.db)
+} else if (organism == "mmusculus") {
+  library(org.Mm.eg.db)
+}
 
 Tag_this_analysis <- "M0_WT_vs_KO"
 
@@ -107,7 +113,11 @@ table_sig_genes(deseq_output$deseq2res_sig[deseq_output$deseq2res_sig$log2FoldCh
 # download_table()
 cols <- c("ENSEMBL", "SYMBOL", "GENENAME")
 ensemblkeys <- gsub("\\.[0-9]*$", "", deseq_output$deseq2res$gene_id)
-genenames <- select(org.Hs.eg.db, keys=ensemblkeys, columns=cols, keytype="ENSEMBL")
+if (organism == "hsapiens") {
+  genenames <- select(org.Hs.eg.db, keys=ensemblkeys, columns=cols, keytype="ENSEMBL")
+} else if (organism == "mmusculus") {
+  genenames <- select(org.Mm.eg.db, keys=ensemblkeys, columns=cols, keytype="ENSEMBL")
+}
 genenames <- genenames[match(ensemblkeys, genenames$ENSEMBL), ]
 deseq_output$deseq2res <- cbind(deseq_output$deseq2res, genenames)
 write.csv(deseq_output$deseq2res,paste0(DIR_project, paste0('Diff_Exp_genes_stats_',Tag_this_analysis,'.csv')))
