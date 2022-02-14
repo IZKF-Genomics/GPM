@@ -35,7 +35,7 @@ process_dds_res <- function(tx2gene, dds) {
   return(output)
 }
 
-run_deseq_salmon <- function(samplesheet, exp_matrix) {
+run_deseq_salmon <- function(samplesheet) {
   files <- file.path(DIR_salmon, samplesheet$sample, "quant.sf")
   names(files) <- samplesheet$sample
   tx2gene <- read_csv(FILE_tx2gene)
@@ -51,7 +51,7 @@ run_deseq_salmon <- function(samplesheet, exp_matrix) {
   return(output)
 }
 
-run_deseq_salmon_batch <- function(samplesheet, exp_matrix) {
+run_deseq_salmon_batch <- function(samplesheet) {
   files <- file.path(DIR_salmon, samplesheet$sample, "quant.sf")
   names(files) <- samplesheet$sample
   tx2gene <- read_csv(FILE_tx2gene)
