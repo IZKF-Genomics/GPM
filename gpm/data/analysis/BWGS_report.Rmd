@@ -1,0 +1,86 @@
+---
+title: "220221 Simon Horz Micorbiology BWGS"
+author:
+  - "Lin Gan, Genomics Core Facility, lgan@ukaachen.de"
+date: "Last compiled on `r format(Sys.time(), '%d %B, %Y')`"
+output:
+  html_document:
+    df_print: paged
+    toc: true
+    toc_float:
+      toc_collapsed: true
+    toc_depth: 3
+    number_sections: false
+    theme: lumen
+bibliography: references_BWGS.bib
+---
+
+```{r conig, echo=FALSE, results="hide", warning=FALSE, message=FALSE}
+library("heatmaply")
+library("readr")
+require("tidyr")
+options(warn = -1)
+
+DIR_base <- "/data/projects/220221_Simon_Horz_microbiology_BWGS/"
+
+setwd(DIR_base)
+
+
+```
+
+![](https://www.medizin.rwth-aachen.de/global/show_document.asp?id=aaaaaaaaaawfyoe "IZKF")
+
+This document is the summary of the basic bacterial genome assembly done by Genomic Core Facility in IZKF, RWTH Aachen Uniklinik. Please contact us for any further discussion or collaboration.
+
+Please refer to our [Publication Policy](https://genomics.rwth-aachen.de/services/publication-policy/).
+
+------------------------------------------------------------------------
+
+The following contents are provided after the basic assembly analysis of the bacterial whole genome sequencing data with Bacass pipeline[@Peltzer2021-xn] under nf-core framework[@Ewels2020-il] :
+
+-   Quality reports of the sequencing data
+-   Contamination check reports for the samples
+-   Assenbly results
+-   Assembly quality assessment reports for the samples
+-   Annotation of the assembled genome
+
+------------------------------------------------------------------------
+
+# Quality report of the sequencing data
+
+The raw sequencing data were demultiplexed. QC assessment was applied on the resulted fastq files. Bellow is the resulted multiQC[@Ewels2016-pr] report:
+
+[MultiQC reports](https://genomics.rwth-aachen.de/data/220221_Simon_Horz_microbiology_BWGS/results/multiqc/Genomics_Facility_IZKF_Aachen_Sequencing_Quality_Report_multiqc_report.html)
+
+# Contamination check
+
+The raw data from a genome sequencing could contain DNA from contaminating organisms. In this step, sequencing results were scanned using metagenomic analysis tool Kraken2[@Wood2019-er] to identify potential contamination.
+
+-   [contamination report SA1](https://genomics.rwth-aachen.de/data/220221_Simon_Horz_microbiology_BWGS/results/SA1/Kraken2/SA1.kraken2.report.txt)
+-   [contamination report Pa](https://genomics.rwth-aachen.de/data/220221_Simon_Horz_microbiology_BWGS/results/Pa/Kraken2/Pa.kraken2.report.txt)
+-   [contamination report R](https://genomics.rwth-aachen.de/data/220221_Simon_Horz_microbiology_BWGS/results/R/Kraken2/R.kraken2.report.txt)
+-   [contamination report N](https://genomics.rwth-aachen.de/data/220221_Simon_Horz_microbiology_BWGS/results/N/Kraken2/N.kraken2.report.txt)
+
+# Genome Assembly
+
+Unicycler[@Wick2017-us] was applied to assemble the short sequencing reads. The assembled scaffolds fasta files are listed bellow:
+
+-   [Assembled scafffolds SA1](https://genomics.rwth-aachen.de/data/220221_Simon_Horz_microbiology_BWGS/results/SA1/Unicycler/SA1.scaffolds.fa)
+-   [Assembled scafffolds Pa](https://genomics.rwth-aachen.de/data/220221_Simon_Horz_microbiology_BWGS/results/Pa/Unicycler/Pa.scaffolds.fa)
+-   [Assembled scafffolds R](https://genomics.rwth-aachen.de/data/220221_Simon_Horz_microbiology_BWGS/results/R/Unicycler/R.scaffolds.fa)
+-   [Assembled scafffolds N](https://genomics.rwth-aachen.de/data/220221_Simon_Horz_microbiology_BWGS/results/N/Unicycler/N.scaffolds.fa)
+
+# Assembly quality assessment
+
+The quality of the assembled contigs were evaluated by QUAST[@Gurevich2013-tw] with the following report:
+
+[Assembly quality report](https://genomics.rwth-aachen.de/data/220221_Simon_Horz_microbiology_BWGS/results/QUAST/other_files/report.html)
+
+# Annotation the assembled genome
+
+The assemblies are annotated by Prokka[@Seemann2014-ic].
+
+-   [Annotation of SA1](https://genomics.rwth-aachen.de/data/220221_Simon_Horz_microbiology_BWGS/results/SA1/Prokka/SA1/SA1.gff):
+-   [Annotation of Pa](https://genomics.rwth-aachen.de/data/220221_Simon_Horz_microbiology_BWGS/results/Pa/Prokka/Pa/Pa.gff):
+-   [Annotation of R](https://genomics.rwth-aachen.de/data/220221_Simon_Horz_microbiology_BWGS/results/R/Prokka/R/R.gff):
+-   [Annotation of N](https://genomics.rwth-aachen.de/data/220221_Simon_Horz_microbiology_BWGS/results/N/Prokka/N/N.gff):
