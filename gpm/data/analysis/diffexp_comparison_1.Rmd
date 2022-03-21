@@ -25,7 +25,7 @@ library(DESeq2)
 library("tximport")
 library("readr")
 library("tximportData")
-
+library(stringr)
 library(AnnotationDbi, warn.conflicts = FALSE)
 options(warn = -1)
 
@@ -67,7 +67,7 @@ Differential expression analysis is done with DESEQ2 package in R [@love2014mode
 
 ```{r, echo=FALSE, results="hide", warning=FALSE, message=FALSE}
 samples2 <- samples[!(is.na(samples$group)),]
-deseq_output <- run_deseq_salmon(samples2)
+deseq_output <- run_deseq_salmon(samples2, spikein=TRUE)
 # samples2$sample <- samples2$rename
 ```
 
