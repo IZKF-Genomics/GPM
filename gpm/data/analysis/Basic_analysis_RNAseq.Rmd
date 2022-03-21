@@ -25,9 +25,9 @@ options(warn = -1)
 ################# File paths #####################################################
 DIR_base <- "GPM_DIR_BASE/"
 DIR_project <- paste0(DIR_base, "analysis/")
-DIR_salmon <- paste0(DIR_base, "nfcore/results/salmon/")
+DIR_salmon <- paste0(DIR_base, "nfcore/results/star_salmon/")
 FILE_scaled_ct <- paste0(DIR_salmon, "salmon.merged.gene_counts_scaled.tsv")
-
+FILE_tx2gene <- paste0(DIR_salmon, "salmon_tx2gene.tsv")
 source(paste0(DIR_project, "functions.R"))
 
 ################# Parameters #####################################################
@@ -39,10 +39,8 @@ CUTOFF_ADJP <- 0.05
 # organism <- "hsapiens"
 # organism <- "mmusculus"
 if (organism == "hsapiens") {
-  FILE_tx2gene <- "/data/genomes/tx2gene/gencode.v38.annotation.tx2gene.csv"
   method_des <- "human genome (GRCh38.p13)"
 } else if (organism == "mmusculus") {
-  FILE_tx2gene <- "/data/genomes/tx2gene/gencode.vM27.annotation.tx2gene.csv"
   method_des <- "mouse genome (GRCm39)"
 }
 
@@ -114,7 +112,7 @@ Please make sure that you store these data in a lab-wise level. Genomics Facilit
 FASTQ files were generated using bcl2fastq (Illumina). To facilitate reproducible analysis, samples were processed using the publicly available nf-core/RNA-seq pipeline version 3.4 [@ewels2020nf] implemented in Nextflow 21.04.0 [@di2017nextflow] using Docker 20.10.8 [@merkel2014docker] with the minimal command. In brief, lane-level reads were trimmed using Trim Galore 0.6.7 [@felix_krueger_2021_5127899] and aligned to the `r method_des` using STAR 2.7.9a [@dobin2013star]. Gene-level assignment was then performed using featureCounts 1.6.457 [@liao2014featurecounts] and transcript-level quantification was done by Salmon v1.5.2 [@patro2017salmon]. All analysis was performed using custom scripts in R version 4.1.1 using the DESeq2 v.1.32.0 framework [@love2014moderated]. 
 
 
-# Correlation
+<!-- # Correlation -->
 
 ```{r load, echo=FALSE, results="hide", warning=FALSE, message=FALSE}
 scaled_ct <- read_tsv(FILE_scaled_ct)
@@ -129,10 +127,10 @@ colnames(scaled_ct2)[1] <- "Gene_symbol"
 # fig <- heatmaply_cor(cor(corrmatrix[1:1000,], method="spearman"), width = Fig_width, height = Fig_height,
 #                      main = "Correlation of all genes",
 #                      key.title = "Correlation")
-fig <- heatmaply_cor(cor(scaled_ct[,c(-1,-2)]), width = Fig_width, height = Fig_height,
-                     main = "Correlation of all genes",
-                     key.title = "Correlation")
-fig
+# fig <- heatmaply_cor(cor(scaled_ct[,c(-1,-2)]), width = Fig_width, height = Fig_height,
+#                      main = "Correlation of all genes",
+#                      key.title = "Correlation")
+# fig
 ```
 
 
