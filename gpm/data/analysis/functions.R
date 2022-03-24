@@ -1,3 +1,21 @@
+organism2method_des <- function(organism) {
+  if (organism == "hsapiens") {
+    method_des <- "human genome (GRCh38.p13)"
+  } else if (organism == "mmusculus") {
+    method_des <- "mouse genome (GRCm39)"
+  }
+  return(method_des)
+}
+
+spikein_ERCC2method <- function(spikein_ERCC) {
+  if (spikein_ERCC==TRUE) {
+    spikein_method <- "Reads were mapped to a composite genome made by concatenating the reference genome and 92 ERCC ExFold RNA Spike-In Mixes sequences (ThermoFisher)." 
+    } else {
+    spikein_method <- ""
+    }
+  return(spikein_method)
+}
+
 PCA_all_samples <- function(scaled_ct, colors) {
   t <- t(scaled_ct[, c(-1)])
   prin_comp <- prcomp(t, rank. = 2)
@@ -15,19 +33,22 @@ PCA_all_samples <- function(scaled_ct, colors) {
 process_dds_res <- function(tx2gene, dds) {
   ensembl_genes <- data.frame(gene_id=tx2gene$gene_id, gene_name=tx2gene$gene_name)
   ensembl_genes <- ensembl_genes[!duplicated(ensembl_genes), ]
-  
+
   normalized_counts <- counts(dds, normalized=TRUE)
   normalized_counts <- merge(ensembl_genes, normalized_counts, by.x="gene_id", by.y="row.names")
-  
+
   res <- results(dds)
   res_combined <- merge(ensembl_genes, as.data.frame(res), by.x= "gene_id", by.y="row.names", all.x=F, all.y=T)
   res_combined <- merge(res_combined, normalized_counts, by=c("gene_id", "gene_name"), all.x=T, all.y=F)
   res_combined <- res_combined[complete.cases(res_combined), ]
   res_combined$sig <- "Non-sig."
   res_combined$sig[res_combined$padj < CUTOFF_ADJP] <- "Sig. genes"
+  sel_ERCC <- str_detect(res_combined$gene_id, "^ERCC-*gene")
+  res_combined$sig[sel_ERCC] <- "Spike in"
+  res_combined <- res_combined[!sel_ERCC,]
   
   res_combined_sig <- res_combined[res_combined$padj < CUTOFF_ADJP,]
-  
+
   output <- list(norm_count=normalized_counts,
                  deseq2res=res_combined,
                  deseq2res_sig=res_combined_sig
@@ -35,35 +56,51 @@ process_dds_res <- function(tx2gene, dds) {
   return(output)
 }
 
-run_deseq_salmon <- function(samplesheet, exp_matrix) {
+run_deseq_salmon <- function(samplesheet, spikein=FALSE) {
   files <- file.path(DIR_salmon, samplesheet$sample, "quant.sf")
   names(files) <- samplesheet$sample
-  tx2gene <- read_csv(FILE_tx2gene)
-
+  tx2gene <- read_tsv(FILE_tx2gene, col_names = c("transcript_id", "gene_id", "gene_name"))
   txi <- tximport(files, type="salmon", tx2gene=tx2gene)
 
   ddsTxi <- DESeqDataSetFromTximport(txi,
                                      colData = samplesheet,
                                      design = ~ group)
-
+  # ERCC normalization #####################
+  if (spikein==TRUE) {
+    ddsTxi <- estimateSizeFactors_ERCC(ddsTxi)
+  }
+  ##########################################
   dds <- DESeq(ddsTxi)
   output <- process_dds_res(tx2gene, dds)
   return(output)
 }
 
-run_deseq_salmon_batch <- function(samplesheet, exp_matrix) {
+run_deseq_salmon_batch <- function(samplesheet, spikein=FALSE) {
   files <- file.path(DIR_salmon, samplesheet$sample, "quant.sf")
   names(files) <- samplesheet$sample
-  tx2gene <- read_csv(FILE_tx2gene)
-  
+  tx2gene <- read_tsv(FILE_tx2gene, col_names = c("transcript_id", "gene_id", "gene_name"))
+
   txi <- tximport(files, type="salmon", tx2gene=tx2gene)
-  
+
   ddsTxi <- DESeqDataSetFromTximport(txi,
                                      colData = samplesheet,
                                      design = ~batch + group)
+  # ERCC normalization #####################
+  if (spikein==TRUE) {
+    ddsTxi <- estimateSizeFactors_ERCC(ddsTxi)
+  }
+  ##########################################
   dds <- DESeq(ddsTxi)
   output <- process_dds_res(tx2gene, dds)
   return(output)
+}
+
+estimateSizeFactors_ERCC <- function(ddsTxi) {
+  sel_ERCC <- str_detect(rownames(ddsTxi), "^ERCC-*")
+  # ddsTxi <- estimateSizeFactors(ddsTxi, controlGenes=str_detect(rownames(ddsTxi), "^ERCC-*"))
+  sizeFactors(ddsTxi) <- estimateSizeFactorsForMatrix(counts(ddsTxi)[sel_ERCC,])
+  # sizeFactors(ddsTxi)
+  return(ddsTxi)
 }
 
 PCA_after_deseq2 <- function(normalized_counts2, samples) {
@@ -98,6 +135,23 @@ volcano_plot <- function(res_combined) {
   fig
 }
 
+MA_plot <- function(res_combined) {
+  pal <- c("red", "gray")
+  pal <- setNames(pal, c("Sig. genes", "Non-sig."))
+  fig <- plot_ly(x = log2(res_combined$baseMean),
+                 y = res_combined$log2FoldChange,
+                 text = res_combined$gene_name,
+                 hoverinfo = 'text',
+                 marker = list(opacity = 0.2),
+                 color = res_combined$sig, colors = pal,
+                 showlegend = T)  %>%
+    layout(
+      title = "MA plot",
+      xaxis = list(title = "Mean Expression (log2)"),
+      yaxis = list(title = "Fold Change (log2)")
+    )
+  fig
+}
 
 heatmap_expression <- function(deseq2res) {
   top1000 <- deseq2res[order(deseq2res$padj, decreasing = FALSE), ]

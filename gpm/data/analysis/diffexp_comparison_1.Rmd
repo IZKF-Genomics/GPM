@@ -2,7 +2,7 @@
 title: "Comparison of 1"
 author:
   - "Gan Lin, Genomics Facility, lgan@ukaachen.de"
-  - "Chao-Chung Kuo, Genomics Facility, ckuo@ukaachen.de"
+  - "Dr. Chao-Chung Kuo, Genomics Facility, ckuo@ukaachen.de"
 date: "Last compiled on `r format(Sys.time(), '%d %B, %Y')`"
 output:
   html_document:
@@ -25,6 +25,8 @@ library(DESeq2)
 library("tximport")
 library("readr")
 library("tximportData")
+library(stringr)
+library(AnnotationDbi, warn.conflicts = FALSE)
 options(warn = -1)
 
 DIR_base <- "GPM_DIR_BASE/"
@@ -33,6 +35,12 @@ DIR_project <- paste0(DIR_base, "analysis/")
 source(paste0(DIR_project, "functions.R"))
 
 load(paste0(DIR_project, "data.RData"))
+
+if (organism == "hsapiens") {
+  library(org.Hs.eg.db)
+} else if (organism == "mmusculus") {
+  library(org.Mm.eg.db)
+}
 
 Tag_this_analysis <- "M0_WT_vs_KO"
 
@@ -59,7 +67,8 @@ Differential expression analysis is done with DESEQ2 package in R [@love2014mode
 
 ```{r, echo=FALSE, results="hide", warning=FALSE, message=FALSE}
 samples2 <- samples[!(is.na(samples$group)),]
-deseq_output <- run_deseq_salmon(samples2, scaled_ct2)
+deseq_output <- run_deseq_salmon(samples2, spikein=spikein_ERCC)
+# samples2$sample <- samples2$rename
 ```
 
 ## PCA
@@ -73,6 +82,7 @@ PCA_after_deseq2(deseq_output$norm_count, samples2)
 ```{r, echo=FALSE, results="asis", warning=FALSE, message=FALSE}
 volcano_plot(deseq_output$deseq2res)
 ```
+
 
 ## Heatmap
 
@@ -102,6 +112,15 @@ table_sig_genes(deseq_output$deseq2res_sig[deseq_output$deseq2res_sig$log2FoldCh
 
 ```{r, echo=FALSE, results='asis', warning=FALSE, message=FALSE}
 # download_table()
+cols <- c("ENSEMBL", "SYMBOL", "GENENAME")
+ensemblkeys <- gsub("\\.[0-9]*$", "", deseq_output$deseq2res$gene_id)
+if (organism == "hsapiens") {
+  genenames <- select(org.Hs.eg.db, keys=ensemblkeys, columns=cols, keytype="ENSEMBL")
+} else if (organism == "mmusculus") {
+  genenames <- select(org.Mm.eg.db, keys=ensemblkeys, columns=cols, keytype="ENSEMBL")
+}
+genenames <- genenames[match(ensemblkeys, genenames$ENSEMBL), ]
+deseq_output$deseq2res <- cbind(deseq_output$deseq2res, genenames)
 write.csv(deseq_output$deseq2res,paste0(DIR_project, paste0('Diff_Exp_genes_stats_',Tag_this_analysis,'.csv')))
 write.csv(deseq_output$norm_count,paste0(DIR_project, paste0('normalized_expression_quantification_',Tag_this_analysis,'.csv')))
 ```
@@ -109,7 +128,7 @@ write.csv(deseq_output$norm_count,paste0(DIR_project, paste0('normalized_express
 
 # Download statistics
 
-* Download CSV file for the statistics of all valid genes in differential expression analysis: [`r paste0('Diff_Exp_genes_stats_',Tag_this_analysis,'.csv')`](`r paste0('Diff_Exp_genes_stats_',Tag_this_analysis,'.csv')`)
+* Download CSV file for the statistics of all valid genes in differential expression analysis (ENSEMBL ID, Gene Symbol and Gene name are included): [`r paste0('Diff_Exp_genes_stats_',Tag_this_analysis,'.csv')`](`r paste0('Diff_Exp_genes_stats_',Tag_this_analysis,'.csv')`)
 * Download CSV file for the expression quantification of all genes: [`r paste0('normalized_expression_quantification_',Tag_this_analysis,'.csv')`](`r paste0('normalized_expression_quantification_',Tag_this_analysis,'.csv')`)
 
 

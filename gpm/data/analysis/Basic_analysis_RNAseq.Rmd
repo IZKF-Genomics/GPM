@@ -19,27 +19,42 @@ bibliography: references.bib
 ```{r conig, echo=FALSE, results="hide", warning=FALSE, message=FALSE}
 library("heatmaply")
 library("readr")
+library(tidyr)
 options(warn = -1)
 
+################# File paths #####################################################
 DIR_base <- "GPM_DIR_BASE/"
 DIR_project <- paste0(DIR_base, "analysis/")
-DIR_salmon <- paste0(DIR_base, "nfcore/results/salmon/")
+DIR_salmon <- paste0(DIR_base, "nfcore/results/star_salmon/")
 FILE_scaled_ct <- paste0(DIR_salmon, "salmon.merged.gene_counts_scaled.tsv")
-# FILE_scaled_ct <- paste0(DIR_salmon, "salmon.merged.gene_counts.tsv")
-
+FILE_tx2gene <- paste0(DIR_salmon, "salmon_tx2gene.tsv")
 source(paste0(DIR_project, "functions.R"))
 
-FILE_tx2gene <- "/data/genomes/tx2gene/gencode.v38.annotation.tx2gene.csv"
-
+################# Parameters #####################################################
 Fig_width <- 600
 Fig_height <- 400
-
 CUTOFF_Quantification <- 20
 CUTOFF_ADJP <- 0.05
+spikein_ERCC <- TRUE
 
+# organism <- "hsapiens"
+# organism <- "mmusculus"
+
+method_des <- organism2method_des(organism) 
+spikein_method <- spikein_ERCC2method(spikein_ERCC)
+
+################# Loading samples ################################################
 ## Load sample sheets from nf-core configuration
 samples <- read.table(file.path(DIR_base,"/nfcore/samplesheet.csv"), header=TRUE, sep = ",")
 rownames(samples) <- samples$sample
+
+# labels_group <- c("GLP2", "CTRL", "GLP2", "Sham", "GLP2", "Sham", "GLP2", "CTRL", "Sham",
+#                   "GLP2", "CTRL", "CTRL", "GLP2", "Sham", "GLP2", "CTRL", "Sham")
+# samples$group <- labels_group
+# d <- samples %>% separate(sample, c("cell", "rest"))
+# samples$cell <- d$cell
+# samples$rename <- paste0(samples$group, "_", samples$sample)
+
 ```
 
 
@@ -93,10 +108,9 @@ Please make sure that you store these data in a lab-wise level. Genomics Facilit
 
 # Method description
 
-FASTQ files were generated using bcl2fastq (Illumina). To facilitate reproducible analysis, samples were processed using the publicly available nf-core/RNA-seq pipeline version 3.4 [@ewels2020nf] implemented in Nextflow 21.04.0 [@di2017nextflow] using Docker 20.10.8 [@merkel2014docker] with the minimal command. In brief, lane-level reads were trimmed using Trim Galore 0.6.7 [@felix_krueger_2021_5127899] and aligned to the human genome (GRCh38.p13) using STAR 2.7.9a [@dobin2013star]. Gene-level assignment was then performed using featureCounts 1.6.457 [@liao2014featurecounts] and transcript-level quantification was done by Salmon v1.5.2 [@patro2017salmon]. All analysis was performed using custom scripts in R version 4.1.1 using the DESeq2 v.1.32.0 framework [@love2014moderated]. 
+FASTQ files were generated using bcl2fastq (Illumina). To facilitate reproducible analysis, samples were processed using the publicly available nf-core/RNA-seq pipeline version 3.5 [@ewels2020nf] implemented in Nextflow 21.10.6 [@di2017nextflow] using Docker 20.10.12 [@merkel2014docker] with the minimal command. In brief, lane-level reads were trimmed using Trim Galore 0.6.7 [@felix_krueger_2021_5127899] and aligned to the `r method_des` using STAR 2.7.9a [@dobin2013star]. `r spikein_method` Gene-level and transcript-level quantification was done by Salmon v1.5.2 [@patro2017salmon]. All analysis was performed using custom scripts in R version 4.1.1 using the DESeq2 v.1.32.0 framework [@love2014moderated].
 
-
-# Correlation
+<!-- # Correlation -->
 
 ```{r load, echo=FALSE, results="hide", warning=FALSE, message=FALSE}
 scaled_ct <- read_tsv(FILE_scaled_ct)
@@ -105,10 +119,16 @@ colnames(scaled_ct2)[1] <- "Gene_symbol"
 ```
 
 ```{r correlation, echo=FALSE, results="asis", warning=FALSE, message=FALSE}
-fig <- heatmaply_cor(cor(scaled_ct[,c(-1,-2)]), width = Fig_width, height = Fig_height,
-                     main = "Correlation of all genes",
-                     key.title = "Correlation")
-fig
+# rowvariance <- apply(scaled_ct2[,c(-1)], 1, var)
+# 
+# corrmatrix <- scaled_ct2[,c(-1)][order(rowvariance, decreasing = TRUE), ]
+# fig <- heatmaply_cor(cor(corrmatrix[1:1000,], method="spearman"), width = Fig_width, height = Fig_height,
+#                      main = "Correlation of all genes",
+#                      key.title = "Correlation")
+# fig <- heatmaply_cor(cor(scaled_ct[,c(-1,-2)]), width = Fig_width, height = Fig_height,
+#                      main = "Correlation of all genes",
+#                      key.title = "Correlation")
+# fig
 ```
 
 
@@ -116,7 +136,10 @@ fig
 
 ```{r saveobjects, echo=FALSE, results="hide", warning=FALSE, message=FALSE}
 save(DIR_base,DIR_project,DIR_salmon,
-     FILE_scaled_ct,FILE_tx2gene,Fig_width,Fig_height,CUTOFF_Quantification,CUTOFF_ADJP,
+     FILE_scaled_ct,FILE_tx2gene,
+     organism, 
+     Fig_width,Fig_height,
+     CUTOFF_Quantification, CUTOFF_ADJP, spikein_ERCC,
      samples, scaled_ct, scaled_ct2, file = paste0(DIR_project, "data.RData"))
 
 rmarkdown::render('diffexp_comparison_1.Rmd', output_format = 'html_document',
