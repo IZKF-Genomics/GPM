@@ -191,17 +191,20 @@ def clean(ctx, targetfolder, no):
     tmp_patterns = ["*.fastq.gz",
                     "*/*.fastq.gz",
                     "nfcore/work"]
-
+    def clear_a_folder(target):
+        for p in tmp_patterns:
+            target_pattern = target+"/"+p
+            listfiles = glob.glob(target_pattern)
+            if listfiles:
+                click.echo("Clean "+target_pattern)
+                if not no:
+                    result = subprocess.run(["rm", "-fr", target_pattern], stderr=subprocess.PIPE, text=True)
+                    click.echo(result.stderr)
+    
+    clear_a_folder(targetfolder)
     for item in ctx.args:
-        print(item)
-        # for p in tmp_patterns:
-        #     target_pattern = targetfolder+"/"+p
-        #     listfiles = glob.glob(target_pattern)
-        #     if listfiles:
-        #         click.echo("Clean "+target_pattern)
-        #         if not no:
-        #             result = subprocess.run(["rm", "-fr", target_pattern], stderr=subprocess.PIPE, text=True)
-        #             click.echo(result.stderr)
+        clear_a_folder(item)
+        
     
 
 ###################################################################
