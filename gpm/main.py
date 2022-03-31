@@ -179,22 +179,29 @@ def tar_export(export_dir, no):
 ###################################################################
 ## clean the folders
 ###################################################################
-@main.command()
+@main.command(context_settings=dict(
+    ignore_unknown_options=True,
+    allow_extra_args=True,
+))
 @click.argument('targetfolder')
 @click.option('--no/--no-behaviour', default=False, show_default=True, help="List the behaviours of the command without actually removing them.")
-def clean(targetfolder, no):
+@click.pass_context
+def clean(ctx, targetfolder, no):
     """Clean the temporary files and folders in target folders which shouldn't be archived or backup, such as *fastq.gz, nf-core work folder and result folder."""
     tmp_patterns = ["*.fastq.gz",
                     "*/*.fastq.gz",
                     "nfcore/work"]
-    for p in tmp_patterns:
-        target_pattern = targetfolder+"/"+p
-        listfiles = glob.glob(target_pattern)
-        if listfiles:
-            click.echo("Clean "+target_pattern)
-            if not no:
-                result = subprocess.run(["rm", "-fr", target_pattern], stderr=subprocess.PIPE, text=True)
-                click.echo(result.stderr)
+
+    for item in ctx.args:
+        print(item)
+        # for p in tmp_patterns:
+        #     target_pattern = targetfolder+"/"+p
+        #     listfiles = glob.glob(target_pattern)
+        #     if listfiles:
+        #         click.echo("Clean "+target_pattern)
+        #         if not no:
+        #             result = subprocess.run(["rm", "-fr", target_pattern], stderr=subprocess.PIPE, text=True)
+        #             click.echo(result.stderr)
     
 
 ###################################################################
