@@ -267,13 +267,13 @@ def tardir(path, tar_name):
     cmd = " ".join(["tar","-hcf",tar_name,path])
     returned_value = subprocess.call(cmd, shell=True)
 
-def tar_exports(export_dir, nobehavour):
+def tar_exports(export_dir, nobehaviour):
     export_dir = export_dir.rstrip("/")
     name = os.path.basename(export_dir)
     compressed_folder = os.path.join(export_dir, "compressed_tars")
     if not os.path.exists(compressed_folder):
         click.echo("Create the folder: " + compressed_folder)
-        if not nobehavour:
+        if not nobehaviour:
             os.makedirs(compressed_folder)
 
     for filename in os.listdir(export_dir):
@@ -281,7 +281,7 @@ def tar_exports(export_dir, nobehavour):
         tarfile = os.path.join(compressed_folder, name+"_" +filename+".tar")
         if os.path.isdir(pathfile) and filename != "compressed_tars":
             click.echo("Tar the folder: " + pathfile +" => "+ tarfile)
-            if not nobehavour:
+            if not nobehaviour:
                 tardir(pathfile, tarfile)
 
     # tardir(os.path.join(export_dir, "1_Raw_data"), os.path.join(compressed_folder, name+"_1_Raw_data.tar"))
