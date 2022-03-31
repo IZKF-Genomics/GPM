@@ -1,15 +1,16 @@
 import sys
 import click
-import re
+# import re
 import os
-import fnmatch
+# import fnmatch
 from .gpm import GPM
 from . import version, APPLICATIONS, EXPORT_URL
 from .helpers import generate_samples, write_file_run_bcl2fastq, write_file_run_cellranger_mkfastq, copyfromdata, show_tree, move_igv, tar_exports, export_empty_folder
-from pathlib import Path
+# from pathlib import Path
 import datetime
-import collections
-
+# import collections
+import glob
+import subprocess
 
 helps = {"raw": 'Enter the path to the directory for the BCL raw data, e.g. 210903_NB501289_0495_AHLLHTBGXJ',
          "app": "Choose the application ("+" ".join(APPLICATIONS)+")",
@@ -183,15 +184,17 @@ def tar_export(export_dir, no):
 @click.option('--no/--no-behaviour', default=False, show_default=True, help="List the behaviours of the command without actually removing them.")
 def clean(targetfolder, no):
     """Clean the temporary files and folders in target folders which shouldn't be archived or backup, such as *fastq.gz, nf-core work folder and result folder."""
-    import subprocess
     tmp_patterns = ["*.fastq.gz",
                     "*/*.fastq.gz",
                     "nfcore/work"]
     for p in tmp_patterns:
-        click.echo("Clean "+targetfolder+"/"+p)
-        if not no:
-            result = subprocess.run(["rm", "-fr", targetfolder+"/"+p], stderr=subprocess.PIPE, text=True)
-            click.echo(result.stderr)
+        target_pattern = targetfolder+"/"+p
+        listfiles = glob.glob(target_pattern)
+        if listfiles:
+            click.echo("Clean "+target_pattern)
+            if not no:
+                result = subprocess.run(["rm", "-fr", target_pattern], stderr=subprocess.PIPE, text=True)
+                click.echo(result.stderr)
     
 
 ###################################################################
