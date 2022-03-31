@@ -171,7 +171,7 @@ def export(export_dir, config, user, analysis, bcl):
 @main.command()
 @click.argument('export_dir')
 def tar_export(export_dir):
-    """Tar the three folders (Raw data, Processed data, and Reports) under the export directory with symlinks."""
+    """Tar the sub folders under the export directory with symlinks, except compressed_tar folder."""
     tar_exports(export_dir)
 
 ###################################################################
