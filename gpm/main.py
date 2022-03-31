@@ -198,8 +198,12 @@ def clean(ctx, targetfolder, no):
             if listfiles:
                 click.echo("Clean "+target_pattern)
                 if not no:
-                    result = subprocess.run(["rm", "-fr", target_pattern], stderr=subprocess.PIPE, text=True)
-                    click.echo(result.stderr)
+                    proc = subprocess.Popen('rm -fr '+target_pattern, shell=True,
+                                            stdout=subprocess.PIPE,
+                                            stderr=subprocess.PIPE)
+                    # result = subprocess.run(["rm", "-fr", target_pattern], stderr=subprocess.PIPE, text=True)
+                    if proc.stderr:
+                        click.echo(proc.stderr)
     
     clear_a_folder(targetfolder)
     for item in ctx.args:
