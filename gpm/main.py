@@ -180,8 +180,8 @@ def tar_export(export_dir, no):
 ###################################################################
 @main.command()
 @click.argument('targetfolder')
-@click.option('-n', default=False, show_default=True, help="List the behaviours of the command without actually removing them.")
-def clean(targetfolder, n):
+@click.option('--no/--no-behaviour', default=False, show_default=True, help="List the behaviours of the command without actually removing them.")
+def clean(targetfolder, no):
     """Clean the temporary files and folders in target folders which shouldn't be archived or backup, such as *fastq.gz, nf-core work folder and result folder."""
     import subprocess
     tmp_patterns = ["*.fastq.gz",
@@ -189,7 +189,7 @@ def clean(targetfolder, n):
                     "nfcore/work"]
     for p in tmp_patterns:
         click.echo("Clean "+targetfolder+"/"+p)
-        if not n:
+        if not no:
             result = subprocess.run(["rm", "-fr", targetfolder+"/"+p], stderr=subprocess.PIPE, text=True)
             click.echo(result.stderr)
     
