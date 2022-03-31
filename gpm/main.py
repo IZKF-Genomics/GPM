@@ -202,14 +202,12 @@ def clean(ctx, targetfolder, no):
                                             stdout=subprocess.PIPE,
                                             stderr=subprocess.PIPE)
                     # result = subprocess.run(["rm", "-fr", target_pattern], stderr=subprocess.PIPE, text=True)
-                    if proc.stderr:
-                        click.echo(proc.stderr)
+                    # if proc.stderr:
+                    #     click.echo(proc.stderr)
     
     clear_a_folder(targetfolder)
     for item in ctx.args:
         clear_a_folder(item)
-        
-    
 
 ###################################################################
 ## igv session for nf-core ChIP-Seq
