@@ -270,9 +270,18 @@ def tardir(path, tar_name):
 def tar_exports(export_dir):
     name = os.path.basename(export_dir)
     compressed_folder = os.path.join(export_dir, "compressed_tars")
-    tardir(os.path.join(export_dir, "1_Raw_data"), os.path.join(compressed_folder, name+"_1_Raw_data.tar"))
-    tardir(os.path.join(export_dir, "2_Processed_data"), os.path.join(compressed_folder, name+"_2_Processed_data.tar"))
-    tardir(os.path.join(export_dir, "3_Reports"), os.path.join(compressed_folder, name+"_3_Reports.tar"))
+    if not os.path.exists(compressed_folder):
+        os.makedirs(compressed_folder)
+
+    for filename in os.listdir(export_dir):
+        pathfile = os.path.join(export_dir, filename)
+        if os.path.isdir(pathfile) and filename != "compressed_tars":
+            print("Tar the folder: " + pathfile)
+            tardir(pathfile, os.path.join(compressed_folder, name+"_" +filename+".tar"))
+
+    # tardir(os.path.join(export_dir, "1_Raw_data"), os.path.join(compressed_folder, name+"_1_Raw_data.tar"))
+    # tardir(os.path.join(export_dir, "2_Processed_data"), os.path.join(compressed_folder, name+"_2_Processed_data.tar"))
+    # tardir(os.path.join(export_dir, "3_Reports"), os.path.join(compressed_folder, name+"_3_Reports.tar"))
         
 def htpasswd_create_user(target_dir, url, username, app):
     """Create the new user in the target directory with password"""
