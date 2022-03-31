@@ -170,9 +170,10 @@ def export(export_dir, config, user, analysis, bcl):
 ###################################################################
 @main.command()
 @click.argument('export_dir')
-def tar_export(export_dir):
+@click.option('-nobehavour', default=False, show_default=True, help="List the behaviours of the command without actually tarring them.")
+def tar_export(export_dir, nobehavour):
     """Tar the sub folders under the export directory with symlinks, except compressed_tar folder."""
-    tar_exports(export_dir)
+    tar_exports(export_dir, nobehavour)
 
 ###################################################################
 ## clean the folders
