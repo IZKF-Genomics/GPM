@@ -27,7 +27,10 @@ options(warn = -1)
 DIR_base <- "GPM_DIR_BASE/"
 DIR_project <- paste0(DIR_base, "analysis/")
 DIR_salmon <- paste0(DIR_base, "nfcore/results/star_salmon/")
-FILE_scaled_ct <- paste0(DIR_salmon, "salmon.merged.gene_counts_scaled.tsv")
+# mRNAseq or tRNAseq
+# FILE_scaled_ct <- paste0(DIR_salmon, "salmon.merged.gene_counts_length_scaled.tsv")
+# 3mRNAseq
+# FILE_scaled_ct <- paste0(DIR_salmon, "salmon.merged.gene_counts_scaled.tsv") 
 FILE_tx2gene <- paste0(DIR_salmon, "salmon_tx2gene.tsv")
 source(paste0(DIR_project, "functions.R"))
 
