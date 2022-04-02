@@ -20,6 +20,7 @@ bibliography: references.bib
 library("heatmaply")
 library("readr")
 library(tidyr)
+library(data.table)
 options(warn = -1)
 
 ################# File paths #####################################################

@@ -89,9 +89,10 @@ volcano_plot(deseq_output$deseq2res)
 MA_plot(deseq_output$deseq2res)
 ```
 
+`r if(spikein_ERCC){"## MA plot of spike in"}`
 
-```{r, echo=FALSE, results="asis", warning=FALSE, message=FALSE}
-heatmap_expression(deseq_output$deseq2res)
+```{r, echo=FALSE, results="asis", warning=FALSE, message=FALSE, eval=spikein_ERCC}
+MA_plot_ERCC(deseq_output$deseq2res_ERCC)
 ```
 
 ## Heatmap
