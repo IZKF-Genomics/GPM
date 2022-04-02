@@ -10,7 +10,6 @@
 # }
 
 nextflow run nf-core/rnaseq -r 3.5 -profile docker \
-     --pseudo_aligner salmon \
      --input samplesheet.csv \
      --genome gencode_hg38 --gencode --featurecounts_group_type gene_type \
      --rseqc_modules 'bam_stat,inner_distance,infer_experiment,junction_annotation,junction_saturation,read_distribution,read_duplication' \
