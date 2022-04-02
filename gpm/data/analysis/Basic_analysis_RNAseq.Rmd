@@ -35,8 +35,8 @@ Fig_width <- 600
 Fig_height <- 400
 CUTOFF_Quantification <- 20
 CUTOFF_ADJP <- 0.05
-spikein_ERCC <- TRUE
-
+# spikein_ERCC <- TRUE
+# spikein_ERCC <- FALSE
 # organism <- "hsapiens"
 # organism <- "mmusculus"
 

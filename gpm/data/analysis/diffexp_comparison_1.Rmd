@@ -83,6 +83,16 @@ PCA_after_deseq2(deseq_output$norm_count, samples2)
 volcano_plot(deseq_output$deseq2res)
 ```
 
+## MA plot
+
+```{r, echo=FALSE, results="asis", warning=FALSE, message=FALSE}
+MA_plot(deseq_output$deseq2res)
+```
+
+
+```{r, echo=FALSE, results="asis", warning=FALSE, message=FALSE}
+heatmap_expression(deseq_output$deseq2res)
+```
 
 ## Heatmap
 
