@@ -272,7 +272,8 @@ def tar_exports(export_dir, nobehaviour):
     name = os.path.basename(export_dir)
     compressed_folder = os.path.join(export_dir, "compressed_tars")
     if not os.path.exists(compressed_folder):
-        click.echo("Create the folder: " + compressed_folder)
+        click.echo(click.style("Create the folder:", fg='bright_green'))
+        click.echo(compressed_folder)
         if not nobehaviour:
             os.makedirs(compressed_folder)
 
@@ -280,7 +281,8 @@ def tar_exports(export_dir, nobehaviour):
         pathfile = os.path.join(export_dir, filename)
         tarfile = os.path.join(compressed_folder, name+"_" +filename+".tar")
         if os.path.isdir(pathfile) and filename != "compressed_tars":
-            click.echo("Tar the folder: " + pathfile +" => "+ tarfile)
+            click.echo(click.style("Tar the folder:", fg='bright_green'))
+            click.echo(pathfile +click.style(" => ", fg='bright_green')+ tarfile)
             if not nobehaviour:
                 tardir(pathfile, tarfile)
 
