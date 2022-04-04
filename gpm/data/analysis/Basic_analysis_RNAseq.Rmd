@@ -105,7 +105,7 @@ Please click the hyperlinked list below:
 In the command line environment, you can also download everything by the commands below with the given username and password from us:
 
 ```
-wget -r --user USERNAME --password PASSWORD -A '*.tar' GPM_URL_TAR
+wget -r -nH -np -nd -P --user USERNAME --password PASSWORD -A '*.tar' GPM_URL_TAR -P GPM_TITLE_NAME
 ```
 
 Please make sure that you store these data in a lab-wise level. Genomics Facility won't store your data forever and these data should still be accessible even after someone leaves your lab. Please refer to our [Data Management Policy](https://genomics.rwth-aachen.de/services/data-management-policy/).
