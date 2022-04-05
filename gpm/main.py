@@ -1,15 +1,16 @@
 import sys
 import click
-import re
+# import re
 import os
-import fnmatch
+# import fnmatch
 from .gpm import GPM
 from . import version, APPLICATIONS, EXPORT_URL
 from .helpers import generate_samples, write_file_run_bcl2fastq, write_file_run_cellranger_mkfastq, copyfromdata, show_tree, move_igv, tar_exports, export_empty_folder
-from pathlib import Path
+# from pathlib import Path
 import datetime
-import collections
-
+# import collections
+import glob
+import subprocess
 
 helps = {"raw": 'Enter the path to the directory for the BCL raw data, e.g. 210903_NB501289_0495_AHLLHTBGXJ',
          "app": "Choose the application ("+" ".join(APPLICATIONS)+")",
@@ -170,20 +171,43 @@ def export(export_dir, config, user, analysis, bcl):
 ###################################################################
 @main.command()
 @click.argument('export_dir')
-def tar_export(export_dir):
-    """Tar the three folders (Raw data, Processed data, and Reports) under the export directory with symlinks."""
-    tar_exports(export_dir)
+@click.option('--no/--no-behaviour', default=False, show_default=True, help="List the behaviours of the command without actually tarring them.")
+def tar_export(export_dir, no):
+    """Tar the sub folders under the export directory with symlinks, except compressed_tar folder."""
+    tar_exports(export_dir, no)
 
 ###################################################################
-## create an empty export
+## clean the folders
 ###################################################################
-# @main.command()
-# @click.argument('export_dir')
-# @click.argument('client')
-# def mkexport(export_dir, client):
-#     """Create an empty export folder with configuration of access"""
-#     add_htaccess(export_dir)
-#     create_user(export_dir)
+@main.command(context_settings=dict(
+    ignore_unknown_options=True,
+    allow_extra_args=True,
+))
+@click.argument('targetfolder')
+@click.option('--no/--no-behaviour', default=False, show_default=True, help="List the behaviours of the command without actually removing them.")
+@click.pass_context
+def clean(ctx, targetfolder, no):
+    """Clean the temporary files and folders in target folders which shouldn't be archived or backup, such as *fastq.gz, nf-core work folder and result folder."""
+    tmp_patterns = ["*.fastq.gz",
+                    "*/*.fastq.gz",
+                    "nfcore/work"]
+    def clear_a_folder(target):
+        for p in tmp_patterns:
+            target_pattern = target+"/"+p
+            listfiles = glob.glob(target_pattern)
+            if listfiles:
+                click.echo("Clean "+target_pattern)
+                if not no:
+                    proc = subprocess.Popen('rm -fr '+target_pattern, shell=True,
+                                            stdout=subprocess.PIPE,
+                                            stderr=subprocess.PIPE)
+                    # result = subprocess.run(["rm", "-fr", target_pattern], stderr=subprocess.PIPE, text=True)
+                    # if proc.stderr:
+                    #     click.echo(proc.stderr)
+    
+    clear_a_folder(targetfolder)
+    for item in ctx.args:
+        clear_a_folder(item)
 
 ###################################################################
 ## igv session for nf-core ChIP-Seq

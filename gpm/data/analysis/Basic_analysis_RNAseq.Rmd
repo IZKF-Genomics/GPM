@@ -20,13 +20,17 @@ bibliography: references.bib
 library("heatmaply")
 library("readr")
 library(tidyr)
+library(data.table)
 options(warn = -1)
 
 ################# File paths #####################################################
 DIR_base <- "GPM_DIR_BASE/"
 DIR_project <- paste0(DIR_base, "analysis/")
 DIR_salmon <- paste0(DIR_base, "nfcore/results/star_salmon/")
-FILE_scaled_ct <- paste0(DIR_salmon, "salmon.merged.gene_counts_scaled.tsv")
+# mRNAseq or tRNAseq
+# FILE_scaled_ct <- paste0(DIR_salmon, "salmon.merged.gene_counts_length_scaled.tsv")
+# 3mRNAseq
+# FILE_scaled_ct <- paste0(DIR_salmon, "salmon.merged.gene_counts_scaled.tsv") 
 FILE_tx2gene <- paste0(DIR_salmon, "salmon_tx2gene.tsv")
 source(paste0(DIR_project, "functions.R"))
 
@@ -35,8 +39,8 @@ Fig_width <- 600
 Fig_height <- 400
 CUTOFF_Quantification <- 20
 CUTOFF_ADJP <- 0.05
-spikein_ERCC <- TRUE
-
+# spikein_ERCC <- TRUE
+# spikein_ERCC <- FALSE
 # organism <- "hsapiens"
 # organism <- "mmusculus"
 
@@ -101,7 +105,7 @@ Please click the hyperlinked list below:
 In the command line environment, you can also download everything by the commands below with the given username and password from us:
 
 ```
-wget -r --user USERNAME --password PASSWORD -A '*.tar' GPM_URL_TAR
+wget -r -nH -np -nd -P --user USERNAME --password PASSWORD -A '*.tar' GPM_URL_TAR -P GPM_TITLE_NAME
 ```
 
 Please make sure that you store these data in a lab-wise level. Genomics Facility won't store your data forever and these data should still be accessible even after someone leaves your lab. Please refer to our [Data Management Policy](https://genomics.rwth-aachen.de/services/data-management-policy/).

@@ -83,6 +83,17 @@ PCA_after_deseq2(deseq_output$norm_count, samples2)
 volcano_plot(deseq_output$deseq2res)
 ```
 
+## MA plot
+
+```{r, echo=FALSE, results="asis", warning=FALSE, message=FALSE}
+MA_plot(deseq_output$deseq2res)
+```
+
+`r if(spikein_ERCC){"## MA plot of spike in"}`
+
+```{r, echo=FALSE, results="asis", warning=FALSE, message=FALSE, eval=spikein_ERCC}
+MA_plot_ERCC(deseq_output$deseq2res_ERCC)
+```
 
 ## Heatmap
 
