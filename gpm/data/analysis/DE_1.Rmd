@@ -43,6 +43,8 @@ if (organism == "hsapiens") {
 }
 
 Tag_this_analysis <- "M0_WT_vs_KO"
+File_stats <- paste0('DE_',Tag_this_analysis,'_genes_stats.csv')
+File_norm_expression <- paste0('DE_',Tag_this_analysis,'normalized_expression_quantification.csv')
 
 ## Please assign the groups for comparison into labels_group variable and confirm the direction of comparison by level parameter in the function factor, here is just an example
 # Manually define the grouping
@@ -132,15 +134,16 @@ if (organism == "hsapiens") {
 }
 genenames <- genenames[match(ensemblkeys, genenames$ENSEMBL), ]
 deseq_output$deseq2res <- cbind(deseq_output$deseq2res, genenames)
-write.csv(deseq_output$deseq2res,paste0(DIR_project, paste0('Diff_Exp_genes_stats_',Tag_this_analysis,'.csv')))
-write.csv(deseq_output$norm_count,paste0(DIR_project, paste0('normalized_expression_quantification_',Tag_this_analysis,'.csv')))
+
+write.csv(deseq_output$deseq2res,paste0(DIR_project, File_stats))
+write.csv(deseq_output$norm_count,paste0(DIR_project, File_norm_expression))
 ```
 
 
 # Download statistics
 
-* Download CSV file for the statistics of all valid genes in differential expression analysis (ENSEMBL ID, Gene Symbol and Gene name are included): [`r paste0('Diff_Exp_genes_stats_',Tag_this_analysis,'.csv')`](`r paste0('Diff_Exp_genes_stats_',Tag_this_analysis,'.csv')`)
-* Download CSV file for the expression quantification of all genes: [`r paste0('normalized_expression_quantification_',Tag_this_analysis,'.csv')`](`r paste0('normalized_expression_quantification_',Tag_this_analysis,'.csv')`)
+* Download CSV file for the statistics of all valid genes in differential expression analysis (ENSEMBL ID, Gene Symbol and Gene name are included): [`r File_stats`](`r File_stats`)
+* Download CSV file for the expression quantification of all genes: [`r File_norm_expression`](`r File_norm_expression`)
 
 
 # References
