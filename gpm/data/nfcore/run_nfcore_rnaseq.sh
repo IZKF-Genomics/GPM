@@ -9,6 +9,9 @@
 #   email = 'ckuo@ukaachen.de'
 # }
 
+################## GPM samplesheet #####################
+# gpm samplesheet -st 'forward' samplesheet.csv FASTQ_DIR
+
 nextflow run nf-core/rnaseq -r 3.5 -profile docker \
      --input samplesheet.csv \
      --genome gencode_hg38 --gencode --featurecounts_group_type gene_type \

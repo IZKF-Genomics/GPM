@@ -172,14 +172,14 @@ def export(export_dir, config, user, analysis, bcl, fastq):
         os.symlink(analysis, os.path.join(export_dir,"analysis"), target_is_directory=True)
     if os.path.isdir(os.path.join(export_dir,"1_Raw_data")):
         if bcl:
-            os.symlink(bcl, os.path.join(export_dir,"1_Raw_data", "BCL"), target_is_directory=True)
+            os.symlink(bcl.rstrip("/"), os.path.join(export_dir,"1_Raw_data", "BCL"), target_is_directory=True)
         if fastq:
-            os.symlink(fastq, os.path.join(export_dir,"1_Raw_data", "FASTQ"), target_is_directory=True)
+            os.symlink(fastq.rstrip("/"), os.path.join(export_dir,"1_Raw_data", "FASTQ"), target_is_directory=True)
     else:
         if bcl:
-            os.symlink(bcl, os.path.join(export_dir, "BCL"), target_is_directory=True)
+            os.symlink(bcl.rstrip("/"), os.path.join(export_dir, "BCL"), target_is_directory=True)
         if fastq:
-            os.symlink(fastq, os.path.join(export_dir, "FASTQ"), target_is_directory=True)
+            os.symlink(fastq.rstrip("/"), os.path.join(export_dir, "FASTQ"), target_is_directory=True)
 
     
 

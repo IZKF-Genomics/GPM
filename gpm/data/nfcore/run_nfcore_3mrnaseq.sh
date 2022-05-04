@@ -1,4 +1,4 @@
-################## test script ##################
+################## test script #########################
 # nextflow run nf-core/rnaseq -profile test,docker
 
 ################## ~/.nextflow/config ##################
@@ -8,6 +8,9 @@
 #   config_profile_url = 'http://genomics.rwth-aachen.de'
 #   email = 'ckuo@ukaachen.de'
 # }
+
+################## GPM samplesheet #####################
+# gpm samplesheet -st 'forward' samplesheet.csv FASTQ_DIR
 
 nextflow run nf-core/rnaseq -r 3.5 -profile docker \
      --input samplesheet.csv --clip_r1 12 \
