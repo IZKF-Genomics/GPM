@@ -268,6 +268,8 @@ def tardir(path, tar_name):
     returned_value = subprocess.call(cmd, shell=True)
 
 def tar_exports(export_dir, nobehaviour):
+    if export_dir == ".":
+        export_dir = os.getcwd()
     export_dir = export_dir.rstrip("/")
     name = os.path.basename(export_dir)
     compressed_folder = os.path.join(export_dir, "compressed_tars")
