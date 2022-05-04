@@ -25,3 +25,4 @@ bcl2fastq \
   # --writing-threads 2 \
   # Other amazing parameter
   
+multiqc -f .

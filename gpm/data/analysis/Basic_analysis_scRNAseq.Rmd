@@ -99,19 +99,13 @@ for (i in 1:length(samples)) {
 ```
 
 ```{r, results="asis"}
-
 library(htmltools)
 
-
 for( i in 1:length(samples)){
-  
   cat("\n") 
   cat("##", "[",samples[[i]],"]","(",summaryFiles[[i]],")\n") # Create links to the summary reports
-  
   cat("\n")
-  
 }
-
 ```
 
 ##[samples[[1]]](summaryFiles[[1]])
