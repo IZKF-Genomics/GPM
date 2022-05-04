@@ -36,7 +36,8 @@ def main():
 @main.command()
 @click.option('-r', '--raw', help=helps["raw"], required=True)
 @click.option('-o', '--output', help=helps["demultiplex_output"], required=True)
-def demultiplex(raw, output):
+@click.option('-sc', default=False, show_default=True, help="Flag for single-cell sequencing, otherwise bulk sequencing is set as default.")
+def demultiplex(raw, output, sc):
     """A wrapper of bcl2fastq programm and cellranger mkfastq for demultiplexing."""
     # if not output:
     #     rawname = os.path.basename(raw)
@@ -49,18 +50,25 @@ def demultiplex(raw, output):
         click.echo(output)
         sys.exit()
 
-    write_file_run_bcl2fastq(raw, output)
-    write_file_run_cellranger_mkfastq(raw, output)
+    
+    if sc:
+        write_file_run_cellranger_mkfastq(raw, output)
+    else:
+        write_file_run_bcl2fastq(raw, output)
     copyfromdata("bcl2fastq/samplesheet.csv", output)
 
     show_tree(output)
     click.echo()
     click.echo(click.style("Next steps:", fg='bright_green'))
     click.echo("1. Modify samplesheet.csv with the proper information. Please add Sample_Project with the correct format (YYMMDD_Provider_PI_Institute_App).")
-    click.echo("2. Check and modify run_bcl2fastq.sh (bulk sequencing) or run_cellranger.sh (single cell sequencing)")
-    click.echo("3. Run run_bcl2fastq.sh (bulk sequencing) or run_cellranger.sh (single cell sequencing) with the command below: (Recommend to run it in screen session)")
-    click.echo("\tbash run_bcl2fastq.sh")
-    click.echo("\tbash run_cellranger.sh")
+    if sc:
+        click.echo("2. Check and modify run_cellranger.sh")
+        click.echo("3. Run run_cellranger.sh with the command below: (Recommend to run it in screen session)")
+        click.echo("\tbash run_cellranger.sh")
+    else:
+        click.echo("2. Check and modify run_bcl2fastq.sh")
+        click.echo("3. Run run_bcl2fastq.sh with the command below: (Recommend to run it in screen session)")
+        click.echo("\tbash run_bcl2fastq.sh")
 
 
 ###################################################################
