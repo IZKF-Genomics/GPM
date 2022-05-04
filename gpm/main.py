@@ -155,7 +155,8 @@ def analysis(config_file):
 @click.option('-user', default="user", show_default=True, help="Define the user name for creating an empty export folder.")
 @click.option('-analysis', default="", show_default=True, help="Define the source of analysis folder for soft linking.")
 @click.option('-bcl', default="", show_default=True, help="Define the source of BCL folder for soft linking.")
-def export(export_dir, config, user, analysis, bcl):
+@click.option('-fastq', default="", show_default=True, help="Define the source of FASTQ folder for soft linking.")
+def export(export_dir, config, user, analysis, bcl, fastq):
     """Export the raw data, processed data and reports to the export directory by creating soft links without moving around the big files."""
     if os.path.isfile(config):
         gpm = GPM(load_config=config, seqdate=None, application=None, 
@@ -169,8 +170,16 @@ def export(export_dir, config, user, analysis, bcl):
         # if not os.path.exists(os.path.join(export_dir,"analysis")):
         #     os.makedirs(os.path.join(export_dir,"analysis"))
         os.symlink(analysis, os.path.join(export_dir,"analysis"), target_is_directory=True)
-    if bcl:
-        os.symlink(bcl, os.path.join(export_dir,"1_Raw_data", "BCL"), target_is_directory=True)
+    if os.path.isdir(os.path.join(export_dir,"1_Raw_data")):
+        if bcl:
+            os.symlink(bcl, os.path.join(export_dir,"1_Raw_data", "BCL"), target_is_directory=True)
+        if fastq:
+            os.symlink(bcl, os.path.join(export_dir,"1_Raw_data", "FASTQ"), target_is_directory=True)
+    else:
+        if bcl:
+            os.symlink(bcl, os.path.join(export_dir, "BCL"), target_is_directory=True)
+        if fastq:
+            os.symlink(bcl, os.path.join(export_dir, "FASTQ"), target_is_directory=True)
 
     
 
