@@ -124,6 +124,7 @@ volcano_plot <- function(res_combined) {
                  y = -log10(res_combined$padj),
                  text = res_combined$gene_name,
                  hoverinfo = 'text',
+                 type = 'scatter', 
                  marker = list(opacity = 0.2),
                  color = res_combined$sig, colors = pal,
                  showlegend = T)  %>%
@@ -142,6 +143,7 @@ MA_plot <- function(res_combined) {
                  y = res_combined$log2FoldChange,
                  text = res_combined$gene_name,
                  hoverinfo = 'text',
+                 type = 'scatter', 
                  marker = list(opacity = 0.2),
                  color = res_combined$sig, colors = pal,
                  showlegend = T)  %>%
@@ -204,13 +206,13 @@ table_diffexp_statistics <- function(deseq2res) {
 table_sig_genes <- function(res_sig) {
   res <- subset(res_sig, select = -c(sig) )
   datatable( res ,
-             extensions = c("Buttons" , "FixedColumns"),
+             extensions = c("FixedColumns"),
              filter = 'top',
              options = list( autoWidth = TRUE ,
                              dom = 'Blftip',
                              pageLength = 10,
                              searchHighlight = FALSE,
-                             buttons = c('copy', 'csv', 'print'),
+                            #  buttons = c('copy', 'csv', 'print'),
                              scrollX = TRUE,
                              fixedColumns = list(leftColumns = 2)),
              class = c('compact cell-border stripe hover') ,

@@ -28,7 +28,7 @@ setwd(DIR_base)
 
 ```
 
-![](https://www.medizin.rwth-aachen.de/global/show_document.asp?id=aaaaaaaaaawfyoe "IZKF")
+![](https://www.medizin.rwth-aachen.de/global/show_document.asp?id=aaaaaaaaaawfyoe)
 
 This document is the summary of the basic bacterial genome assembly done by Genomic Core Facility in IZKF, RWTH Aachen Uniklinik. Please contact us for any further discussion or collaboration.
 

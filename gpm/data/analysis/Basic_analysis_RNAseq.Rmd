@@ -62,7 +62,7 @@ rownames(samples) <- samples$sample
 ```
 
 
-![](https://www.medizin.rwth-aachen.de/global/show_document.asp?id=aaaaaaaaaawfyoe "IZKF")
+![](https://www.medizin.rwth-aachen.de/global/show_document.asp?id=aaaaaaaaaawfyoe)
 
 This document is the summary of the bioinformatic analysis done by Genomic Facility in IZKF, RWTH Aachen Uniklinik. Please contact us for any further discussion or collaboration. If these results are used in any poster or publications, please acknowledge our core facility with the text below:
 
@@ -117,26 +117,26 @@ FASTQ files were generated using bcl2fastq (Illumina). To facilitate reproducibl
 <!-- # Correlation -->
 
 ```{r load, echo=FALSE, results="hide", warning=FALSE, message=FALSE}
-scaled_ct <- read_tsv(FILE_scaled_ct)
+scaled_ct <- fread(FILE_scaled_ct)
 scaled_ct2 <- aggregate(x=scaled_ct[, c(-1,-2)], by=list(scaled_ct$gene_name), FUN=mean)
 colnames(scaled_ct2)[1] <- "Gene_symbol"
 ```
 
 ```{r correlation, echo=FALSE, results="asis", warning=FALSE, message=FALSE}
-# rowvariance <- apply(scaled_ct2[,c(-1)], 1, var)
-# 
-# corrmatrix <- scaled_ct2[,c(-1)][order(rowvariance, decreasing = TRUE), ]
+rowvariance <- apply(scaled_ct2[,c(-1)], 1, var)
+
+corrmatrix <- scaled_ct2[,c(-1)][order(rowvariance, decreasing = TRUE), ]
 # fig <- heatmaply_cor(cor(corrmatrix[1:1000,], method="spearman"), width = Fig_width, height = Fig_height,
 #                      main = "Correlation of all genes",
 #                      key.title = "Correlation")
-# fig <- heatmaply_cor(cor(scaled_ct[,c(-1,-2)]), width = Fig_width, height = Fig_height,
-#                      main = "Correlation of all genes",
-#                      key.title = "Correlation")
-# fig
+fig <- heatmaply_cor(cor(scaled_ct[,c(-1,-2)]), width = Fig_width, height = Fig_height,
+                     main = "Correlation of all genes",
+                     key.title = "Correlation")
+fig
 ```
 
 
-# Differential expression analysis
+# Differential Gene Expression Analysis
 
 ```{r saveobjects, echo=FALSE, results="hide", warning=FALSE, message=FALSE}
 save(DIR_base,DIR_project,DIR_salmon,
@@ -146,11 +146,11 @@ save(DIR_base,DIR_project,DIR_salmon,
      CUTOFF_Quantification, CUTOFF_ADJP, spikein_ERCC,
      samples, scaled_ct, scaled_ct2, file = paste0(DIR_project, "data.RData"))
 
-rmarkdown::render('DE_1.Rmd', output_format = 'html_document',
-                  output_file = "DE_1.html")
+rmarkdown::render('DGEA_1.Rmd', output_format = 'html_document',
+                  output_file = "DGEA_1.html")
 ```
 
-## [Comparison 1](DE_1.html) 
+* [](DGEA_1.html) 
 
 
 # References
