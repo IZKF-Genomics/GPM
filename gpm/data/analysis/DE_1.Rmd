@@ -65,13 +65,13 @@ samples$group <- factor(labels_group, levels = c("control","knockdown"))
 
 Differential expression analysis is done with DESEQ2 package in R [@love2014moderated] and follows the instruction for Salmon quantification ([Analyzing RNA-seq data with DESeq2](https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html)).
 
-# Figures {.tabset}
-
 ```{r, echo=FALSE, results="hide", warning=FALSE, message=FALSE}
 samples2 <- samples[!(is.na(samples$group)),]
 deseq_output <- run_deseq_salmon(samples2, spikein=spikein_ERCC)
 # samples2$sample <- samples2$rename
 ```
+
+# Interactive Figures {.tabset}
 
 ## PCA
 
@@ -101,6 +101,95 @@ MA_plot_ERCC(deseq_output$deseq2res_ERCC)
 
 ```{r, echo=FALSE, results="asis", warning=FALSE, message=FALSE}
 heatmap_expression(deseq_output$deseq2res)
+```
+
+
+# Static Figures {.tabset}
+
+## PCA
+
+```{r, echo=FALSE, results="asis", warning=FALSE, message=FALSE, dpi=600, fig.width=6, fig.height=4}
+t <- t(deseq_output$norm_count[, c(-1,-2)])
+prin_comp <- prcomp(t, rank. = 2)
+components <- prin_comp[["x"]]
+components <- data.frame(components)
+components <- cbind(components, rownames(t))
+labels <- samples2$sample
+labels_group <- samples2$group
+
+fig <- ggplot(components, aes(PC1, PC2, color=labels_group)) +
+       geom_point(size=3) + theme_bw() + scale_color_brewer(palette = "Set1") + 
+       labs(color = "Groups") + ggtitle("PCA") +
+       theme(plot.title = element_text(hjust = 0.5))
+fig
+```
+
+## Volcano plot
+
+```{r, echo=FALSE, results="asis", warning=FALSE, message=FALSE, dpi=600, fig.width=6, fig.height=4}
+pal <- c("red", "royalblue")
+pal <- setNames(pal, c("Sig. genes", "Non-sig."))
+xmax <- max(abs(deseq_output$deseq2res$log2FoldChange)) * 1.1
+ymax <- max(-log10(deseq_output$deseq2res$padj)[is.finite(-log10(deseq_output$deseq2res$padj))]) * 1.1
+fig <- ggplot(deseq_output$deseq2res, aes(log2FoldChange, -log10(padj), color=sig)) +
+       geom_point(size=1, alpha=0.2) + theme_bw() + scale_color_manual(values=pal) + 
+       labs(color = "Groups") + ggtitle("Volcano plot") +
+       xlab("Fold Change (log2)") + ylab("adjusted p-value (-log10)") +
+       theme(plot.title = element_text(hjust = 0.5)) +
+       xlim(-xmax, xmax) + ylim(0, ymax)
+fig
+```
+
+## MA plot
+
+```{r, echo=FALSE, results="asis", warning=FALSE, message=FALSE, dpi=600, fig.width=6, fig.height=4}
+pal <- c("red", "royalblue")
+pal <- setNames(pal, c("Sig. genes", "Non-sig."))
+ymax <- max(abs(deseq_output$deseq2res$log2FoldChange)) * 1.01
+
+fig <- ggplot(deseq_output$deseq2res, aes(log2(baseMean), log2FoldChange, color=sig)) +
+       geom_point(size=1, alpha=0.2) + theme_bw() + scale_color_manual(values=pal) + 
+       labs(color = "Groups") + ggtitle("MA plot") +
+       xlab("Expresion Mean (log2)") + ylab("Fold Change (log2)") +
+       theme(plot.title = element_text(hjust = 0.5)) +
+       ylim(-ymax, ymax)
+fig
+```
+
+## Heatmap
+
+```{r, echo=FALSE, results="asis", warning=FALSE, message=FALSE, dpi=600, fig.width=6, fig.height=4}
+margin_spacer <- function(x) {
+  # where x is the column in your dataset
+  left_length <- nchar(levels(factor(x)))[1]
+  if (left_length > 8) {
+    return((left_length - 8) * 4)
+  }
+  else
+    return(0)
+}
+
+top1000 <- deseq_output$deseq2res[order(deseq_output$deseq2res$padj, decreasing = FALSE), ]
+top1000 <- top1000[1:1000,]
+samples_names <- colnames(top1000)[9:(dim(top1000)[2]-1)]
+heatmap_t <- scale(log10(top1000[,9:(dim(top1000)[2]-1)]+1))
+ord <- hclust( dist(heatmap_t, method = "euclidean"), method = "ward.D" )$order
+
+heatmap_t <- cbind(top1000$gene_name, as.data.frame(heatmap_t))
+colnames(heatmap_t)[1] <- "gene_name"
+heatmap_t <- pivot_longer(heatmap_t, cols=2:(dim(heatmap_t)[2]), names_to="sample", values_to="Expression")
+heatmap_t$gene_name <- factor( heatmap_t$gene_name, levels = top1000$gene_name[ord])
+heatmap_t$sample <- factor( heatmap_t$sample, levels = samples_names)
+
+fig <- ggplot(heatmap_t, aes(sample, gene_name, fill=Expression)) + 
+       geom_tile() + ggtitle("Heatmap of top 1000 genes ranked by padj") +
+       ylab("Genes") + xlab("Samples") + scale_fill_viridis() + 
+       theme(plot.title = element_text(hjust = 0.5),
+             axis.ticks.y = element_blank(),
+             axis.text.y = element_blank(),
+             axis.text.x = element_text(angle = 45, vjust = 1, hjust=1),
+             plot.margin = margin(l = 0 + margin_spacer(heatmap_t$sample)))
+fig
 ```
 
 # Tables {.tabset}
