@@ -59,8 +59,8 @@ process_dds_res <- function(tx2gene, dds) {
 run_deseq_salmon <- function(samplesheet, spikein=FALSE) {
   files <- file.path(DIR_salmon, samplesheet$sample, "quant.sf")
   names(files) <- samplesheet$sample
-  tx2gene <- read_tsv(FILE_tx2gene, col_names = c("transcript_id", "gene_id", "gene_name"))
-  txi <- tximport(files, type="salmon", tx2gene=tx2gene)
+  tx2gene <- fread(FILE_tx2gene, col.names = c("transcript_id", "gene_id", "gene_name"))
+  txi <- tximport(files, type="salmon", tx2gene=tx2gene[,c(1,2)])
 
   ddsTxi <- DESeqDataSetFromTximport(txi,
                                      colData = samplesheet,
@@ -78,9 +78,9 @@ run_deseq_salmon <- function(samplesheet, spikein=FALSE) {
 run_deseq_salmon_batch <- function(samplesheet, spikein=FALSE) {
   files <- file.path(DIR_salmon, samplesheet$sample, "quant.sf")
   names(files) <- samplesheet$sample
-  tx2gene <- read_tsv(FILE_tx2gene, col_names = c("transcript_id", "gene_id", "gene_name"))
+  tx2gene <- fread(FILE_tx2gene, col.names = c("transcript_id", "gene_id", "gene_name"))
 
-  txi <- tximport(files, type="salmon", tx2gene=tx2gene)
+  txi <- tximport(files, type="salmon", tx2gene=tx2gene[,c(1,2)])
 
   ddsTxi <- DESeqDataSetFromTximport(txi,
                                      colData = samplesheet,
@@ -124,7 +124,7 @@ volcano_plot <- function(res_combined) {
                  y = -log10(res_combined$padj),
                  text = res_combined$gene_name,
                  hoverinfo = 'text',
-                 type = 'scatter', 
+                 type = 'scatter', mode = 'markers',
                  marker = list(opacity = 0.2),
                  color = res_combined$sig, colors = pal,
                  showlegend = T)  %>%
@@ -143,7 +143,7 @@ MA_plot <- function(res_combined) {
                  y = res_combined$log2FoldChange,
                  text = res_combined$gene_name,
                  hoverinfo = 'text',
-                 type = 'scatter', 
+                 type = 'scatter', mode = 'markers',
                  marker = list(opacity = 0.2),
                  color = res_combined$sig, colors = pal,
                  showlegend = T)  %>%
