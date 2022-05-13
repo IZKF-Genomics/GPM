@@ -65,7 +65,7 @@ samples$group <- factor(labels_group, levels = c("control","knockdown"))
 
 ```
 
-### [Back to front page](Basic_analysis_RNAseq.html)
+### [Back to front page](Analysis_Report_RNAseq.html)
 
 Differential expression analysis is done with DESEQ2 package in R [@love2014moderated] and follows the instruction for Salmon quantification ([Analyzing RNA-seq data with DESeq2](https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html)).
 
