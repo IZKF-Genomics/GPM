@@ -10,7 +10,7 @@
 # }
 
 ################## GPM samplesheet #####################
-# gpm samplesheet -st 'forward' samplesheet.csv FASTQ_DIR
+# gpm samplesheet -st 'reverse' samplesheet.csv FASTQ_DIR
 
 nextflow run nf-core/rnaseq -r 3.5 -profile docker \
      --input samplesheet.csv \
