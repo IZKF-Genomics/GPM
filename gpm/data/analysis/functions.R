@@ -1,3 +1,7 @@
+###########################################################
+## Description
+###########################################################
+
 organism2method_des <- function(organism) {
   if (organism == "hsapiens") {
     method_des <- "human genome (GRCh38.p13)"
@@ -16,19 +20,9 @@ spikein_ERCC2method <- function(spikein_ERCC) {
   return(spikein_method)
 }
 
-PCA_all_samples <- function(scaled_ct, colors) {
-  t <- t(scaled_ct[, c(-1)])
-  prin_comp <- prcomp(t, rank. = 2)
-  components <- prin_comp[["x"]]
-  components <- data.frame(components)
-  components <- cbind(components, rownames(t))
-  components$PC2 <- -components$PC2
-
-  fig <- plot_ly(components, x = ~PC1, y = ~PC2, color = colors, 
-                 width = Fig_width, height = Fig_height,
-                 type = 'scatter', mode = 'markers', text = components$`rownames(t)`)
-  fig
-}
+###########################################################
+## RNAseq
+###########################################################
 
 process_dds_res <- function(tx2gene, dds) {
   ensembl_genes <- data.frame(gene_id=tx2gene$gene_id, gene_name=tx2gene$gene_name)
@@ -103,7 +97,24 @@ estimateSizeFactors_ERCC <- function(ddsTxi) {
   return(ddsTxi)
 }
 
-PCA_after_deseq2 <- function(normalized_counts2, samples) {
+###########################################################
+## RNAseq figures
+###########################################################
+PCA_plotly <- function(scaled_ct, colors) {
+  t <- t(scaled_ct[, c(-1)])
+  prin_comp <- prcomp(t, rank. = 2)
+  components <- prin_comp[["x"]]
+  components <- data.frame(components)
+  components <- cbind(components, rownames(t))
+  components$PC2 <- -components$PC2
+
+  fig <- plot_ly(components, x = ~PC1, y = ~PC2, color = colors, 
+                 width = Fig_width, height = Fig_height,
+                 type = 'scatter', mode = 'markers', text = components$`rownames(t)`)
+  fig
+}
+
+RNAseq_PCA_plotly <- function(normalized_counts2, samples) {
   t <- t(normalized_counts2[, c(-1,-2)])
   prin_comp <- prcomp(t, rank. = 2)
   components <- prin_comp[["x"]]
@@ -117,7 +128,7 @@ PCA_after_deseq2 <- function(normalized_counts2, samples) {
   fig
 }
 
-volcano_plot <- function(res_combined) {
+RNAseq_volcano_plotly <- function(res_combined) {
   pal <- c("red", "royalblue")
   pal <- setNames(pal, c("Sig. genes", "Non-sig."))
   fig <- plot_ly(x = res_combined$log2FoldChange,
@@ -136,7 +147,7 @@ volcano_plot <- function(res_combined) {
   fig
 }
 
-MA_plot <- function(res_combined) {
+RNAseq_maplot_plotly <- function(res_combined) {
   pal <- c("red", "gray")
   pal <- setNames(pal, c("Sig. genes", "Non-sig."))
   fig <- plot_ly(x = log2(res_combined$baseMean),
@@ -155,7 +166,30 @@ MA_plot <- function(res_combined) {
   fig
 }
 
-heatmap_expression <- function(deseq2res) {
+RNAseq_maplot_plotly_ERCC <- function(res_combined_ERCC) {
+  # res_combined <- deseq_output$deseq2res
+  # res_combined_ERCC <- deseq_output$deseq2res_ERCC
+  # res_df <- rbind(res_combined, res_combined_ERCC)
+  pal <- c("red", "gray", "orange")
+  pal <- setNames(pal, c("Sig. genes", "Non-sig.", "Spike in"))
+  # res_combined$sig <- factor(res_combined$sig, level=c("Sig. genes", "Spike in", "Non-sig."))
+  
+  fig <- plot_ly(x = log2(res_combined_ERCC$baseMean),
+              y = res_combined_ERCC$log2FoldChange,
+              text = res_combined_ERCC$gene_name,
+              hoverinfo = 'text',
+              marker = list(opacity = 0.5),
+              color = res_combined_ERCC$sig, colors = pal,
+              showlegend = T) %>%
+        layout(
+          title = "MA plot of spike in",
+          xaxis = list(title = "Mean Expression (log2)"),
+          yaxis = list(title = "Fold Change (log2)")
+        )
+  fig
+}
+
+RNAseq_heatmap_plotly <- function(deseq2res) {
   top1000 <- deseq2res[order(deseq2res$padj, decreasing = FALSE), ]
   top1000 <- top1000[1:1000,]
   
@@ -170,10 +204,58 @@ heatmap_expression <- function(deseq2res) {
             k_col = 2)
 }
 
+RNAseq_PCA_ggplot2 <- function(deseq_output, samples2) {
+  t <- t(deseq_output$norm_count[, c(-1,-2)])
+  prin_comp <- prcomp(t, rank. = 2)
+  components <- prin_comp[["x"]]
+  components <- data.frame(components)
+  components <- cbind(components, rownames(t))
+  labels <- samples2$sample
+  labels_group <- samples2$group
 
+  fig <- ggplot(components, aes(PC1, PC2, color=labels_group)) +
+        geom_point(size=3) + theme_bw() + scale_color_brewer(palette = "Set1") + 
+        labs(color = "Groups") + ggtitle("PCA") +
+        theme(plot.title = element_text(hjust = 0.5))
+  fig
+}
+
+RNAseq_volcano_ggplot2 <- function(deseq_output) {
+  pal <- c("red", "royalblue")
+  pal <- setNames(pal, c("Sig. genes", "Non-sig."))
+  xmax <- max(abs(deseq_output$deseq2res$log2FoldChange)) * 1.1
+  ymax <- max(-log10(deseq_output$deseq2res$padj)[is.finite(-log10(deseq_output$deseq2res$padj))]) * 1.1
+  fig <- ggplot(deseq_output$deseq2res, aes(log2FoldChange, -log10(padj), color=sig)) +
+        geom_point(size=1, alpha=0.2) + theme_bw() + scale_color_manual(values=pal) + 
+        labs(color = "Groups") + ggtitle("Volcano plot") +
+        xlab("Fold Change (log2)") + ylab("adjusted p-value (-log10)") +
+        theme(plot.title = element_text(hjust = 0.5)) +
+        xlim(-xmax, xmax) + ylim(0, ymax)
+  fig
+}
+
+RNAseq_maplot_ggplot2 <- function(deseq_output) {
+  pal <- c("red", "royalblue")
+  pal <- setNames(pal, c("Sig. genes", "Non-sig."))
+  ymax <- max(abs(deseq_output$deseq2res$log2FoldChange)) * 1.01
+
+  fig <- ggplot(deseq_output$deseq2res, aes(log2(baseMean), log2FoldChange, color=sig)) +
+        geom_point(size=1, alpha=0.2) + theme_bw() + scale_color_manual(values=pal) + 
+        labs(color = "Groups") + ggtitle("MA plot") +
+        xlab("Expresion Mean (log2)") + ylab("Fold Change (log2)") +
+        theme(plot.title = element_text(hjust = 0.5)) +
+        ylim(-ymax, ymax)
+  fig
+}
+
+RNAseq_heatmap_ggplot2 <- function(deseq_output, samples2) {
+  
+}
+###########################################################
+## Output tables
+###########################################################
 
 table_all_normalized_quantified_values <- function(normalized_counts) {
-
   datatable( normalized_counts ,
              extensions = c("Buttons" , "FixedColumns"),
              filter = 'top',
