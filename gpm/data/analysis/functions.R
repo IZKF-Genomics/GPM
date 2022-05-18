@@ -347,6 +347,7 @@ miRNAseq_deseq2 <- function(FILE_counts_mature, FILE_counts_hairpin, samples2) {
   ##########################################
   dds <- DESeq(dds)
   res <- as.data.frame(results(dds))
+  res <- cbind(data.frame(gene_name=rownames(res)), res)
   res$sig <- "Non-sig."
   res$sig[res$padj < CUTOFF_ADJP] <- "Sig."
   norm_counts <- counts(dds, normalized=TRUE)
