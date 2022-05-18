@@ -249,7 +249,36 @@ RNAseq_maplot_ggplot2 <- function(deseq_output) {
 }
 
 RNAseq_heatmap_ggplot2 <- function(deseq_output, samples2) {
-  
+  margin_spacer <- function(x) {
+    # where x is the column in your dataset
+    left_length <- nchar(levels(factor(x)))[1]
+    if (left_length > 8) {
+      return((left_length - 8) * 4)
+    }
+    else
+      return(0)
+  }
+  top1000 <- deseq_output$deseq2res[order(deseq_output$deseq2res$padj, decreasing = FALSE), ]
+  top1000 <- top1000[1:1000,]
+  samples_names <- colnames(top1000)[9:(dim(top1000)[2]-1)]
+  heatmap_t <- scale(log10(top1000[,9:(dim(top1000)[2]-1)]+1))
+  ord <- hclust( dist(heatmap_t, method = "euclidean"), method = "ward.D" )$order
+
+  heatmap_t <- cbind(top1000$gene_name, as.data.frame(heatmap_t))
+  colnames(heatmap_t)[1] <- "gene_name"
+  heatmap_t <- pivot_longer(heatmap_t, cols=2:(dim(heatmap_t)[2]), names_to="sample", values_to="Expression")
+  heatmap_t$gene_name <- factor( heatmap_t$gene_name, levels = top1000$gene_name[ord])
+  heatmap_t$sample <- factor( heatmap_t$sample, levels = samples_names)
+
+  fig <- ggplot(heatmap_t, aes(sample, gene_name, fill=Expression)) + 
+        geom_tile() + ggtitle("Heatmap of top 1000 genes ranked by padj") +
+        ylab("Genes") + xlab("Samples") + scale_fill_viridis() + 
+        theme(plot.title = element_text(hjust = 0.5),
+              axis.ticks.y = element_blank(),
+              axis.text.y = element_blank(),
+              axis.text.x = element_text(angle = 45, vjust = 1, hjust=1),
+              plot.margin = margin(l = 0 + margin_spacer(heatmap_t$sample)))
+  fig
 }
 ###########################################################
 ## Output tables
@@ -285,7 +314,7 @@ table_diffexp_statistics <- function(deseq2res) {
              rownames = FALSE) %>% formatRound(c(-1, -2), 2)
 }
 
-table_sig_genes <- function(res_sig) {
+table_sig_genes <- function(res_sig, rowname=F) {
   res <- subset(res_sig, select = -c(sig) )
   datatable( res ,
              extensions = c("FixedColumns"),
@@ -298,7 +327,7 @@ table_sig_genes <- function(res_sig) {
                              scrollX = TRUE,
                              fixedColumns = list(leftColumns = 2)),
              class = c('compact cell-border stripe hover') ,
-             rownames = FALSE) %>% formatRound(c(-1, -2), 2)
+             rownames = rowname) %>% formatRound(c(-1, -2), 2)
 }
 
 ###########################################################
@@ -308,8 +337,8 @@ table_sig_genes <- function(res_sig) {
 miRNAseq_deseq2 <- function(FILE_counts_mature, FILE_counts_hairpin, samples2) {
   df_counts1 <- t(read.csv(FILE_counts_mature, row.names = 1, header=T, sep=","))[, samples2$sample]
   df_counts2 <- t(read.csv(FILE_counts_hairpin, row.names = 1, header=T, sep=","))[, samples2$sample]
-  df_counts <- df_counts1
-  # df_counts <- rbind(df_counts1, df_counts2)
+  # df_counts <- df_counts1
+  df_counts <- rbind(df_counts1, df_counts2)
   dds <- DESeqDataSetFromMatrix(countData = df_counts, colData = samples2, design = ~group)
   # ERCC normalization #####################
   # if (spikein==TRUE) {
@@ -343,6 +372,25 @@ miRNAseq_PCA_plotly <- function(normalized_counts, samples) {
   fig <- plot_ly(components, x = ~PC1, y = ~PC2, color = labels_group, text = labels,
                  width = Fig_width, height = Fig_height,
                  type = 'scatter', mode = 'markers')
+  fig
+}
+
+miRNAseq_volcano_plotly <- function(res_combined) {
+  pal <- c("red", "royalblue")
+  pal <- setNames(pal, c("Sig.", "Non-sig."))
+  fig <- plot_ly(x = res_combined$log2FoldChange,
+                 y = -log10(res_combined$padj),
+                 text = res_combined$gene_name,
+                 hoverinfo = 'text',
+                 type = 'scatter', mode = 'markers',
+                 marker = list(opacity = 0.2),
+                 color = res_combined$sig, colors = pal,
+                 showlegend = T)  %>%
+    layout(
+      title = "Volcano plot",
+      xaxis = list(title = "Fold Change (log2)"),
+      yaxis = list(title = "adjusted p-value (-log10)")
+    )
   fig
 }
 

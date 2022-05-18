@@ -78,7 +78,7 @@ miRNAseq_PCA_plotly(res_miRNA$norm_counts, samples2)
 ## Volcano plot
 
 ```{r, echo=FALSE, results="asis", warning=FALSE, message=FALSE}
-volcano_plot(res_miRNA$res)
+miRNAseq_volcano_plotly(res_miRNA$res)
 ```
 
 ## MA plot
