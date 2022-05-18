@@ -26,12 +26,13 @@ options(warn = -1)
 ################# File paths #####################################################
 DIR_base <- "GPM_DIR_BASE/"
 DIR_project <- paste0(DIR_base, "analysis/")
-DIR_salmon <- paste0(DIR_base, "nfcore/results/star_salmon/")
-# mRNAseq or tRNAseq
-# FILE_scaled_ct <- paste0(DIR_salmon, "salmon.merged.gene_counts_length_scaled.tsv")
-# 3mRNAseq
-# FILE_scaled_ct <- paste0(DIR_salmon, "salmon.merged.gene_counts_scaled.tsv") 
-FILE_tx2gene <- paste0(DIR_salmon, "salmon_tx2gene.tsv")
+DIR_edger <- paste0(DIR_base, "nfcore/results/edger/")
+
+FILE_counts_hairpin <- paste0(DIR_edger, "hairpin_counts.csv")
+FILE_counts_mature <- paste0(DIR_edger, "mature_counts.csv")
+FILE_CPM_hairpin <- paste0(DIR_edger, "hairpin_normalized_CPM.txt")
+FILE_CPM_mature <- paste0(DIR_edger, "mature_normalized_CPM.txt")
+
 source(paste0(DIR_project, "functions.R"))
 
 ################# Parameters #####################################################
@@ -41,11 +42,6 @@ CUTOFF_Quantification <- 20
 CUTOFF_ADJP <- 0.05
 # spikein_ERCC <- TRUE
 # spikein_ERCC <- FALSE
-# organism <- "hsapiens"
-# organism <- "mmusculus"
-
-method_des <- organism2method_des(organism) 
-spikein_method <- spikein_ERCC2method(spikein_ERCC)
 
 ################# Loading samples ################################################
 ## Load sample sheets from nf-core configuration
@@ -112,45 +108,23 @@ Please make sure that you store these data in a lab-wise level. Genomics Facilit
 
 # Method description
 
-FASTQ files were generated using bcl2fastq (Illumina). To facilitate reproducible analysis, samples were processed using the publicly available nf-core/RNA-seq pipeline version 3.5 [@ewels2020nf] implemented in Nextflow 21.10.6 [@di2017nextflow] using Docker 20.10.12 [@merkel2014docker] with the minimal command. In brief, lane-level reads were trimmed using Trim Galore 0.6.7 [@felix_krueger_2021_5127899] and aligned to the `r method_des` using STAR 2.7.9a [@dobin2013star]. `r spikein_method` Gene-level and transcript-level quantification was done by Salmon v1.5.2 [@patro2017salmon]. All analysis was performed using custom scripts in R version 4.1.1 using the DESeq2 v.1.32.0 framework [@love2014moderated].
+FASTQ files were generated using bcl2fastq (Illumina). To facilitate reproducible analysis, samples were processed using the publicly available nf-core/smRNAseq pipeline version 1.1.0 [@ewels2020nf] implemented in Nextflow 21.10.6 [@di2017nextflow] using Docker 20.10.12 [@merkel2014docker] with the minimal command. All analysis was performed using custom scripts in R version 4.1.1 using the DESeq2 v.1.32.0 framework [@love2014moderated].
 
-<!-- # Correlation -->
-
-```{r load, echo=FALSE, results="hide", warning=FALSE, message=FALSE}
-scaled_ct <- fread(FILE_scaled_ct)
-scaled_ct2 <- aggregate(x=scaled_ct[, c(-1,-2)], by=list(scaled_ct$gene_name), FUN=mean)
-colnames(scaled_ct2)[1] <- "Gene_symbol"
-```
-
-```{r correlation, echo=FALSE, results="asis", warning=FALSE, message=FALSE}
-rowvariance <- apply(scaled_ct2[,c(-1)], 1, var)
-
-corrmatrix <- scaled_ct2[,c(-1)][order(rowvariance, decreasing = TRUE), ]
-# fig <- heatmaply_cor(cor(corrmatrix[1:1000,], method="spearman"), width = Fig_width, height = Fig_height,
-#                      main = "Correlation of all genes",
-#                      key.title = "Correlation")
-fig <- heatmaply_cor(cor(scaled_ct[,c(-1,-2)]), width = Fig_width, height = Fig_height,
-                     main = "Correlation of all genes",
-                     key.title = "Correlation")
-fig
-```
-
-
-# Differential Gene Expression Analysis
+# Differential Expression Analysis
 
 ```{r saveobjects, echo=FALSE, results="hide", warning=FALSE, message=FALSE}
-save(DIR_base,DIR_project,DIR_salmon,
-     FILE_scaled_ct,FILE_tx2gene,
-     organism, 
+save(DIR_base,DIR_project,DIR_edger,
+     FILE_counts_hairpin, FILE_counts_mature,
+     FILE_CPM_hairpin, FILE_CPM_mature,
      Fig_width,Fig_height,
      CUTOFF_Quantification, CUTOFF_ADJP, spikein_ERCC,
-     samples, scaled_ct, scaled_ct2, file = paste0(DIR_project, "data.RData"))
+     samples, file = paste0(DIR_project, "data.RData"))
 
-rmarkdown::render('DGEA_1.Rmd', output_format = 'html_document',
-                  output_file = "DGEA_1.html")
+rmarkdown::render('DEA_miRNA_Tumor_vs_Healthy.Rmd', output_format = 'html_document',
+                  output_file = "DEA_miRNA_Tumor_vs_Healthy.html")
 ```
 
-* [](DGEA_1.html) 
+* [Tumor vs Healthy](DEA_miRNA_Tumor_vs_Healthy.html)
 
 
 # References
