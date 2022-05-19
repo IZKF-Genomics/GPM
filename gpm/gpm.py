@@ -45,7 +45,6 @@ class GPM():
     def copy_file_replace_vairalbles(self, original, target):
         with open(original) as f1:
             contents = [l.rstrip() for l in f1.readlines()]
-    
         modifier = {"FASTQ_DIR": self.fastq,
                     "GPM_TITLE_NAME": self.name,
                     "GPM_PROJECTNAME": self.name.replace("_", " "),
@@ -58,7 +57,7 @@ class GPM():
         for i,line in enumerate(contents):
             for old, new in modifier.items():
                 if old in line:
-                    contents[i] = line.replace(old, new)
+                    contents[i] = contents[i].replace(old, new)
 
         with open(target, "w") as f2:
             for line in contents:
