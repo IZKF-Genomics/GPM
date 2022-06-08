@@ -38,7 +38,7 @@ DIR_project <- paste0(DIR_base, "analysis/")
 source(paste0(DIR_project, "functions.R"))
 
 load(paste0(DIR_project, "data.RData"))
-load(SAMPLE_RData)
+load("SAMPLE_RData")
 
 if (organism == "hsapiens") {
   library(org.Hs.eg.db)
@@ -46,7 +46,7 @@ if (organism == "hsapiens") {
   library(org.Mm.eg.db)
 }
 
-Tag_this_analysis <- "M0_KO_vs_WT"
+Tag_this_analysis <- "FILETAG"
 File_stats <- paste0('DGEA_',Tag_this_analysis,'_genes_stats.csv')
 File_norm_expression <- paste0('DGEA_',Tag_this_analysis,'_norm_exp_quant.csv')
 File_xlsx_res <- paste0('DGEA_',Tag_this_analysis,'_res.xlsx')
