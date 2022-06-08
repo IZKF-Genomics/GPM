@@ -24,6 +24,20 @@ spikein_ERCC2method <- function(spikein_ERCC) {
 ## RNAseq
 ###########################################################
 
+add_DGEA <- function(description, tag, filtered_samples) {
+  scripts  <- readLines("DGEA_template.Rmd")
+  scripts  <- gsub(pattern = "TITLEDESCRIPTION", replace = description, x = scripts)
+  tmp_samplesheet <- paste0("DGEA_", tag, "_data.RData")
+  save(filtered_samples, file = tmp_samplesheet)
+  scripts  <- gsub(pattern = "SAMPLE_RData", replace = tmp_samplesheet, x = scripts)
+  filename <- paste0("DGEA_",tag)
+  writeLines(scripts, con=paste0(filename,".Rmd"))
+
+  rmarkdown::render(paste0(filename,".Rmd"), output_format = 'html_document',
+                    output_file = paste0(filename,".html"))
+  cat("* [", description, "](", paste0(filename,".html"),")\n")
+}
+
 process_dds_res <- function(tx2gene, dds) {
   ensembl_genes <- data.frame(gene_id=tx2gene$gene_id, gene_name=tx2gene$gene_name)
   ensembl_genes <- ensembl_genes[!duplicated(ensembl_genes), ]
@@ -248,7 +262,7 @@ RNAseq_maplot_ggplot2 <- function(deseq_output) {
   fig
 }
 
-RNAseq_heatmap_ggplot2 <- function(deseq_output, samples2) {
+RNAseq_heatmap_ggplot2 <- function(deseq_output) {
   margin_spacer <- function(x) {
     # where x is the column in your dataset
     left_length <- nchar(levels(factor(x)))[1]
@@ -264,13 +278,13 @@ RNAseq_heatmap_ggplot2 <- function(deseq_output, samples2) {
   heatmap_t <- scale(log10(top1000[,9:(dim(top1000)[2]-1)]+1))
   ord <- hclust( dist(heatmap_t, method = "euclidean"), method = "ward.D" )$order
 
-  heatmap_t <- cbind(top1000$gene_name, as.data.frame(heatmap_t))
-  colnames(heatmap_t)[1] <- "gene_name"
+  heatmap_t <- cbind(top1000$gene_id, as.data.frame(heatmap_t))
+  colnames(heatmap_t)[1] <- "gene_id"
   heatmap_t <- pivot_longer(heatmap_t, cols=2:(dim(heatmap_t)[2]), names_to="sample", values_to="Expression")
-  heatmap_t$gene_name <- factor( heatmap_t$gene_name, levels = top1000$gene_name[ord])
+  heatmap_t$gene_id <- factor( heatmap_t$gene_id, levels = top1000$gene_id[ord])
   heatmap_t$sample <- factor( heatmap_t$sample, levels = samples_names)
 
-  fig <- ggplot(heatmap_t, aes(sample, gene_name, fill=Expression)) + 
+  fig <- ggplot(heatmap_t, aes(sample, gene_id, fill=Expression)) + 
         geom_tile() + ggtitle("Heatmap of top 1000 genes ranked by padj") +
         ylab("Genes") + xlab("Samples") + scale_fill_viridis() + 
         theme(plot.title = element_text(hjust = 0.5),

@@ -137,9 +137,6 @@ fig <- heatmaply_cor(cor(scaled_ct[,c(-1,-2)]), width = Fig_width, height = Fig_
 fig
 ```
 
-
-# Differential Gene Expression Analysis
-
 ```{r saveobjects, echo=FALSE, results="hide", warning=FALSE, message=FALSE}
 save(DIR_base,DIR_project,DIR_salmon,
      FILE_scaled_ct,FILE_tx2gene,
@@ -147,9 +144,18 @@ save(DIR_base,DIR_project,DIR_salmon,
      Fig_width,Fig_height,
      CUTOFF_Quantification, CUTOFF_ADJP, spikein_ERCC,
      samples, scaled_ct, scaled_ct2, file = paste0(DIR_project, "data.RData"))
+```
 
-rmarkdown::render('DGEA_1.Rmd', output_format = 'html_document',
-                  output_file = "DGEA_1.html")
+# Differential Gene Expression Analysis
+
+
+```{r, echo=FALSE, results="asis", warning=FALSE, message=FALSE}
+# samples$group <- factor(labels_group, levels = c("control","knockdown"))
+# samples <- samples[samples$macrophages=="M0",]
+# samples$group <- factor(samples$genotype, levels = c("WT","KO"))
+add_DGEA <- function(description, tag, filtered_samples)
+# rmarkdown::render('DGEA_1.Rmd', output_format = 'html_document',
+#                   output_file = "DGEA_1.html")
 ```
 
 * [](DGEA_1.html) 
