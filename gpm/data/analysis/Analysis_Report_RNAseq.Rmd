@@ -22,6 +22,7 @@ library("readr")
 library(tidyr)
 library(data.table)
 options(warn = -1)
+options(knitr.duplicate.label = "allow")
 
 ################# File paths #####################################################
 DIR_base <- "GPM_DIR_BASE/"
@@ -125,6 +126,17 @@ save(DIR_base,DIR_project,DIR_salmon,
 ```
 
 # Differential Gene Expression Analysis
+
+```{r, echo=FALSE, results="hide", warning=FALSE, message=FALSE}
+description <- "All samples"
+filetag <- str_replace_all(description, " ", "_")
+samples$group <- paste(samples$genotype, samples$treat, sep = "_")
+add_DGEA(description, filetag, samples)
+rmarkdown::render(paste0('DGEA_',filetag,'.Rmd'), output_format = 'html_document',
+                  output_file = paste0('DGEA_',filetag,'.html'))
+```
+
+### [`r description`](`r paste0('DGEA_',filetag,'.html')`)
 
 ```{r, echo=FALSE, results="hide", warning=FALSE, message=FALSE}
 description <- "IL10 vs Control in WT"
