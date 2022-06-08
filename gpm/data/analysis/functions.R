@@ -27,15 +27,12 @@ spikein_ERCC2method <- function(spikein_ERCC) {
 add_DGEA <- function(description, tag, filtered_samples) {
   scripts  <- readLines("DGEA_template.Rmd")
   scripts  <- gsub(pattern = "TITLEDESCRIPTION", replace = description, x = scripts)
+  scripts  <- gsub(pattern = "FILETAG", replace = tag, x = scripts)
   tmp_samplesheet <- paste0("DGEA_", tag, "_data.RData")
   save(filtered_samples, file = tmp_samplesheet)
   scripts  <- gsub(pattern = "SAMPLE_RData", replace = tmp_samplesheet, x = scripts)
   filename <- paste0("DGEA_",tag)
   writeLines(scripts, con=paste0(filename,".Rmd"))
-
-  rmarkdown::render(paste0(filename,".Rmd"), output_format = 'html_document',
-                    output_file = paste0(filename,".html"))
-  cat("* [", description, "](", paste0(filename,".html"),")\n")
 }
 
 process_dds_res <- function(tx2gene, dds) {
