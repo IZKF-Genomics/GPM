@@ -63,7 +63,7 @@ rownames(samples) <- samples$sample
 ```
 
 
-![](https://www.medizin.rwth-aachen.de/global/show_document.asp?id=aaaaaaaaaawfyoe)
+![](RWTH_IZKF_GF_Logo_rgb.png)
 
 This document is the summary of the bioinformatic analysis done by Genomic Facility in IZKF, RWTH Aachen Uniklinik. Please contact us for any further discussion or collaboration. If these results are used in any poster or publications, please acknowledge our core facility with the text below:
 
@@ -137,6 +137,9 @@ rmarkdown::render(paste0('DGEA_',filetag,'.Rmd'), output_format = 'html_document
 ```
 
 ### [`r description`](`r paste0('DGEA_',filetag,'.html')`)
+
+### [Correlation analysis](DGEA_correlation_analysis.html)
+### [Genesets Comparisons](DGEA_genesets_comparisons.html)
 
 ```{r, echo=FALSE, results="hide", warning=FALSE, message=FALSE}
 description <- "IL10 vs Control in WT"

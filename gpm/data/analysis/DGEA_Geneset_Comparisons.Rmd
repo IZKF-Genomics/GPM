@@ -27,9 +27,9 @@ library(ggpubr)
 library(eulerr)
 options(warn = -1)
 
-source(paste0(DIR_project, "functions.R"))
+source("functions.R")
 
-load(paste0(DIR_project, "data.RData"))
+load("data.RData")
 
 Tag_this_analysis <- "DGEA_Geneset_Comparisons"
 # File_stats <- paste0('DE_',Tag_this_analysis,'_genes_stats.csv')
