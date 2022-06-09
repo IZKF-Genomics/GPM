@@ -1,0 +1,94 @@
+---
+title: "DGEA Geneset Comparisons"
+author:
+  - "Gan Lin, Genomics Facility, lgan@ukaachen.de"
+  - "Dr. Chao-Chung Kuo, Genomics Facility, ckuo@ukaachen.de"
+date: "Last compiled on `r format(Sys.time(), '%d %B, %Y')`"
+output:
+  html_document:
+    df_print: paged
+    toc: true
+    toc_float:
+      toc_collapsed: true
+    toc_depth: 3
+    number_sections: false
+    theme: lumen
+bibliography: references.bib
+---
+
+```{r, echo=FALSE, results="hide", warning=FALSE, message=FALSE}
+library(data.table)
+# require(dplyr)
+# require(DT)
+library(ggplot2)
+library(ggpubr)
+# library(pheatmap)
+# library(tidyr)
+library(eulerr)
+options(warn = -1)
+
+source(paste0(DIR_project, "functions.R"))
+
+load(paste0(DIR_project, "data.RData"))
+
+Tag_this_analysis <- "DGEA_Geneset_Comparisons"
+# File_stats <- paste0('DE_',Tag_this_analysis,'_genes_stats.csv')
+# File_norm_expression <- paste0('DE_',Tag_this_analysis,'normalized_expression_quantification.csv')
+
+extract_de_genes <- function(filename) {
+  degenes <- fread(filename)[, c("gene_name","padj")]
+  return(unique(unlist(degenes$gene_name[degenes$padj < CUTOFF_ADJP])))
+}
+
+generate_venn <- function(label1, label2) {
+  
+  genes <- list(
+            label1 = extract_de_genes(paste0("DGEA_", label1, "_genes_stats.csv")), 
+            label2 = extract_de_genes(paste0("DGEA_", label2, "_genes_stats.csv")))
+  # names(genes) <- c(gsub("_", "", label1), 
+  #                   gsub("_", "", label2))
+  names(genes) <- c(label1, label2)
+  plot(euler(genes), quantities = TRUE)
+}
+
+```
+
+### [Back to front page](Analysis_Report_RNAseq.html)
+
+If there is a need to modify the figures to fit your particular need (style or color), additional service for customized visualization is needed. The main focus of this report is to present the analysis result to the clients. Any requests beyond this purpose is regarded another service. 
+
+## WT in Ctrl
+
+```{r, echo=FALSE, results="asis", warning=FALSE, message=FALSE, dpi=600, fig.width=6, fig.height=4}
+generate_venn("IL10_vs_Control_in_WT", "LPS_vs_Control_in_WT")
+```
+
+## KO in Ctrl
+
+```{r, echo=FALSE, results="asis", warning=FALSE, message=FALSE, dpi=600, fig.width=6, fig.height=4}
+generate_venn("IL10_vs_Control_in_KO", "LPS_vs_Control_in_KO")
+```
+
+## IL10LPS in WT
+
+```{r, echo=FALSE, results="asis", warning=FALSE, message=FALSE, dpi=600, fig.width=6, fig.height=4}
+generate_venn("IL10LPS_vs_IL10_in_WT", "IL10LPS_vs_LPS_in_WT")
+```
+
+## IL10LPS in KO
+
+```{r, echo=FALSE, results="asis", warning=FALSE, message=FALSE, dpi=600, fig.width=6, fig.height=4}
+generate_venn("IL10LPS_vs_IL10_in_KO", "IL10LPS_vs_LPS_in_KO")
+```
+
+
+# References
+
+<div id="refs"></div>
+
+
+# R session information
+
+```{r, echo=FALSE, results='markup', warning=FALSE, message=TRUE}
+sessionInfo()
+```
