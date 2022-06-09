@@ -1,5 +1,5 @@
 ---
-title: "Gene Ontology Analysis for TITLEDESCRIPTION"
+title: "Gene Ontology Analysis"
 author:
   - "Gan Lin, Genomics Facility, lgan@ukaachen.de"
   - "Dr. Chao-Chung Kuo, Genomics Facility, ckuo@ukaachen.de"
@@ -18,7 +18,7 @@ bibliography: references.bib
 
 ```{r, echo=FALSE, results="hide", warning=FALSE, message=FALSE}
 Tag_this_analysis <- "GO"
-pvalueCutoff <- 0.05
+pvalueCutoff_GO <- 0.05
 
 load("data.RData")
 
@@ -71,7 +71,7 @@ Interpretation of gene lists is a key step in numerous biological data analysis 
 
 # Method
 
-For gene ontology analysis, R library gprofiler2[@kolberg2020gprofiler2] was used. Using gost function, correction_method = â€œfdrâ€ and significant=TRUE. To minimize the enrichment of gene ontologies based on a small set of genes, we used three conditions for significance assessment: false discovery rate (FDR) < `r pvalueCutoff`. We used Gene Ontology (GO or by branch GO\:MF, GO\:BP, GO\:CC), Kyoto Encyclopedia of Genes and Genomes (KEGG), WikiPathways (WP) as sources.
+For gene ontology analysis, R library gprofiler2[@kolberg2020gprofiler2] was used. Using gost function, correction_method = 'FDR' and significant=TRUE. To minimize the enrichment of gene ontologies based on a small set of genes, we used three conditions for significance assessment: false discovery rate (FDR) < `r pvalueCutoff_GO`. We used Gene Ontology (GO or by branch GO\:MF, GO\:BP, GO\:CC), Kyoto Encyclopedia of Genes and Genomes (KEGG), WikiPathways (WP) as sources.
 
 <!-- intersection size (intersection between gene set vs. a number of genes in a term) > 3; and precision (intersection size divided by gene set) >0.03 -->
 
@@ -81,15 +81,15 @@ run_GO <- function(label) {
   GENE_LIST <- paste0("DGEA_", label, "_genes_stats.csv")
   # reading in input from deseq2
   df = read.csv(GENE_LIST, header=TRUE)
-  df <- df[df$padj < pvalueCutoff,]
+  df <- df[df$padj < CUTOFF_ADJP,]
   # de_gene_list <- gsub("\\.[0-9]*$", "", df$gene_id[(df$padj < pvalueCutoff)])
-  up_gene_list <- gsub("\\.[0-9]*$", "", df$gene_id[(df$padj < pvalueCutoff)&(df$log2FoldChange>0)])
-  dn_gene_list <- gsub("\\.[0-9]*$", "", df$gene_id[(df$padj < pvalueCutoff)&(df$log2FoldChange<0)])
+  up_gene_list <- gsub("\\.[0-9]*$", "", df$gene_id[(df$padj < CUTOFF_ADJP)&(df$log2FoldChange>0)])
+  dn_gene_list <- gsub("\\.[0-9]*$", "", df$gene_id[(df$padj < CUTOFF_ADJP)&(df$log2FoldChange<0)])
   
   gostres <- gost(query = list("Down" = dn_gene_list,
                                "Up" = up_gene_list), 
                   multi_query = FALSE, evcodes = TRUE, 
-                  correction_method = "fdr", user_threshold=pvalueCutoff,
+                  correction_method = "fdr", user_threshold=pvalueCutoff_GO,
                   organism = organism, numeric_ns = "",
                   sources=c("GO", "KEGG", "WP"))
                   # sources=c("GO", "KEGG", "REAC", "MIRNA", "HP", "HPA", "WP"))
@@ -98,25 +98,114 @@ run_GO <- function(label) {
   # publish_gostplot(p1, highlight_terms = gostres_de$result$term_id)
   write.table(gostres$result[1:11], file = paste0(Tag_this_analysis, "_", label,"_res.csv"))
   return(gostres)
-  }
+}
+
+
+fnames <- list.files(pattern = "*genes_stats.csv")
+fnames <- fnames[fnames !="DGEA_All_samples_genes_stats.csv"]
+labels <- gsub("DGEA_", "", fnames)
+labels <- gsub("_genes_stats.csv", "", labels)
+
 ```
 
-# GO analysis among treatments {.tabset}
+<!-- # GO analysis among treatments {.tabset} -->
 
-## DNP20min_vs_Control_in_WT
+<!-- ```{r,echo=FALSE, results='asis', warning=FALSE, message=FALSE} -->
+<!-- for (lab in labels) { -->
+<!--   cat("\n## ",  lab, "\n") -->
+<!--   gostres <- run_GO(label=lab) -->
+<!--   gostplot(gostres, capped = FALSE, interactive = TRUE) -->
+<!--   cat("\n") -->
+<!-- } -->
+<!-- ``` -->
+
+# WT {.tabset}
+
+## IL10_vs_Control_in_WT
 
 ```{r, echo=FALSE, results='markup', warning=FALSE, message=FALSE}
-gostres <- run_GO(label="DNP20min_vs_Control_in_WT")
+gostres <- run_GO(label="IL10_vs_Control_in_WT")
 gostplot(gostres, capped = FALSE, interactive = TRUE)
 ```
 
+## LPS_vs_Control_in_WT
+
+```{r, echo=FALSE, results='markup', warning=FALSE, message=FALSE}
+gostres <- run_GO(label="LPS_vs_Control_in_WT")
+gostplot(gostres, capped = FALSE, interactive = TRUE)
+```
+
+## IL10LPS_vs_LPS_in_WT
+
+```{r, echo=FALSE, results='markup', warning=FALSE, message=FALSE}
+gostres <- run_GO(label="IL10LPS_vs_LPS_in_WT")
+gostplot(gostres, capped = FALSE, interactive = TRUE)
+```
+
+## IL10LPS_vs_IL10_in_WT
+
+```{r, echo=FALSE, results='markup', warning=FALSE, message=FALSE}
+gostres <- run_GO(label="IL10LPS_vs_IL10_in_WT")
+gostplot(gostres, capped = FALSE, interactive = TRUE)
+```
+
+# KO {.tabset}
+
+## IL10_vs_Control_in_KO
+
+```{r, echo=FALSE, results='markup', warning=FALSE, message=FALSE}
+gostres <- run_GO(label="IL10_vs_Control_in_KO")
+gostplot(gostres, capped = FALSE, interactive = TRUE)
+```
+
+## LPS_vs_Control_in_KO
+
+```{r, echo=FALSE, results='markup', warning=FALSE, message=FALSE}
+gostres <- run_GO(label="LPS_vs_Control_in_KO")
+gostplot(gostres, capped = FALSE, interactive = TRUE)
+```
+
+## IL10LPS_vs_LPS_in_KO
+
+```{r, echo=FALSE, results='markup', warning=FALSE, message=FALSE}
+gostres <- run_GO(label="IL10LPS_vs_LPS_in_KO")
+gostplot(gostres, capped = FALSE, interactive = TRUE)
+```
+
+## IL10LPS_vs_IL10_in_KO
+
+```{r, echo=FALSE, results='markup', warning=FALSE, message=FALSE}
+gostres <- run_GO(label="IL10LPS_vs_IL10_in_KO")
+gostplot(gostres, capped = FALSE, interactive = TRUE)
+```
 
 # GO analysis between genotypes {.tabset}
 
-## KO_vs_WT_under_Control
+## KO_vs_WT_in_Control
 
 ```{r, echo=FALSE, results='markup', warning=FALSE, message=FALSE}
-gostres <- run_GO(label="KO_vs_WT_under_Control")
+gostres <- run_GO(label="KO_vs_WT_in_Control")
+gostplot(gostres, capped = FALSE, interactive = TRUE)
+```
+
+## KO_vs_WT_in_IL10
+
+```{r, echo=FALSE, results='markup', warning=FALSE, message=FALSE}
+gostres <- run_GO(label="KO_vs_WT_in_IL10")
+gostplot(gostres, capped = FALSE, interactive = TRUE)
+```
+
+## KO_vs_WT_in_IL10LPS
+
+```{r, echo=FALSE, results='markup', warning=FALSE, message=FALSE}
+gostres <- run_GO(label="KO_vs_WT_in_IL10LPS")
+gostplot(gostres, capped = FALSE, interactive = TRUE)
+```
+
+## KO_vs_WT_in_LPS
+
+```{r, echo=FALSE, results='markup', warning=FALSE, message=FALSE}
+gostres <- run_GO(label="KO_vs_WT_in_LPS")
 gostplot(gostres, capped = FALSE, interactive = TRUE)
 ```
 

@@ -153,6 +153,10 @@ rmarkdown::render(paste0('DGEA_',filetag,'.Rmd'), output_format = 'html_document
 
 ### [`r description`](`r paste0('DGEA_',filetag,'.html')`)
 
+<!-- # GO Analysis
+
+### [GO Analyses](GO_analyses.html)
+### [GO Integration](GO_integration.html) -->
 
 # References
 
