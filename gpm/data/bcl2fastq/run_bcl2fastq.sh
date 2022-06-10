@@ -24,5 +24,15 @@ bcl2fastq \
   # --loading-threads 2 \
   # --writing-threads 2 \
   # Other amazing parameter
-  
+
+###### Running FASTQC ######################################
+mkdir -p ./fastqc
+for fastq in $(ls */*.fastq.gz)
+do
+    echo "Running FASTQC on ${fastq}"
+    SAMPLE=`basename $fastq`
+    fastqc -t 90 ${fastq} -o ./fastqc
+done
+
+###### Running MultiQC #####################################
 multiqc -f .
