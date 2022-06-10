@@ -27,12 +27,7 @@ bcl2fastq \
 
 ###### Running FASTQC ######################################
 mkdir -p ./fastqc
-for fastq in $(ls */*.fastq.gz)
-do
-    echo "Running FASTQC on ${fastq}"
-    SAMPLE=`basename $fastq`
-    fastqc -t 90 ${fastq} -o ./fastqc
-done
+find * -maxdepth 1 -name "*.fastq.gz" | parallel -j 30 "fastqc {} -o ./fastqc"
 
 ###### Running MultiQC #####################################
 multiqc -f .
