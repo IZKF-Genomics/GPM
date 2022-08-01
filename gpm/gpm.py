@@ -43,8 +43,8 @@ class GPM():
                         self.structure.append(ll)
 
     def copy_file_replace_vairalbles(self, original, target):
-        with open(original, 'r') as f1:
-            contents = [l.rstrip() for l in f1.readlines()]
+        with open(original) as f1:
+            contents = [l for l in f1.readlines()]
         modifier = {"FASTQ_DIR": self.fastq,
                     "GPM_TITLE_NAME": self.name,
                     "GPM_PROJECTNAME": self.name.replace("_", " "),
