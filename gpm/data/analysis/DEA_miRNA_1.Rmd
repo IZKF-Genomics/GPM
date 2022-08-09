@@ -59,7 +59,7 @@ samples$group <- factor(labels_group, levels = c("control","knockdown"))
 samples2 <- samples[!(is.na(samples$group)),]
 ```
 
-### [Back to front page](Analysis_Report_RNAseq.html)
+### [Back to front page](Analysis_Report_miRNAseq.html)
 
 If there is a need to modify the figures to fit your particular need (style or color), additional service for customized visualization is needed. The main focus of this report is to present the analysis result to the clients. Any requests beyond this purpose is regarded another service. 
 
@@ -158,7 +158,7 @@ saveWorkbook(wb, file = File_xlsx_res, overwrite = TRUE)
 
 # Download statistics
 
-* Download xlsx file for all results: [`r File_xlsx_res`](`r File_xlsx_res`) (However, CSV file is more recommended for robust analysis.)
+* Download xlsx file for all results: [`r File_xlsx_res`](`r File_xlsx_res`)
 <!-- * Download CSV file for the statistics of all valid genes in differential expression analysis (ENSEMBL ID, Gene Symbol and Gene name are included): [`r File_stats`](`r File_stats`)
 * Download CSV file for the expression quantification of all genes: [`r File_norm_expression`](`r File_norm_expression`) -->
 
