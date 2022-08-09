@@ -13,7 +13,7 @@
 # gpm samplesheet -st 'forward' samplesheet.csv FASTQ_DIR
 
 nextflow run nf-core/smrnaseq -profile docker \
-     --input 'FASTQ_DIR/*.fastq.gz' \
+     --input samplesheet.csv \
      --genome gencode_hg38 --mirna_gtf /data/genomes/hg38/miRNA/hsa.gff3 --mature /data/genomes/hg38/miRNA/mature.fa.gz --hairpin /data/genomes/hg38/miRNA/hairpin.fa.gz
 
 # Options for --genome:
