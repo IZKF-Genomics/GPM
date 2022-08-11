@@ -1,9 +1,9 @@
 
-version_info = (0,2,5)
+version_info = (0,2,6)
 version = ".".join([str(c) for c in version_info])
 
 APPLICATIONS = ["RNAseq", "tRNAseq", "mRNAseq", "3mRNAseq",
-                "ChIPseq", "ATACseq", "Ampseq",
+                "ChIPseq", "ATACseq", "ampliseq",
                 "scRNAseq", "miRNAseq",
                 "BWGS", "WES"]
 
