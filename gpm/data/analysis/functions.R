@@ -345,22 +345,25 @@ table_sig_genes <- function(res_sig, rowname=F) {
 ## miRNAseq
 ###########################################################
 
-miRNAseq_deseq2 <- function(FILE_counts_mature, FILE_counts_hairpin, samples2) {
+miRNAseq_deseq2 <- function(FILE_counts_mature, FILE_counts_hairpin, samples2, sizeFactorSpikeIn=FALSE) {
   df_counts1 <- t(read.csv(FILE_counts_mature, row.names = 1, header=T, sep=","))[, samples2$sample]
   df_counts2 <- t(read.csv(FILE_counts_hairpin, row.names = 1, header=T, sep=","))[, samples2$sample]
   # df_counts <- df_counts1
   df_counts <- rbind(df_counts1, df_counts2)
   dds <- DESeqDataSetFromMatrix(countData = df_counts, colData = samples2, design = ~group)
-  # ERCC normalization #####################
-  # if (spikein==TRUE) {
-  #   dds <- estimateSizeFactors_ERCC(dds)
-  # }
-  ##########################################
+  ## With QIAseq miRNA-Seq Spike-in
+  if (sizeFactorSpikeIn) {
+    sizeFactors(dds) <- sizeFactorSpikeIn
+  } #################
   dds <- DESeq(dds)
   res <- as.data.frame(results(dds))
   res <- cbind(data.frame(gene_name=rownames(res)), res)
   res$sig <- "Non-sig."
   res$sig[res$padj < CUTOFF_ADJP] <- "Sig."
+  ## With QIAseq miRNA-Seq Spike-in
+  if (sizeFactorSpikeIn) {
+    res$sig[grep("UniSP",res$gene_name)] <- "Spikein"
+  } #################
   norm_counts <- counts(dds, normalized=TRUE)
   res_combined <- merge(res, norm_counts, by.x= "row.names", by.y="row.names", all.y=T)
   colnames(res_combined)[1] <- "gene_name"
@@ -428,7 +431,7 @@ miRNAseq_maplot_plotly <- function(res_combined) {
 miRNAseq_heatmap_plotly <- function(res_combined) {
   res_reorder <- res_combined[order(res_combined$padj, decreasing = FALSE), ]
   res_reorder <- res_reorder[1:500,]
-  heatmap_t <- log10(res_reorder[,9:(dim(res_reorder)[2])]+1)
+  heatmap_t <- log10(res_reorder[,10:(dim(res_reorder)[2])]+1)
   rownames(heatmap_t) <- c()
   # heatmaply(heatmap_t, main = "Heatmap of miRNAs ranked by adj. p-value",
   #           method = "plotly")
@@ -498,8 +501,8 @@ miRNAseq_heatmap_ggplot2 <- function(res_miRNA){
 
   res_reorder <- res_miRNA$res_combined[order(res_miRNA$res_combined$padj, decreasing = FALSE), ]
   res_reorder <- res_reorder[1:500,]
-  samples_names <- colnames(res_reorder)[9:(dim(res_reorder)[2])]
-  heatmap_t <- scale(log10(res_reorder[,9:(dim(res_reorder)[2])]+1))
+  samples_names <- colnames(res_reorder)[10:(dim(res_reorder)[2])]
+  heatmap_t <- scale(log10(res_reorder[,10:(dim(res_reorder)[2])]+1))
   ord <- hclust( dist(heatmap_t, method = "euclidean"), method = "ward.D" )$order
 
   heatmap_t <- cbind(res_reorder$gene_name, as.data.frame(heatmap_t))
