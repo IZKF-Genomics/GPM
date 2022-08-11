@@ -305,8 +305,8 @@ def htpasswd_create_user(target_dir, url, username, app):
     click.echo()
     click.echo(click.style("Create new user for export directory:", fg='bright_green'))
     click.echo("Directory:\t" + target_dir)
-    if "RNAseq" in app:
-        click.echo("URL:\t" + url + "/3_Reports/analysis/Analysis_Report_RNAseq.html")
+    if app:
+        click.echo("URL:\t" + url + "/3_Reports/analysis/Analysis_Report_" + app + ".html")
     else:
         click.echo("URL:\t" + url)
     click.echo("user:\t" + username)
