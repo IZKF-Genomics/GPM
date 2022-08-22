@@ -75,7 +75,10 @@ class GPM():
                         target = os.path.join(self.base, s[3], os.path.basename(s[2]))
                     else:
                         target = os.path.join(self.base, s[3], s[4])
-                    self.copy_file_replace_vairalbles(original, target)
+                    if original.endswith('.png'):
+                        shutil.copyfile(original, target)
+                    else:
+                        self.copy_file_replace_vairalbles(original, target)
 
                 
             else: # directory
