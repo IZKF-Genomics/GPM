@@ -48,15 +48,16 @@ process_dds_res <- function(tx2gene, dds) {
   res_combined <- res_combined[complete.cases(res_combined), ]
   res_combined$sig <- "Non-sig."
   res_combined$sig[res_combined$padj < CUTOFF_ADJP] <- "Sig. genes"
-  sel_ERCC <- str_detect(res_combined$gene_id, "^ERCC-*gene")
+  sel_ERCC <- str_detect(res_combined$gene_id, "^ERCC-0*")
   res_combined$sig[sel_ERCC] <- "Spike in"
-  res_combined <- res_combined[!sel_ERCC,]
+  res_noERCC <- res_combined[!sel_ERCC,]
   
   res_combined_sig <- res_combined[res_combined$padj < CUTOFF_ADJP,]
 
   output <- list(norm_count=normalized_counts,
-                 deseq2res=res_combined,
-                 deseq2res_sig=res_combined_sig
+                 deseq2res=res_noERCC,
+                 deseq2res_sig=res_combined_sig,
+                 res_combined_ERCC=res_combined
   )
   return(output)
 }
@@ -201,13 +202,12 @@ RNAseq_maplot_plotly_ERCC <- function(res_combined_ERCC) {
 }
 
 RNAseq_heatmap_plotly <- function(deseq2res) {
-  top1000 <- deseq2res[order(deseq2res$padj, decreasing = FALSE), ]
-  top1000 <- top1000[1:1000,]
+  sig_genes <- deseq2res[deseq2res$sig == "Sig. genes", ]
   
-  heatmap_t <- log10(top1000[,9:(dim(top1000)[2]-1)]+1)
+  heatmap_t <- log10(sig_genes[,9:(dim(sig_genes)[2]-1)]+1)
   rownames(heatmap_t) <- c()
   heatmaply(heatmap_t, main = "Heatmap of top 1000 genes ranked by adj. p-value",
-            method = "plotly",labRow=top1000$gene_name,
+            method = "plotly",labRow=sig_genes$gene_name,
             xlab = "Samples", ylab = "Genes", width = Fig_width, height = Fig_height+200,
             showticklabels = c(TRUE, FALSE), show_dendrogram = c(FALSE, TRUE),
             key.title = "Scaled\nexpression\nin log10 scale",
@@ -269,21 +269,20 @@ RNAseq_heatmap_ggplot2 <- function(deseq_output) {
     else
       return(0)
   }
-  top1000 <- deseq_output$deseq2res[order(deseq_output$deseq2res$padj, decreasing = FALSE), ]
-  top1000 <- top1000[1:1000,]
-  samples_names <- colnames(top1000)[9:(dim(top1000)[2]-1)]
-  heatmap_t <- scale(log10(top1000[,9:(dim(top1000)[2]-1)]+1))
+  sig_genes <- deseq_output$deseq2res[deseq_output$deseq2res$sig == "Sig. genes", ]
+  samples_names <- colnames(sig_genes)[9:(dim(sig_genes)[2]-1)]
+  heatmap_t <- scale(log10(sig_genes[,9:(dim(sig_genes)[2]-1)]+1))
   ord <- hclust( dist(heatmap_t, method = "euclidean"), method = "ward.D" )$order
 
-  heatmap_t <- cbind(top1000$gene_id, as.data.frame(heatmap_t))
+  heatmap_t <- cbind(sig_genes$gene_id, as.data.frame(heatmap_t))
   colnames(heatmap_t)[1] <- "gene_id"
   heatmap_t <- pivot_longer(heatmap_t, cols=2:(dim(heatmap_t)[2]), names_to="sample", values_to="Expression")
-  heatmap_t$gene_id <- factor( heatmap_t$gene_id, levels = top1000$gene_id[ord])
+  heatmap_t$gene_id <- factor( heatmap_t$gene_id, levels = sig_genes$gene_id[ord])
   heatmap_t$sample <- factor( heatmap_t$sample, levels = samples_names)
 
-  fig <- ggplot(heatmap_t, aes(sample, gene_id, fill=Expression)) + 
-        geom_tile() + ggtitle("Heatmap of top 1000 genes ranked by padj") +
-        ylab("Genes") + xlab("Samples") + scale_fill_viridis() + 
+  fig <- ggplot(heatmap_t, aes(sample, gene_id, fill=Expression)) +
+        geom_tile() + ggtitle("Heatmap of sig. DE genes") +
+        ylab("Genes") + xlab("Samples") + scale_fill_viridis() +
         theme(plot.title = element_text(hjust = 0.5),
               axis.ticks.y = element_blank(),
               axis.text.y = element_blank(),
