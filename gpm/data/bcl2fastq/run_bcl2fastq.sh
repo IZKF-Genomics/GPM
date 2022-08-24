@@ -30,4 +30,5 @@ mkdir -p ./fastqc
 find * -maxdepth 1 -name "*.fastq.gz" | parallel -j 30 "fastqc {} -o ./fastqc"
 
 ###### Running MultiQC #####################################
-multiqc -f .
+mkdir -p multiqc
+multiqc -f . -o ./multiqc
