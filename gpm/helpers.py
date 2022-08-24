@@ -264,7 +264,7 @@ def tardir(path, tar_name):
     # archive and compress
     # tar -cf - "${SOURCE}" | pv -p -s "${SOURCE_SIZE}k" | xz -6 --threads=6 -c -
 
-    cmd = " ".join(["tar","-hcf",tar_name,path])
+    cmd = " ".join(["tar","-hcf",tar_name,"--absolute-names", path])
     returned_value = subprocess.call(cmd, shell=True)
 
 def tar_exports(export_dir, nobehaviour):
