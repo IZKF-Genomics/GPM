@@ -156,7 +156,8 @@ def analysis(config_file):
 @click.option('-analysis', default="", show_default=True, help="Define the source of analysis folder for soft linking.")
 @click.option('-bcl', default="", show_default=True, help="Define the source of BCL folder for soft linking.")
 @click.option('-fastq', default="", show_default=True, help="Define the source of FASTQ folder for soft linking.")
-def export(export_dir, config, user, analysis, bcl, fastq):
+@click.option('-multiqc', default="", show_default=True, help="Define the source of the multiqc report for soft linking.")
+def export(export_dir, config, user, analysis, bcl, fastq, multiqc):
     """Export the raw data, processed data and reports to the export directory by creating soft links without moving around the big files."""
     if os.path.isfile(config):
         gpm = GPM(load_config=config, seqdate=None, application=None, 
@@ -180,7 +181,8 @@ def export(export_dir, config, user, analysis, bcl, fastq):
             os.symlink(bcl.rstrip("/"), os.path.join(export_dir, "BCL"), target_is_directory=True)
         if fastq:
             os.symlink(fastq.rstrip("/"), os.path.join(export_dir, "FASTQ"), target_is_directory=True)
-
+    if multiqc:
+        os.symlink(multiqc.rstrip("/"), os.path.join(export_dir, "multiqc"), target_is_directory=True)
     
 
 ###################################################################
