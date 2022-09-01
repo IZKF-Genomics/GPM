@@ -98,8 +98,8 @@ def init(fastq, name):
     piname = split_name[2].capitalize()
     institute = split_name[3]
     gpm = GPM(seqdate=seqdate, application=app, 
-                      provider=provider, piname=piname, institute=institute,
-                      fastq=fastq, name=name)
+              provider=provider, piname=piname, institute=institute,
+              fastq=fastq, name=name, load_config=False)
     
     gpm.show_config()
     gpm.show_tree()

@@ -1,15 +1,6 @@
 ################## test script ##################
 # nextflow run nf-core/atacseq -profile test,docker
 
-################## ~/.nextflow/config ##################
-# Please add the following lines in your ~/.nextflow/config
-# params {
-#   config_profile_description = 'Nextgen3 IZKF'
-#   config_profile_contact = 'Full name'
-#   config_profile_url = 'http://genomics.rwth-aachen.de'
-#   email = 'xxxx@ukaachen.de'
-# }
-
 nextflow run nf-core/atacseq -profile docker \
      --input design.csv \
      --single_end \

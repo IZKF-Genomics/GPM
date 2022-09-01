@@ -2,14 +2,6 @@
 # nextflow run nf-core/bacass -profile test,docker
 # https://nf-co.re/bacass/2.0.0/usage
 
-################## ~/.nextflow/config ##################
-# params {
-#   config_profile_description = 'Nextgen3 IZKF'
-#   config_profile_contact = 'Chao-Chung Kuo'
-#   config_profile_url = 'http://genomics.rwth-aachen.de'
-#   email = 'ckuo@ukaachen.de'
-# }
-
 nextflow run nf-core/bacass -r 2.0.0 -profile docker \
      --input samplesheet.csv
 

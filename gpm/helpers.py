@@ -347,14 +347,16 @@ def get_gpmdata_path():
 
 def get_gpmconfig(section, item):
     # Return the content in the config file. The user defined config has higher priority than the default config.
-    data_config_file_name = os.path.join(get_gpmdata_path(), "gpm.config")
+    gpmconfig = os.path.join(get_gpmdata_path(), "gpm.config")
     config = ConfigParser()
-    config.read_file(codecs.open(data_config_file_name, "r", "utf8"))
-    config.read_file(codecs.open(data_config_file_name + ".user", "r", "utf8"))
+    config.read_file(codecs.open(gpmconfig, "r", "utf8"))
+    gpmconfig = os.path.join(get_gpmdata_path(), "gpm.config.user")
+    if os.path.exists(gpmconfig):
+        config.read_file(codecs.open(gpmconfig, "r", "utf8"))
     return(config[section][item])
 
 def get_config(config_name):
-    cfg_path = os.path.join(get_gpmdata_path, config_name+".user")
+    cfg_path = os.path.join(get_gpmdata_path(), config_name+".user")
     if not os.path.exists(cfg_path):
-        cfg_path = os.path.join(get_gpmdata_path, config_name)
+        cfg_path = os.path.join(get_gpmdata_path(), config_name)
     return(cfg_path)

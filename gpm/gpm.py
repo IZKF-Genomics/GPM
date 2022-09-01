@@ -38,7 +38,7 @@ class GPM():
                 if line.startswith("#"): continue
                 else:
                     if "GPMDATA" in line:
-                        line = line.replace("GPMDATA", get_gpmdata_path)
+                        line = line.replace("GPMDATA", get_gpmdata_path())
                     ll = [l.strip() for l in line.split(";")]
                     if len(ll) == 5:
                         self.structure.append(ll)
@@ -46,6 +46,10 @@ class GPM():
     def copy_file_replace_vairalbles(self, original, target):
         with open(original, "rb") as f1:
             contents = [l.decode('utf8', 'ignore').rstrip() for l in f1.readlines()]
+
+        authors = get_gpmconfig("Rmd", "authors").strip("[]")
+        authors = authors.split(',\n')
+
         modifier = {"FASTQ_DIR": self.fastq,
                     "GPM_TITLE_NAME": self.name,
                     "GPM_PROJECTNAME": self.name.replace("_", " "),
@@ -54,7 +58,7 @@ class GPM():
                     "GPM_URL_2_Processed_data": os.path.join(get_gpmconfig("GPM","EXPORT_URL"), self.name, "2_Processed_data"),
                     "GPM_URL_3_Reports": os.path.join(get_gpmconfig("GPM","EXPORT_URL"), self.name, "3_Reports"),
                     "GPM_URL_TAR": os.path.join(get_gpmconfig("GPM","EXPORT_URL"), self.name, "compressed_tars"),
-                    "GPM_AUTHORS": "\n".join('  - /"'+ ppl+'/"' for ppl in get_gpmconfig("Rmd", "authors"))
+                    "GPM_AUTHORS": "\n".join('  - '+ ppl for ppl in authors)
                     }
 
         for i,line in enumerate(contents):
