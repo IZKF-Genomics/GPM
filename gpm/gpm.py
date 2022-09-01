@@ -2,12 +2,12 @@ import os
 import configparser
 from datetime import date, datetime
 import getpass
-from gpm import version, APPLICATIONS, EXPORT_URL, GROUPNAME
+from gpm import version
 import sys
 import shutil
 import click
 import glob
-from .helpers import DisplayablePath, tardir, htpasswd_create_user
+from .helpers import DisplayablePath, tardir, htpasswd_create_user, get_gpmconfig, get_gpmdata_path, get_config
 from pathlib import Path
 
 
@@ -24,7 +24,7 @@ class GPM():
             self.institute = institute
             self.fastq = fastq
             self.base = os.path.join(os.getcwd(), self.name)
-            assert application in APPLICATIONS
+            assert application in get_gpmconfig("GPM","APPLICATIONS")
             self.app = application
             self.config_path = os.path.join(self.base, "config.ini")
             self.load_structure()
@@ -32,12 +32,13 @@ class GPM():
             self.write_project_config()
         
     def load_structure(self):
-        data_dir = os.path.join(os.path.dirname(__file__), "data")
-        cfg_path = os.path.join(data_dir, "structure.config")
+        cfg_path = get_config("files.config")
         with open(cfg_path) as config:
             for line in config:
                 if line.startswith("#"): continue
                 else:
+                    if "GPMDATA" in line:
+                        line = line.replace("GPMDATA", get_gpmdata_path)
                     ll = [l.strip() for l in line.split(";")]
                     if len(ll) == 5:
                         self.structure.append(ll)
@@ -49,10 +50,12 @@ class GPM():
                     "GPM_TITLE_NAME": self.name,
                     "GPM_PROJECTNAME": self.name.replace("_", " "),
                     "GPM_DIR_BASE": self.base,
-                    "GPM_URL_1_Raw_data": os.path.join(EXPORT_URL, self.name, "1_Raw_data"),
-                    "GPM_URL_2_Processed_data": os.path.join(EXPORT_URL, self.name, "2_Processed_data"),
-                    "GPM_URL_3_Reports": os.path.join(EXPORT_URL, self.name, "3_Reports"),
-                    "GPM_URL_TAR": os.path.join(EXPORT_URL, self.name, "compressed_tars")}
+                    "GPM_URL_1_Raw_data": os.path.join(get_gpmconfig("GPM","EXPORT_URL"), self.name, "1_Raw_data"),
+                    "GPM_URL_2_Processed_data": os.path.join(get_gpmconfig("GPM","EXPORT_URL"), self.name, "2_Processed_data"),
+                    "GPM_URL_3_Reports": os.path.join(get_gpmconfig("GPM","EXPORT_URL"), self.name, "3_Reports"),
+                    "GPM_URL_TAR": os.path.join(get_gpmconfig("GPM","EXPORT_URL"), self.name, "compressed_tars"),
+                    "GPM_AUTHORS": "\n".join('  - /"'+ ppl+'/"' for ppl in get_gpmconfig("Rmd", "authors"))
+                    }
 
         for i,line in enumerate(contents):
             for old, new in modifier.items():
@@ -168,8 +171,8 @@ class GPM():
     def load_export_config(self):
         convert_list = {"GPM_FASTQ": self.fastq}
         self.export_structure = []
-        data_dir = os.path.join(os.path.dirname(__file__), "data")
-        cfg_path = os.path.join(data_dir, "export", "export.config")
+        
+        cfg_path = get_config("export.config")
         with open(cfg_path) as config:
             for line in config:
                 if line.startswith("#"): continue
@@ -226,12 +229,12 @@ class GPM():
                         os.symlink(matching_file, target, target_is_directory=False)
         
     def create_user(self, export_dir):
-        export_URL = os.path.join(EXPORT_URL, self.name)
+        export_URL = os.path.join(get_gpmconfig("GPM","EXPORT_URL"), self.name)
         htpasswd_create_user(export_dir, export_URL, self.provider.lower(), self.app)
 
     def add_htaccess(self, export_dir):
-        data_dir = os.path.join(os.path.dirname(__file__), "data")
-        htaccess_path = os.path.join(data_dir, "export", "htaccess")
+        # data_dir = os.path.join(os.path.dirname(__file__), "data")
+        htaccess_path = get_config("htaccess")
         self.copy_file_replace_vairalbles(htaccess_path, os.path.join(export_dir, ".htaccess"))
         # shutil.chown(os.path.join(export_dir, ".htaccess"), group=GROUPNAME)
 

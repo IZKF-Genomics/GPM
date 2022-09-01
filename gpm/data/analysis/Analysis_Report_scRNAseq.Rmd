@@ -1,7 +1,7 @@
 ---
 title: "220211 Kalmer Koschmieder MedIV scRNAseq"
 author:
-  - "Lin Gan, Genomics Core Facility, lgan@ukaachen.de"
+  GPM_AUTHORS
 date: "Last compiled on `r format(Sys.time(), '%d %B, %Y')`"
 output:
   html_document:

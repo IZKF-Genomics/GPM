@@ -8,6 +8,8 @@ import tarfile
 import subprocess
 import random
 import string
+from configparser import ConfigParser
+import codecs
 
 class DisplayablePath(object):
     display_filename_prefix_middle = '├──'
@@ -325,8 +327,8 @@ def export_empty_folder(export_URL, export_dir, config, user):
     if not os.path.exists(export_dir):
         os.makedirs(export_dir)
     # Add htaccess
-    data_dir = os.path.join(os.path.dirname(__file__), "data")
-    htaccess_path = os.path.join(data_dir, "export", "htaccess")
+    # data_dir = os.path.join(os.path.dirname(__file__), "data")
+    htaccess_path = get_config("htaccess")
     with open(htaccess_path) as f1:
         contents = [l.rstrip() for l in f1.readlines()]
     for i,line in enumerate(contents):
@@ -339,3 +341,20 @@ def export_empty_folder(export_URL, export_dir, config, user):
     # Create user
     htpasswd_create_user(export_dir, os.path.join(export_URL, os.path.basename(export_dir)), 
                          user.lower(), "customized")
+
+def get_gpmdata_path():
+    return os.path.expanduser(os.getenv("GPMDATA", os.path.join(os.getenv("HOME"), "gpmdata")))
+
+def get_gpmconfig(section, item):
+    # Return the content in the config file. The user defined config has higher priority than the default config.
+    data_config_file_name = os.path.join(get_gpmdata_path(), "gpm.config")
+    config = ConfigParser()
+    config.read_file(codecs.open(data_config_file_name, "r", "utf8"))
+    config.read_file(codecs.open(data_config_file_name + ".user", "r", "utf8"))
+    return(config[section][item])
+
+def get_config(config_name):
+    cfg_path = os.path.join(get_gpmdata_path, config_name+".user")
+    if not os.path.exists(cfg_path):
+        cfg_path = os.path.join(get_gpmdata_path, config_name)
+    return(cfg_path)

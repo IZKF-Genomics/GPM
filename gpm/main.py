@@ -4,8 +4,8 @@ import click
 import os
 # import fnmatch
 from .gpm import GPM
-from . import version, APPLICATIONS, EXPORT_URL
-from .helpers import generate_samples, write_file_run_bcl2fastq, write_file_run_cellranger_mkfastq, copyfromdata, show_tree, move_igv, tar_exports, export_empty_folder
+from . import version
+from .helpers import generate_samples, write_file_run_bcl2fastq, write_file_run_cellranger_mkfastq, copyfromdata, show_tree, move_igv, tar_exports, export_empty_folder, get_gpmconfig, get_gpmdata_path
 # from pathlib import Path
 import datetime
 # import collections
@@ -13,7 +13,7 @@ import glob
 import subprocess
 
 helps = {"raw": 'Enter the path to the directory for the BCL raw data, e.g. 210903_NB501289_0495_AHLLHTBGXJ',
-         "app": "Choose the application ("+" ".join(APPLICATIONS)+")",
+         "app": "Choose the application ("+" ".join(get_gpmconfig("GPM","APPLICATIONS"))+")",
          "name": "Enter the name of the new project in the format of YYMMDD_ProviderSurname_PISurname_Institute_Application",
          "base": "Define the base directory of the project",
          "demultiplex_output": "Define the output directory for bcl2fastq. This folder should have the same name as run folder.",
@@ -89,8 +89,8 @@ def init(fastq, name):
         sys.exit()
     # app
     app = split_name[4]
-    if app not in APPLICATIONS:
-        click.echo("Please type exactly the app name in the list: "+" ".join(APPLICATIONS))
+    if app not in get_gpmconfig("GPM","APPLICATIONS"):
+        click.echo("Please type exactly the app name in the list: "+" ".join(get_gpmconfig("GPM","APPLICATIONS")))
         sys.exit()
     
     # surnames
@@ -166,7 +166,7 @@ def export(export_dir, config, user, analysis, bcl, fastq, multiqc):
         gpm.add_htaccess(export_dir)
         gpm.create_user(export_dir)
     else:
-        export_empty_folder(EXPORT_URL, export_dir, config, user)
+        export_empty_folder(get_gpmconfig("GPM","EXPORT_URL"), export_dir, config, user)
     if analysis:
         # if not os.path.exists(os.path.join(export_dir,"analysis")):
         #     os.makedirs(os.path.join(export_dir,"analysis"))
@@ -207,11 +207,11 @@ def tar_export(export_dir, no):
 @click.pass_context
 def clean(ctx, targetfolder, no):
     """Clean the temporary files and folders in target folders which shouldn't be archived or backup, such as *fastq.gz, nf-core work folder and result folder."""
-    tmp_patterns = ["*.fastq.gz",
-                    "*/*.fastq.gz",
-                    "nfcore/work"]
+    # tmp_patterns = ["*.fastq.gz",
+    #                 "*/*.fastq.gz",
+    #                 "nfcore/work"]
     def clear_a_folder(target):
-        for p in tmp_patterns:
+        for p in get_gpmconfig("Clean","patterns"):
             target_pattern = target+"/"+p
             listfiles = glob.glob(target_pattern)
             if listfiles:

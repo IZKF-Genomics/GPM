@@ -1,8 +1,7 @@
 ---
 title: "Integration of Gene Ontology Analyses"
 author:
-  - "Gan Lin, Genomics Facility, lgan@ukaachen.de"
-  - "Dr. Chao-Chung Kuo, Genomics Facility, ckuo@ukaachen.de"
+  GPM_AUTHORS
 date: "Last compiled on `r format(Sys.time(), '%d %B, %Y')`"
 output:
   html_document:

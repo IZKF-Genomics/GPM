@@ -1,5 +1,7 @@
 from setuptools import find_packages, setup
 from gpm import version
+from os import path, getenv, makedirs, listdir
+import shutil
 
 setup(
     name="gpm",
@@ -15,7 +17,7 @@ setup(
     # packages=['mypkg'],
     package_dir = {'gpm': 'gpm'},
     package_data = {'gpm': ['data/*', 'data/bcl2fastq/*', 'data/nfcore/*', 
-                            'data/export/*', 'data/analysis/*']},
+                            'data/export/*', 'data/analysis/*', 'configs/*']},
     py_modules = ['gpm'],
     install_requires=[
         'Click',
@@ -25,3 +27,26 @@ setup(
         gpm=gpm.main:main
     ''',
 )
+
+###################################################################################################
+# Creating Data Path
+###################################################################################################
+
+# if the environment variable is set, use it; otherwise use the home directory as a default
+gpm_data_location = path.expanduser(getenv("GPMDATA", path.join(getenv("HOME"), "gpmdata")))
+
+# Creating Data Path
+if not path.exists(gpm_data_location):
+    makedirs(gpm_data_location)
+# GPM Configs
+config_dir = path.join(path.dirname(__file__), "gpm/configs")
+for file in listdir(config_dir):
+    fn = path.basename(file)
+    shutil.copyfile(path.join(config_dir,fn),
+                    path.join(gpm_data_location,fn))
+    # User defined Configs
+    # userconfig = open(path.join(gpm_data_location,fn+".user"), "w")
+    # with open(path.join(config_dir,fn)) as f1:
+    #     for line in f1.readlines():
+    #         print("# "+line, file=userconfig, end="")
+    # userconfig.close()
