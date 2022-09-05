@@ -15,7 +15,7 @@ Bioinformaticians who manage various projects and analyses with a standard pract
 
 The script below will install GPM and save the configuration files under ~/GPMDATA/. If you want to save the configuration files in a shared directory with others, please define GPMDATA variable in the environment.
 ```
-# GPMDATA="YOUR_DEFINED_PATH"
+# export GPMDATA=/data/gpmdata
 git clone https://github.com/IZKF-Genomics/GPM.git
 cd GPM
 pip install .

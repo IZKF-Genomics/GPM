@@ -73,7 +73,10 @@ If there is a need to modify the figures to fit your particular need (style or c
 
 ```{r, echo=FALSE, results="hide", warning=FALSE, message=FALSE}
 samples2 <- samples[!(is.na(samples$group)),]
-deseq_output <- run_deseq_salmon(samples2, spikein=spikein_ERCC)
+# totalRNAseq, mRNAseq
+# deseq_output <- run_deseq_salmon(samples2, spikein=spikein_ERCC,countsFromAbundance="lengthScaledTPM", lengthcorrection=TRUE)
+# 3mRNAseq
+# deseq_output <- run_deseq_salmon(samples2, spikein=spikein_ERCC,countsFromAbundance="lengthScaledTPM", lengthcorrection=FALSE)
 # samples2$sample <- samples2$rename
 ```
 

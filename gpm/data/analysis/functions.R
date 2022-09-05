@@ -62,15 +62,22 @@ process_dds_res <- function(tx2gene, dds) {
   return(output)
 }
 
-run_deseq_salmon <- function(samplesheet, spikein=FALSE) {
+run_deseq_salmon <- function(samplesheet, spikein=FALSE, countsFromAbundance="no", lengthcorrection=TRUE) {
   files <- file.path(DIR_salmon, samplesheet$sample, "quant.sf")
   names(files) <- samplesheet$sample
   tx2gene <- fread(FILE_tx2gene, col.names = c("transcript_id", "gene_id", "gene_name"))
-  txi <- tximport(files, type="salmon", tx2gene=tx2gene[,c(1,2)])
+  txi <- tximport(files, type="salmon", tx2gene=tx2gene[,c(1,2)], countsFromAbundance=countsFromAbundance)
+  samplesheet <- samplesheet[colnames(txi$counts),]
 
-  ddsTxi <- DESeqDataSetFromTximport(txi,
-                                     colData = samplesheet,
-                                     design = ~ group)
+  if (lengthcorrection) {
+    ddsTxi <- DESeqDataSetFromTximport(txi,
+                                       colData = samplesheet,
+                                       design = ~ group)
+  } else {
+    # 3mRNAseq
+    ddsTxi <- DESeqDataSetFromTximport(txi, samplesheet, ~group)
+  }
+  
   # ERCC normalization #####################
   if (spikein==TRUE) {
     ddsTxi <- estimateSizeFactors_ERCC(ddsTxi)
@@ -81,16 +88,23 @@ run_deseq_salmon <- function(samplesheet, spikein=FALSE) {
   return(output)
 }
 
-run_deseq_salmon_batch <- function(samplesheet, spikein=FALSE) {
+run_deseq_salmon_batch <- function(samplesheet, spikein=FALSE, countsFromAbundance="no", lengthcorrection=TRUE) {
   files <- file.path(DIR_salmon, samplesheet$sample, "quant.sf")
   names(files) <- samplesheet$sample
   tx2gene <- fread(FILE_tx2gene, col.names = c("transcript_id", "gene_id", "gene_name"))
 
   txi <- tximport(files, type="salmon", tx2gene=tx2gene[,c(1,2)])
+  samplesheet <- samplesheet[colnames(txi$counts),]
 
-  ddsTxi <- DESeqDataSetFromTximport(txi,
-                                     colData = samplesheet,
-                                     design = ~batch + group)
+  if (lengthcorrection) {
+    ddsTxi <- DESeqDataSetFromTximport(txi,
+                                       colData = samplesheet,
+                                       design = ~batch + group)
+  } else {
+    # 3mRNAseq
+    ddsTxi <- DESeqDataSetFromTximport(txi, samplesheet, ~batch + group)
+  }
+  
   # ERCC normalization #####################
   if (spikein==TRUE) {
     ddsTxi <- estimateSizeFactors_ERCC(ddsTxi)
