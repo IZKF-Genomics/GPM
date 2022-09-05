@@ -207,9 +207,7 @@ def tar_export(export_dir, no):
 @click.pass_context
 def clean(ctx, targetfolder, no):
     """Clean the temporary files and folders in target folders which shouldn't be archived or backup, such as *fastq.gz, nf-core work folder and result folder."""
-    # tmp_patterns = ["*.fastq.gz",
-    #                 "*/*.fastq.gz",
-    #                 "nfcore/work"]
+
     def clear_a_folder(target):
         for p in get_gpmconfig("Clean","patterns"):
             target_pattern = target+"/"+p
@@ -220,13 +218,48 @@ def clean(ctx, targetfolder, no):
                     proc = subprocess.Popen('rm -fr '+target_pattern, shell=True,
                                             stdout=subprocess.PIPE,
                                             stderr=subprocess.PIPE)
-                    # result = subprocess.run(["rm", "-fr", target_pattern], stderr=subprocess.PIPE, text=True)
-                    # if proc.stderr:
-                    #     click.echo(proc.stderr)
     
     clear_a_folder(targetfolder)
     for item in ctx.args:
         clear_a_folder(item)
+
+###################################################################
+## archive the folders
+###################################################################
+@main.command(context_settings=dict(
+    ignore_unknown_options=True,
+    allow_extra_args=True,
+))
+@click.argument('targetfolder')
+@click.option('--backup/--backup-destination', required=True, help="Define the destination folder for archiving the target folders.")
+@click.option('--size/--max-size', default="100M", show_default=True, help="Define the max size of a single file for archiving.")
+@click.pass_context
+def archive(ctx, targetfolder, no, backup):
+    """Archive the folders to the backup destination with filterring the pre-defined file types or folders."""
+    def archive_a_folder(targetfolder, size):
+        # find large files
+        proc = subprocess.Popen('find . -type f -size +'+ size + " " +targetfolder, shell=True,
+                                stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        def confirm_choice():
+            confirm = input("Do we want to archive this folder?\n"+targetfolder+"\n[y]Yes or [n]No: ")
+            if confirm != 'y' and confirm != 'n':
+                print("\n Invalid Option. Please Enter a Valid Option.")
+                return confirm_choice() 
+            print (confirm)
+            return confirm
+        confirm = confirm_choice()
+
+        if confirm=="y":
+            proc = subprocess.Popen('rsync --remove-source-files -v --progress -r --max-size='+size+' --checksum '+targetfolder+" "+backup, shell=True,
+                                    stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+            proc = subprocess.Popen('find -depth -type d -empty -delete '+targetfolder, shell=True,
+                                    stdout=subprocess.PIPE,stderr=subprocess.PIPE)    
+        else:
+            print("Archive process is cancelled.")
+   
+    archive_a_folder(targetfolder)
+    for item in ctx.args:
+        archive_a_folder(item)
 
 ###################################################################
 ## igv session for nf-core ChIP-Seq
