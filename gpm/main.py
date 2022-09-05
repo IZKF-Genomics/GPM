@@ -234,7 +234,7 @@ def clean(ctx, targetfolder, no):
 @click.option('--backup/--backup-destination', required=True, help="Define the destination folder for archiving the target folders.")
 @click.option('-size', default="100M", show_default=True, help="Define the max size of a single file for archiving.")
 @click.pass_context
-def archive(ctx, targetfolder, no, backup):
+def archive(ctx, targetfolder, size, backup):
     """Archive the folders to the backup destination with filterring the pre-defined file types or folders."""
     def archive_a_folder(targetfolder, size):
         # find large files
@@ -257,9 +257,9 @@ def archive(ctx, targetfolder, no, backup):
         else:
             print("Archive process is cancelled.")
    
-    archive_a_folder(targetfolder)
+    archive_a_folder(targetfolder, size)
     for item in ctx.args:
-        archive_a_folder(item)
+        archive_a_folder(item, size)
 
 ###################################################################
 ## igv session for nf-core ChIP-Seq
