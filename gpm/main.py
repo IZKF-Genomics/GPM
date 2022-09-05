@@ -257,7 +257,7 @@ def archive(ctx, targetfolder, size, backup):
         else:
             print("Archive process is cancelled.")
    
-    archive_a_folder(targetfolder, size)
+    # archive_a_folder(targetfolder, size)
     for item in ctx.args:
         archive_a_folder(item, size)
 
