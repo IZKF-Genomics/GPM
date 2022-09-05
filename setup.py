@@ -37,6 +37,7 @@ if environ.get('GPMDATA'):
     gpm_data_location = path.expanduser(getenv("GPMDATA"))
 else:
     gpm_data_location = path.expanduser(path.join(getenv("HOME"), "gpmdata"))
+print("GPMDATA folder: "+gpm_data_location)
 
 # Creating Data Path
 if not path.exists(gpm_data_location):
