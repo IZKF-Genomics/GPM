@@ -1,6 +1,6 @@
 from setuptools import find_packages, setup
 from gpm import version
-from os import path, getenv, makedirs, listdir
+from os import path, getenv, makedirs, listdir, environ
 import shutil
 
 setup(
@@ -33,7 +33,10 @@ setup(
 ###################################################################################################
 
 # if the environment variable is set, use it; otherwise use the home directory as a default
-gpm_data_location = path.expanduser(getenv("GPMDATA", path.join(getenv("HOME"), "gpmdata")))
+if environ.get('GPMDATA'):
+    gpm_data_location = path.expanduser(getenv("GPMDATA"))
+else:
+    gpm_data_location = path.expanduser(path.join(getenv("HOME"), "gpmdata"))
 
 # Creating Data Path
 if not path.exists(gpm_data_location):
