@@ -76,7 +76,7 @@ samples2 <- samples[!(is.na(samples$group)),]
 # totalRNAseq, mRNAseq
 # deseq_output <- run_deseq_salmon(samples2, spikein=spikein_ERCC,countsFromAbundance="lengthScaledTPM", lengthcorrection=TRUE)
 # 3mRNAseq
-# deseq_output <- run_deseq_salmon(samples2, spikein=spikein_ERCC,countsFromAbundance="lengthScaledTPM", lengthcorrection=FALSE)
+# deseq_output <- run_deseq_salmon(samples2, spikein=spikein_ERCC, lengthcorrection=FALSE)
 # samples2$sample <- samples2$rename
 ```
 
