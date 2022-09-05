@@ -232,7 +232,7 @@ def clean(ctx, targetfolder, no):
 ))
 @click.argument('targetfolder')
 @click.option('--backup/--backup-destination', required=True, help="Define the destination folder for archiving the target folders.")
-@click.option('--size/--max-size', default="100M", show_default=True, help="Define the max size of a single file for archiving.")
+@click.option('-size/-max-size', default="100M", show_default=True, help="Define the max size of a single file for archiving.")
 @click.pass_context
 def archive(ctx, targetfolder, no, backup):
     """Archive the folders to the backup destination with filterring the pre-defined file types or folders."""
