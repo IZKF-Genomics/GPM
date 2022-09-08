@@ -241,7 +241,7 @@ def archive(ctx, targetfolder, size, backup):
         proc = subprocess.Popen('find . -type f -size +'+ size + " " +targetfolder, shell=True,
                                 stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         def confirm_choice():
-            confirm = input("Do we want to archive this folder?\n"+targetfolder+"\n[y]Yes or [n]No: ")
+            confirm = input("Do you want to archive this folder?\n"+targetfolder+"\n[y]Yes or [n]No: ")
             if confirm != 'y' and confirm != 'n':
                 print("\n Invalid Option. Please Enter a Valid Option.")
                 return confirm_choice() 

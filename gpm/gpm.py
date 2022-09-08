@@ -242,12 +242,12 @@ class GPM():
         self.copy_file_replace_vairalbles(htaccess_path, os.path.join(export_dir, ".htaccess"))
         # shutil.chown(os.path.join(export_dir, ".htaccess"), group=GROUPNAME)
 
-    def generate_index_html(self, export_dir):
-        index_path = os.path.join(export_dir, "index.html")
-        print(index_path)
-        for report_html in glob.glob(export_dir+'/3_Reports/Analysis_Report*.html'):
-            print(report_html)
-            shutil.copy(report_html, index_path)
+    # def generate_index_html(self, export_dir):
+    #     index_path = os.path.join(export_dir, "index.html")
+    #     print(index_path)
+    #     for report_html in glob.glob(export_dir+'/3_Reports/Analysis_Report*.html'):
+    #         print(report_html)
+    #         shutil.copy(report_html, index_path)
     
     def tar_exports(self, export_dir):
         compressed_folder = os.path.join(export_dir, "compressed_tars")
