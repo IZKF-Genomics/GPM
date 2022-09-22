@@ -48,36 +48,18 @@ if (organism == "hsapiens") {
 Tag_this_analysis <- "FILETAG"
 File_stats <- paste0('DGEA_',Tag_this_analysis,'_genes_stats.csv')
 File_norm_expression <- paste0('DGEA_',Tag_this_analysis,'_norm_exp_quant.csv')
-File_xlsx_res <- paste0('DGEA_',Tag_this_analysis,'_res.xlsx')
-
-## Please assign the groups for comparison into labels_group variable and confirm the direction of comparison by level parameter in the function factor, here is just an example
-# Manually define the grouping
-# labels_group <- c("control","control",
-#                   FALSE,FALSE,
-#                   FALSE,FALSE,
-#                   "knockdown","knockdown",
-#                   FALSE,FALSE,
-#                   FALSE,FALSE)
-# samples$group <- factor(labels_group, levels = c("control","knockdown"))
-# Select by columns
-# samples <- samples[samples$macrophages=="M0",]
-# samples$group <- factor(samples$genotype, levels = c("WT","KO"))
-
+File_xlsx_res <- paste0('DGEA_',Tag_this_analysis,'_res.xlsx'
 ```
 
 ### [Back to front page](Analysis_Report_RNAseq.html)
 
-Differential expression analysis is done with DESEQ2 package in R [@love2014moderated] and follows the instruction for Salmon quantification ([Analyzing RNA-seq data with DESeq2](https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html)).
-
-If there is a need to modify the figures to fit your particular need (style or color), additional service for customized visualization is needed. The main focus of this report is to present the analysis result to the clients. Any requests beyond this purpose is regarded another service. 
+Differential gene expression analysis is done with DESEQ2 package in R [@love2014moderated] and follows the instruction for Salmon quantification ([Analyzing RNA-seq data with DESeq2](https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html)).
 
 ```{r, echo=FALSE, results="hide", warning=FALSE, message=FALSE}
-samples2 <- samples[!(is.na(samples$group)),]
-# totalRNAseq, mRNAseq
-# deseq_output <- run_deseq_salmon(samples2, spikein=spikein_ERCC,countsFromAbundance="lengthScaledTPM", lengthcorrection=TRUE)
-# 3mRNAseq
-# deseq_output <- run_deseq_salmon(samples2, spikein=spikein_ERCC, lengthcorrection=FALSE)
-# samples2$sample <- samples2$rename
+
+deseq_output <- run_deseq_salmon(filtered_samples, spikein=spikein_ERCC,
+                                 countsFromAbundance=countsFromAbundance,
+                                 lengthcorrection=lengthcorrection)
 ```
 
 # Interactive Figures {.tabset}
@@ -85,7 +67,7 @@ samples2 <- samples[!(is.na(samples$group)),]
 ## PCA
 
 ```{r, echo=FALSE, results='asis', warning=FALSE, message=FALSE}
-RNAseq_PCA_plotly(deseq_output$norm_count, samples2)
+RNAseq_PCA_plotly(deseq_output$norm_count, filtered_samples)
 ```
 
 ## Volcano plot
@@ -103,7 +85,7 @@ RNAseq_maplot_plotly(deseq_output$deseq2res)
 `r if(spikein_ERCC){"## MA plot of spike in"}`
 
 ```{r, echo=FALSE, results="asis", warning=FALSE, message=FALSE, eval=spikein_ERCC}
-RNAseq_maplot_plotly_ERCC(deseq_output$deseq2res_ERCC)
+RNAseq_maplot_plotly_ERCC(deseq_output$lengthcorrection)
 ```
 
 ## Heatmap
@@ -118,7 +100,7 @@ RNAseq_heatmap_plotly(deseq_output$deseq2res)
 ## PCA
 
 ```{r, echo=FALSE, results="asis", warning=FALSE, message=FALSE, dpi=600, fig.width=6, fig.height=4}
-RNAseq_PCA_ggplot2(deseq_output, samples2)
+RNAseq_PCA_ggplot2(deseq_output, filtered_samples)
 ```
 
 ## Volcano plot

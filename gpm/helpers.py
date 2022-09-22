@@ -297,22 +297,25 @@ def tar_exports(export_dir, nobehaviour):
 def htpasswd_create_user(target_dir, url, username, app):
     """Create the new user in the target directory with password"""
     export_base_path = Path(target_dir).parent.absolute()
-    shutil.copy(os.path.join(export_base_path, ".htpasswd"), 
-                os.path.join(target_dir, ".htpasswd"))
-    password = generate_password()
-    cmd = " ".join(["htpasswd", "-b", os.path.join(target_dir,".htpasswd"), username, password])
-    # returned_value = subprocess.call(cmd, shell=True)
-    # print(cmd)
-    subprocess.run(cmd, shell=True)
-    click.echo()
-    click.echo(click.style("Create new user for export directory:", fg='bright_green'))
-    click.echo("Directory:\t" + target_dir)
-    if app:
-        click.echo("URL:\t" + url + "/3_Reports/analysis/Analysis_Report_" + app + ".html")
+    if os.path.exists(os.path.join(export_base_path, ".htpasswd")):
+        shutil.copy(os.path.join(export_base_path, ".htpasswd"), 
+                    os.path.join(target_dir, ".htpasswd"))
+        password = generate_password()
+        cmd = " ".join(["htpasswd", "-b", os.path.join(target_dir,".htpasswd"), username, password])
+        # returned_value = subprocess.call(cmd, shell=True)
+        # print(cmd)
+        subprocess.run(cmd, shell=True)
+        click.echo()
+        click.echo(click.style("Create new user for export directory:", fg='bright_green'))
+        click.echo("Directory:\t" + target_dir)
+        if app:
+            click.echo("URL:\t" + url + "/3_Reports/analysis/Analysis_Report_" + app + ".html")
+        else:
+            click.echo("URL:\t" + url)
+        click.echo("user:\t" + username)
+        click.echo("password:\t" + password)
     else:
-        click.echo("URL:\t" + url)
-    click.echo("user:\t" + username)
-    click.echo("password:\t" + password)
+        click.echo("Skip setting htpasswd")
 
 def create_user(export_dir, export_URL, username):
     htpasswd_create_user(export_dir, export_URL, username, None)

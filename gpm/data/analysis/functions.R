@@ -13,7 +13,7 @@ organism2method_des <- function(organism) {
 
 spikein_ERCC2method <- function(spikein_ERCC) {
   if (spikein_ERCC==TRUE) {
-    spikein_method <- "Reads were mapped to a composite genome made by concatenating the reference genome and 92 ERCC ExFold RNA Spike-In Mixes sequences (ThermoFisher)." 
+    spikein_method <- "Reads were mapped to a composite genome made by concatenating the reference genome and 92 ERCC ExFold RNA Spike-In Mixes sequences (ThermoFisher)."
     } else {
     spikein_method <- ""
     }
@@ -51,7 +51,7 @@ process_dds_res <- function(tx2gene, dds) {
   sel_ERCC <- str_detect(res_combined$gene_id, "^ERCC-0*")
   res_combined$sig[sel_ERCC] <- "Spike in"
   res_noERCC <- res_combined[!sel_ERCC,]
-  
+
   res_combined_sig <- res_combined[res_combined$padj < CUTOFF_ADJP,]
 
   output <- list(norm_count=normalized_counts,
@@ -62,7 +62,7 @@ process_dds_res <- function(tx2gene, dds) {
   return(output)
 }
 
-run_deseq_salmon <- function(samplesheet, spikein=FALSE, countsFromAbundance="no", lengthcorrection=TRUE) {
+run_deseq_salmon <- function(samplesheet, spikein=FALSE, countsFromAbundance, lengthcorrection) {
   files <- file.path(DIR_salmon, samplesheet$sample, "quant.sf")
   names(files) <- samplesheet$sample
   tx2gene <- fread(FILE_tx2gene, col.names = c("transcript_id", "gene_id", "gene_name"))
@@ -77,7 +77,7 @@ run_deseq_salmon <- function(samplesheet, spikein=FALSE, countsFromAbundance="no
     # 3mRNAseq
     ddsTxi <- DESeqDataSetFromTximport(txi, samplesheet, ~group)
   }
-  
+
   # ERCC normalization #####################
   if (spikein==TRUE) {
     ddsTxi <- estimateSizeFactors_ERCC(ddsTxi)
@@ -88,7 +88,7 @@ run_deseq_salmon <- function(samplesheet, spikein=FALSE, countsFromAbundance="no
   return(output)
 }
 
-run_deseq_salmon_batch <- function(samplesheet, spikein=FALSE, countsFromAbundance="no", lengthcorrection=TRUE) {
+run_deseq_salmon_batch <- function(samplesheet, spikein=FALSE, countsFromAbundance, lengthcorrection) {
   files <- file.path(DIR_salmon, samplesheet$sample, "quant.sf")
   names(files) <- samplesheet$sample
   tx2gene <- fread(FILE_tx2gene, col.names = c("transcript_id", "gene_id", "gene_name"))
@@ -104,7 +104,7 @@ run_deseq_salmon_batch <- function(samplesheet, spikein=FALSE, countsFromAbundan
     # 3mRNAseq
     ddsTxi <- DESeqDataSetFromTximport(txi, samplesheet, ~batch + group)
   }
-  
+
   # ERCC normalization #####################
   if (spikein==TRUE) {
     ddsTxi <- estimateSizeFactors_ERCC(ddsTxi)
@@ -134,7 +134,7 @@ PCA_plotly <- function(scaled_ct, colors) {
   components <- cbind(components, rownames(t))
   components$PC2 <- -components$PC2
 
-  fig <- plot_ly(components, x = ~PC1, y = ~PC2, color = colors, 
+  fig <- plot_ly(components, x = ~PC1, y = ~PC2, color = colors,
                  width = Fig_width, height = Fig_height,
                  type = 'scatter', mode = 'markers', text = components$`rownames(t)`)
   fig
@@ -199,7 +199,7 @@ RNAseq_maplot_plotly_ERCC <- function(res_combined_ERCC) {
   pal <- c("red", "gray", "orange")
   pal <- setNames(pal, c("Sig. genes", "Non-sig.", "Spike in"))
   # res_combined$sig <- factor(res_combined$sig, level=c("Sig. genes", "Spike in", "Non-sig."))
-  
+
   fig <- plot_ly(x = log2(res_combined_ERCC$baseMean),
               y = res_combined_ERCC$log2FoldChange,
               text = res_combined_ERCC$gene_name,
@@ -216,17 +216,21 @@ RNAseq_maplot_plotly_ERCC <- function(res_combined_ERCC) {
 }
 
 RNAseq_heatmap_plotly <- function(deseq2res) {
+  # deseq2res <- deseq_output$deseq2res
   sig_genes <- deseq2res[deseq2res$sig == "Sig. genes", ]
-  
+  heatmap_title <- "Heatmap of sig. DE genes"
+  if (dim(sig_genes)[1] < 5) {
+    sig_genes <- deseq2res[order(deseq2res$padj),][1:100,]
+    heatmap_title <- "Heatmap of top 100 genes ranked by adj. p-value"
+  }
   heatmap_t <- log10(sig_genes[,9:(dim(sig_genes)[2]-1)]+1)
   rownames(heatmap_t) <- c()
-  heatmaply(heatmap_t, main = "Heatmap of top 1000 genes ranked by adj. p-value",
+  heatmaply(heatmap_t, main = heatmap_title,
             method = "plotly",labRow=sig_genes$gene_name,
             xlab = "Samples", ylab = "Genes", width = Fig_width, height = Fig_height+200,
             showticklabels = c(TRUE, FALSE), show_dendrogram = c(FALSE, TRUE),
             key.title = "Scaled\nexpression\nin log10 scale",
-            label_names = c("Gene", "Sample", "Expression"),
-            k_col = 2)
+            label_names = c("Gene", "Sample", "Expression"))
 }
 
 RNAseq_PCA_ggplot2 <- function(deseq_output, samples2) {
@@ -239,7 +243,7 @@ RNAseq_PCA_ggplot2 <- function(deseq_output, samples2) {
   labels_group <- samples2$group
 
   fig <- ggplot(components, aes(PC1, PC2, color=labels_group)) +
-        geom_point(size=3) + theme_bw() + scale_color_brewer(palette = "Set1") + 
+        geom_point(size=3) + theme_bw() + scale_color_brewer(palette = "Set1") +
         labs(color = "Groups") + ggtitle("PCA") +
         theme(plot.title = element_text(hjust = 0.5))
   fig
@@ -251,7 +255,7 @@ RNAseq_volcano_ggplot2 <- function(deseq_output) {
   xmax <- max(abs(deseq_output$deseq2res$log2FoldChange)) * 1.1
   ymax <- max(-log10(deseq_output$deseq2res$padj)[is.finite(-log10(deseq_output$deseq2res$padj))]) * 1.1
   fig <- ggplot(deseq_output$deseq2res, aes(log2FoldChange, -log10(padj), color=sig)) +
-        geom_point(size=1, alpha=0.2) + theme_bw() + scale_color_manual(values=pal) + 
+        geom_point(size=1, alpha=0.2) + theme_bw() + scale_color_manual(values=pal) +
         labs(color = "Groups") + ggtitle("Volcano plot") +
         xlab("Fold Change (log2)") + ylab("adjusted p-value (-log10)") +
         theme(plot.title = element_text(hjust = 0.5)) +
@@ -265,7 +269,7 @@ RNAseq_maplot_ggplot2 <- function(deseq_output) {
   ymax <- max(abs(deseq_output$deseq2res$log2FoldChange)) * 1.01
 
   fig <- ggplot(deseq_output$deseq2res, aes(log2(baseMean), log2FoldChange, color=sig)) +
-        geom_point(size=1, alpha=0.2) + theme_bw() + scale_color_manual(values=pal) + 
+        geom_point(size=1, alpha=0.2) + theme_bw() + scale_color_manual(values=pal) +
         labs(color = "Groups") + ggtitle("MA plot") +
         xlab("Expresion Mean (log2)") + ylab("Fold Change (log2)") +
         theme(plot.title = element_text(hjust = 0.5)) +
@@ -284,6 +288,11 @@ RNAseq_heatmap_ggplot2 <- function(deseq_output) {
       return(0)
   }
   sig_genes <- deseq_output$deseq2res[deseq_output$deseq2res$sig == "Sig. genes", ]
+  heatmap_title <- "Heatmap of sig. DE genes"
+  if (dim(sig_genes)[1] < 5) {
+    sig_genes <- deseq_output$deseq2res[order(deseq_output$deseq2res$padj),][1:100,]
+    heatmap_title <- "Heatmap of top 100 genes ranked by adj. p-value"
+  }
   samples_names <- colnames(sig_genes)[9:(dim(sig_genes)[2]-1)]
   heatmap_t <- scale(log10(sig_genes[,9:(dim(sig_genes)[2]-1)]+1))
   ord <- hclust( dist(heatmap_t, method = "euclidean"), method = "ward.D" )$order
@@ -295,7 +304,7 @@ RNAseq_heatmap_ggplot2 <- function(deseq_output) {
   heatmap_t$sample <- factor( heatmap_t$sample, levels = samples_names)
 
   fig <- ggplot(heatmap_t, aes(sample, gene_id, fill=Expression)) +
-        geom_tile() + ggtitle("Heatmap of sig. DE genes") +
+        geom_tile() + ggtitle(heatmap_title) +
         ylab("Genes") + xlab("Samples") + scale_fill_viridis() +
         theme(plot.title = element_text(hjust = 0.5),
               axis.ticks.y = element_blank(),
