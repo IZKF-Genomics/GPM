@@ -24,12 +24,13 @@ spikein_ERCC2method <- function(spikein_ERCC) {
 ## RNAseq
 ###########################################################
 
-add_DGEA <- function(description, tag, filtered_samples) {
+add_DGEA <- function(description, tag, filtered_samples, volcano=TRUE, maplot=TRUE, sigtable=TRUE) {
   scripts  <- readLines("DGEA_template.Rmd")
   scripts  <- gsub(pattern = "TITLEDESCRIPTION", replace = description, x = scripts)
   scripts  <- gsub(pattern = "FILETAG", replace = tag, x = scripts)
   tmp_samplesheet <- paste0("DGEA_", tag, "_data.RData")
-  save(filtered_samples, file = tmp_samplesheet)
+  filtered_samples <- filtered_samples[complete.cases(filtered_samples$group),]
+  save(filtered_samples, volcano, maplot, sigtable, file = tmp_samplesheet)
   scripts  <- gsub(pattern = "SAMPLE_RData", replace = tmp_samplesheet, x = scripts)
   filename <- paste0("DGEA_",tag)
   writeLines(scripts, con=paste0(filename,".Rmd"))
