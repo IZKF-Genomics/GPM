@@ -27,12 +27,7 @@ options(knitr.duplicate.label = "allow")
 DIR_base <- "GPM_DIR_BASE/"
 DIR_project <- paste0(DIR_base, "analysis/")
 DIR_salmon <- paste0(DIR_base, "nfcore/results/star_salmon/")
-
-#### Please choose one option manually!!!!
-# mRNAseq or tRNAseq
-# FILE_scaled_ct <- paste0(DIR_salmon, "salmon.merged.gene_counts_length_scaled.tsv")
-# 3mRNAseq
-# FILE_scaled_ct <- paste0(DIR_salmon, "salmon.merged.gene_counts_scaled.tsv") 
+ 
 FILE_tx2gene <- paste0(DIR_salmon, "salmon_tx2gene.tsv")
 source(paste0(DIR_project, "functions.R"))
 
@@ -46,6 +41,12 @@ CUTOFF_ADJP <- 0.05
 # spikein_ERCC <- FALSE
 # organism <- "hsapiens"
 # organism <- "mmusculus"
+##### totalRNAseq, mRNAseq
+# countsFromAbundance="lengthScaledTPM"
+# lengthcorrection=TRUE
+##### 3mRNAseq
+# countsFromAbundance="no"
+# lengthcorrection=FALSE
 
 method_des <- organism2method_des(organism) 
 spikein_method <- spikein_ERCC2method(spikein_ERCC)
@@ -73,24 +74,9 @@ This document is the summary of the bioinformatic analysis done by Genomic Facil
 
 Please refer to our [Publication Policy](https://genomics.rwth-aachen.de/services/publication-policy/).
 
-
-***
-
-In this report, you are able to:
-
-* Browse and download the files and reports in an intuitive folder structure.
-* Read the QC reports or bioinformatics reports online.
-* Explore the results by the interactive figures in this report. You are able to search, select, zoom in or export the image.
-* Export any tables in this report for gene lists or statistics in various format you want.
-* Get the summary of the method description and citation.
-
-After deliverying this report, we can schedule a short meeting to discuss the result, otherwise, we will close this project with this basic analysis. If you have further request and questions, please don't hestitate to contact us. 
-
 ***
 
 # Download/Browse the files
-
-Please click the hyperlinked list below:
 
 1. [Raw Data](GPM_URL_1_Raw_data): 
     * BCL files from the sequencer
@@ -103,7 +89,7 @@ Please click the hyperlinked list below:
     * [MultiQC reports](GPM_URL_3_Reports/multiqc/multiqc_report.html) for the quality check
     * Basic analysis of the Genomics Facility (This report)
 4. [Compressed files for download](GPM_URL_TAR):
-    * Three tar files are available for download for the above three folders.
+    * Three tar files are available for download the above three folders.
   
 In the command line environment, you can also download everything by the commands below with the given username and password from us:
 
@@ -112,6 +98,8 @@ wget -r -nH -np -nd -P --user USERNAME --password PASSWORD -A '*.tar' GPM_URL_TA
 ```
 
 Please make sure that you store these data in a lab-wise level. Genomics Facility won't store your data forever and these data should still be accessible even after someone leaves your lab. Please refer to our [Data Management Policy](https://genomics.rwth-aachen.de/services/data-management-policy/).
+
+\textcolor{red}{Your data will be deleted according to this policy automatically. Please download everything.}
 
 # Method description
 

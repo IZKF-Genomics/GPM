@@ -48,21 +48,18 @@ if (organism == "hsapiens") {
 Tag_this_analysis <- "FILETAG"
 File_stats <- paste0('DGEA_',Tag_this_analysis,'_genes_stats.csv')
 File_norm_expression <- paste0('DGEA_',Tag_this_analysis,'_norm_exp_quant.csv')
+
 File_xlsx_res <- paste0('DGEA_',Tag_this_analysis,'_res.xlsx')
 ```
 
 ### [Back to front page](Analysis_Report_RNAseq.html)
 
-Differential expression analysis is done with DESEQ2 package in R [@love2014moderated] and follows the instruction for Salmon quantification ([Analyzing RNA-seq data with DESeq2](https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html)).
-
-If there is a need to modify the figures to fit your particular need (style or color), additional service for customized visualization is needed. The main focus of this report is to present the analysis result to the clients. Any requests beyond this purpose is regarded another service. 
+Differential gene expression analysis is done with DESEQ2 package in R [@love2014moderated] and follows the instruction for Salmon quantification ([Analyzing RNA-seq data with DESeq2](https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html)).
 
 ```{r, echo=FALSE, results="hide", warning=FALSE, message=FALSE}
-# totalRNAseq, mRNAseq
-# deseq_output <- run_deseq_salmon(samples2, spikein=spikein_ERCC,countsFromAbundance="lengthScaledTPM", lengthcorrection=TRUE)
-# 3mRNAseq
-# deseq_output <- run_deseq_salmon(samples2, spikein=spikein_ERCC, lengthcorrection=FALSE)
-# samples2$sample <- samples2$rename
+deseq_output <- run_deseq_salmon(filtered_samples, spikein=spikein_ERCC,
+                                 countsFromAbundance=countsFromAbundance,
+                                 lengthcorrection=lengthcorrection)
 ```
 
 # Interactive Figures {.tabset}
