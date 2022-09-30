@@ -216,7 +216,7 @@ def clean(ctx, targetfolder, no):
             if listfiles:
                 size_of_files = sum([os.stat(f).st_size for f in listfiles])
                 size_of_files = round(size_of_files/(1024*1024*1024),3)
-                click.echo("Clean {:4.3f} GB: {}".format(size_of_files, target_pattern))
+                click.echo("Clean {:7.3f} GB: {}".format(size_of_files, target_pattern))
                 # click.echo("Clean "+target_pattern)
                 if not no:
                     proc = subprocess.Popen('rm -fr '+target_pattern, shell=True,
