@@ -210,7 +210,8 @@ def clean(ctx, targetfolder, no):
 
     def clear_a_folder(target):
         for p in get_gpmconfig("Clean","patterns"):
-            target_pattern = target+"/"+p
+            target_pattern = os.path.join(target,p)
+            print(target_pattern)
             listfiles = glob.glob(target_pattern)
             if listfiles:
                 click.echo("Clean "+target_pattern)
