@@ -10,6 +10,7 @@ import random
 import string
 from configparser import ConfigParser
 import codecs
+import json
 
 class DisplayablePath(object):
     display_filename_prefix_middle = '├──'
@@ -361,10 +362,12 @@ def get_gpmconfig(section, item):
 
     config = ConfigParser()
     config.read(gpmconfig)
-    print(config.sections())
-    print(config[section][item])
+    # print(config.sections())
+    # print(config[section][item])
         # config.read_file(codecs.open(gpmconfig, "r", "utf8"))
-    return(config[section][item])
+    res = config[section][item]
+    res = json.loads(res)
+    return(res)
 
 def get_config(config_name):
     cfg_path = os.path.join(get_gpmdata_path(), config_name+".user")
