@@ -365,9 +365,9 @@ def get_gpmconfig(section, item):
     # print(config.sections())
     # print(config[section][item])
         # config.read_file(codecs.open(gpmconfig, "r", "utf8"))
-    res = config[section][item]
-    print(res)
-    res = json.loads(res)
+    res = config.get(section, item)
+    if res[0] == "[": 
+        res = json.loads(res)
     return(res)
 
 def get_config(config_name):
