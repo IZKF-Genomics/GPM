@@ -46,9 +46,9 @@ class GPM():
     def copy_file_replace_vairalbles(self, original, target):
         with open(original, "rb") as f1:
             contents = [l.decode('utf8', 'ignore').rstrip() for l in f1.readlines()]
-
-        authors = get_gpmconfig("Rmd", "authors").strip("[]")
-        authors = authors.split(',\n')
+        authors = get_gpmconfig("Rmd", "authors")
+        # authors = get_gpmconfig("Rmd", "authors").strip("[]")
+        # authors = authors.split(',\n')
 
         modifier = {"FASTQ_DIR": self.fastq,
                     "GPM_TITLE_NAME": self.name,
