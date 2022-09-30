@@ -214,7 +214,7 @@ def clean(ctx, targetfolder, no):
             # print(target_pattern)
             listfiles = glob.glob(target_pattern)
             if listfiles:
-                size_of_files = sum([(f,os.stat(f).st_size) for f in listfiles])
+                size_of_files = sum([os.stat(f).st_size for f in listfiles])
                 size_of_files = round(size_of_files/(1024*1024*1024),3)
                 click.echo("Clean {} GB: {}".format(size_of_files, target_pattern))
                 # click.echo("Clean "+target_pattern)
