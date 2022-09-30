@@ -366,6 +366,7 @@ def get_gpmconfig(section, item):
     # print(config[section][item])
         # config.read_file(codecs.open(gpmconfig, "r", "utf8"))
     res = config[section][item]
+    print(res)
     res = json.loads(res)
     return(res)
 
