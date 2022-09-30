@@ -361,8 +361,8 @@ def get_gpmconfig(section, item):
         gpmconfig = os.path.join(get_gpmdata_path(), "gpm.config")
 
     config = ConfigParser()
-    # config.read(gpmconfig)
-    config.read_file(codecs.open(gpmconfig, "r", "utf8"))
+    config.read(gpmconfig)
+    # config.read_file(codecs.open(gpmconfig, "r", "utf8"))
     # print(config.sections())
     # print(config[section][item])
         # config.read_file(codecs.open(gpmconfig, "r", "utf8"))
