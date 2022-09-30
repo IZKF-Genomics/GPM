@@ -358,8 +358,11 @@ def get_gpmconfig(section, item):
     gpmconfig = os.path.join(get_gpmdata_path(), "gpm.config.user")
     if not os.path.exists(gpmconfig):
         gpmconfig = os.path.join(get_gpmdata_path(), "gpm.config")
+
     config = ConfigParser()
     config.read(gpmconfig)
+    print(config.sections())
+    print(config[section][item])
         # config.read_file(codecs.open(gpmconfig, "r", "utf8"))
     return(config[section][item])
 
