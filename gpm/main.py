@@ -211,10 +211,10 @@ def clean(ctx, targetfolder, no):
     def clear_a_folder(target):
         for p in get_gpmconfig("Clean","patterns"):
             target_pattern = os.path.join(target,p)
-            print(target_pattern)
+            # print(target_pattern)
             listfiles = glob.glob(target_pattern)
             if listfiles:
-                click.echo("Clean "+target_pattern)
+                # click.echo("Clean "+target_pattern)
                 if not no:
                     proc = subprocess.Popen('rm -fr '+target_pattern, shell=True,
                                             stdout=subprocess.PIPE,
