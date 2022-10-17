@@ -346,7 +346,7 @@ def export_empty_folder(export_URL, export_dir, config, user):
             print(line, file=f2)
     # Create user
     htpasswd_create_user(export_dir, os.path.join(export_URL, os.path.basename(export_dir)), 
-                         user.lower(), "customized")
+                         user.lower(), None)
 
 def get_gpmdata_path():
     return os.path.expanduser(os.getenv("GPMDATA", os.path.join(os.getenv("HOME"), "gpmdata")))
