@@ -165,22 +165,11 @@ writeData(wb, "norm_exp_quant", deseq_output$norm_count)
 saveWorkbook(wb, file = File_xlsx_res, overwrite = TRUE)
 ```
 
-`r if(sigtable){"# Download statistics"}`
-
-```{r, echo=FALSE, results='asis', warning=FALSE, message=FALSE, eval=sigtable}
-cat("* Download xlsx file for all results: [",File_xlsx_res,"](",File_xlsx_res,") (However, CSV file is more recommended for robust analysis.)\n",sep = "")
-
-cat("* Download CSV file for the statistics of all valid genes in differential expression analysis (ENSEMBL ID, Gene Symbol and Gene name are included): [",File_stats,"](",File_stats,")\n",sep = "")
-
-cat("* Download CSV file for the expression quantification of all genes: [",File_norm_expression,"](",File_norm_expression,")\n",sep = "")
-```
-
 # Download statistics
 
-* Download xlsx file for all results: [",File_xlsx_res,"](",File_xlsx_res,") (However, CSV file is more recommended for robust analysis.)
-* Download CSV file for the statistics of all valid genes in differential expression analysis (ENSEMBL ID, Gene Symbol and Gene name are included): [",File_stats,"](",File_stats,")
-* Download CSV file for the expression quantification of all genes: [",File_norm_expression,"](",File_norm_expression,")
-
+* Download xlsx file for all results: [`r File_xlsx_res`](`r File_xlsx_res`) (However, CSV file is more recommended for robust analysis.)
+* Download CSV file for the statistics of all valid genes in differential expression analysis (ENSEMBL ID, Gene Symbol and Gene name are included): [`r File_stats`](`r File_stats`)
+* Download CSV file for the expression quantification of all genes: [`r File_norm_expression`](`r File_norm_expression`)
 
 # References
 
