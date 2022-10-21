@@ -60,6 +60,9 @@ Differential gene expression analysis is done with DESEQ2 package in R [@love201
 deseq_output <- run_deseq_salmon(filtered_samples, spikein=spikein_ERCC,
                                  countsFromAbundance=countsFromAbundance,
                                  lengthcorrection=lengthcorrection)
+# deseq_output <- run_deseq_salmon_batch(filtered_samples, spikein=spikein_ERCC,
+#                                        countsFromAbundance=countsFromAbundance,
+#                                        lengthcorrection=lengthcorrection)
 ```
 
 # Interactive Figures {.tabset}
