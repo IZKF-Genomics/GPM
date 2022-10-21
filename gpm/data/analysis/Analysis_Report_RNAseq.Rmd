@@ -133,7 +133,8 @@ rmarkdown::render(paste0('DGEA_',filetag,'.Rmd'), output_format = 'html_document
 ```{r, echo=FALSE, results="hide", warning=FALSE, message=FALSE}
 description <- "Treat vs Control in WT"
 filetag <- str_replace_all(description, " ", "_")
-samples2 <- samples[samples$genotype=="WT",]
+samples2 <- samples
+# samples2 <- samples[samples$genotype=="WT",]
 samples2$group <- factor(samples2$group, levels = c("control","Treat"))
 add_DGEA(description, filetag, samples2)
 rmarkdown::render(paste0('DGEA_',filetag,'.Rmd'), output_format = 'html_document',
