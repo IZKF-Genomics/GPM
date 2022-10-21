@@ -127,8 +127,8 @@ rmarkdown::render(paste0('DGEA_',filetag,'.Rmd'), output_format = 'html_document
 
 ### [`r description`](`r paste0('DGEA_',filetag,'.html')`)
 
-### [Correlation analysis](DGEA_correlation_analysis.html)
-### [Genesets Comparisons](DGEA_Geneset_Comparisons.html)
+<!-- ### [Correlation analysis](DGEA_correlation_analysis.html)
+### [Genesets Comparisons](DGEA_Geneset_Comparisons.html) -->
 
 ```{r, echo=FALSE, results="hide", warning=FALSE, message=FALSE}
 description <- "Treat vs Control in WT"
