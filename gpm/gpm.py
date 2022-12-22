@@ -200,6 +200,7 @@ class GPM():
         
         self.update_config("gpm export")
         export_dir = os.path.abspath(export_dir)
+        symlink_web2comp = get_gpmconfig("GPM", "SYMLINK_From_Web2Comp")
 
         # Create the target folder
         if not os.path.exists(export_dir):
@@ -208,13 +209,13 @@ class GPM():
         # Creating soft links of the files
         self.load_export_config()
         for entry in self.export_structure:
-            # print(entry)
+            print(entry)
             if not entry[1]:
                 target = os.path.join(export_dir, entry[2])
                 if not os.path.exists(target):
                     os.makedirs(target)
             else:
-                origin_file = os.path.join(self.base, entry[1])
+                origin_file = os.path.join(symlink_web2comp, self.base, entry[1])
                 # A directory
                 if os.path.isdir(origin_file):  
                     target = handle_rename(export_dir, entry)
