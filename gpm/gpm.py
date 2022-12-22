@@ -215,18 +215,18 @@ class GPM():
                 if not os.path.exists(target):
                     os.makedirs(target)
             else:
-                origin_file = os.path.join(symprefix, self.base, entry[1])
-                print(symprefix)
-                print(origin_file)
+                origin_file = os.path.join(self.base, entry[1])
+                # print(symprefix)
+                # print(origin_file)
                 # A directory
                 if os.path.isdir(origin_file):  
                     target = handle_rename(export_dir, entry)
                     # print(target)
-                    os.symlink(origin_file, target, target_is_directory=True)
+                    os.symlink(symprefix+origin_file, target, target_is_directory=True)
                 # A file
                 elif os.path.isfile(origin_file):  
                     target = handle_rename(export_dir, entry)
-                    os.symlink(origin_file, target, target_is_directory=False)
+                    os.symlink(symprefix+origin_file, target, target_is_directory=False)
                 # A pattern for many files
                 else:
                     target_dir = os.path.join(export_dir, entry[2])
@@ -234,7 +234,7 @@ class GPM():
                         os.makedirs(target_dir)
                     for matching_file in glob.glob(origin_file):
                         target = os.path.join(target_dir, os.path.basename(matching_file))
-                        os.symlink(matching_file, target, target_is_directory=False)
+                        os.symlink(symprefix+matching_file, target, target_is_directory=False)
         
     def create_user(self, export_dir):
         export_URL = os.path.join(get_gpmconfig("GPM","EXPORT_URL"), self.name)
