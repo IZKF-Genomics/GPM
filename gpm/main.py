@@ -157,12 +157,13 @@ def analysis(config_file):
 @click.option('-bcl', default="", show_default=True, help="Define the source of BCL folder for soft linking.")
 @click.option('-fastq', default="", show_default=True, help="Define the source of FASTQ folder for soft linking.")
 @click.option('-multiqc', default="", show_default=True, help="Define the source of the multiqc report for soft linking.")
-def export(export_dir, config, user, analysis, bcl, fastq, multiqc):
+@click.option('-symprefix', default="/mnt/nextgen", show_default=True, help="Define the prefix of soft link from web server to computational server.")
+def export(export_dir, config, user, analysis, bcl, fastq, multiqc, symprefix):
     """Export the raw data, processed data and reports to the export directory by creating soft links without moving around the big files."""
     if os.path.isfile(config):
         gpm = GPM(load_config=config, seqdate=None, application=None, 
                 provider=None, piname=None, institute=None, fastq=None, name=None)
-        gpm.export(export_dir)
+        gpm.export(export_dir, symprefix)
         gpm.add_htaccess(export_dir)
         gpm.create_user(export_dir)
     else:
