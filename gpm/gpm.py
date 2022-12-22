@@ -216,9 +216,11 @@ class GPM():
                     os.makedirs(target)
             else:
                 origin_file = os.path.join(symprefix, self.base, entry[1])
+                print(origin_file)
                 # A directory
                 if os.path.isdir(origin_file):  
                     target = handle_rename(export_dir, entry)
+                    print(target)
                     os.symlink(origin_file, target, target_is_directory=True)
                 # A file
                 elif os.path.isfile(origin_file):  
