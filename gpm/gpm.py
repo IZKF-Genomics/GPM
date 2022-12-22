@@ -191,7 +191,7 @@ class GPM():
 
     def export(self, export_dir, symprefix, tar=False):
         def handle_rename(export_dir, entry):
-            print(os.path.basename(entry[1]))
+            # print(os.path.basename(entry[1]))
             if entry[3]:
                 target = os.path.join(export_dir, entry[2], entry[3])
             else:
@@ -201,7 +201,7 @@ class GPM():
         self.update_config("gpm export")
         export_dir = os.path.abspath(export_dir)
         # symlink_web2comp = get_gpmconfig("GPM", "SYMLINK_From_Web2Comp")
-        # print(symlink_web2comp)
+        
         # Create the target folder
         if not os.path.exists(export_dir):
             os.makedirs(export_dir)
@@ -216,11 +216,12 @@ class GPM():
                     os.makedirs(target)
             else:
                 origin_file = os.path.join(symprefix, self.base, entry[1])
+                print(symprefix)
                 print(origin_file)
                 # A directory
                 if os.path.isdir(origin_file):  
                     target = handle_rename(export_dir, entry)
-                    print(target)
+                    # print(target)
                     os.symlink(origin_file, target, target_is_directory=True)
                 # A file
                 elif os.path.isfile(origin_file):  
