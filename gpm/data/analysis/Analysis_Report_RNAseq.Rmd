@@ -120,7 +120,7 @@ save(DIR_base,DIR_project,DIR_salmon,
 ```{r, echo=FALSE, results="hide", warning=FALSE, message=FALSE}
 description <- "All samples"
 filetag <- str_replace_all(description, " ", "_")
-add_DGEA(description, filetag, samples, volcano=FALSE, maplot=FALSE, sigtable=FALSE)
+add_DGEA(description, filetag, samples, volcano=FALSE, maplot=FALSE, sigtable=FALSE, paired=FALSE)
 rmarkdown::render(paste0('DGEA_',filetag,'.Rmd'), output_format = 'html_document',
                   output_file = paste0('DGEA_',filetag,'.html'))
 ```
@@ -136,7 +136,7 @@ filetag <- str_replace_all(description, " ", "_")
 samples2 <- samples
 # samples2 <- samples[samples$genotype=="WT",]
 samples2$group <- factor(samples2$group, levels = c("control","Treat"))
-add_DGEA(description, filetag, samples2)
+add_DGEA(description, filetag, samples2, paired=FALSE)
 rmarkdown::render(paste0('DGEA_',filetag,'.Rmd'), output_format = 'html_document',
                   output_file = paste0('DGEA_',filetag,'.html'))
 ```

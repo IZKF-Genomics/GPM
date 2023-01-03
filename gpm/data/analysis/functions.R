@@ -24,13 +24,16 @@ spikein_ERCC2method <- function(spikein_ERCC) {
 ## RNAseq
 ###########################################################
 
-add_DGEA <- function(description, tag, filtered_samples, volcano=TRUE, maplot=TRUE, sigtable=TRUE) {
+add_DGEA <- function(description, tag, filtered_samples, volcano=TRUE, maplot=TRUE, sigtable=TRUE, paired=FALSE) {
   scripts  <- readLines("DGEA_template.Rmd")
   scripts  <- gsub(pattern = "TITLEDESCRIPTION", replace = description, x = scripts)
   scripts  <- gsub(pattern = "FILETAG", replace = tag, x = scripts)
+  if (paired) {scripts  <- gsub(pattern = "PAIRED", replace = "paired", x = scripts)} 
+  else {scripts  <- gsub(pattern = "PAIRED", replace = "unpaired", x = scripts)}
+  
   tmp_samplesheet <- paste0("DGEA_", tag, "_data.RData")
   filtered_samples <- filtered_samples[complete.cases(filtered_samples$group),]
-  save(filtered_samples, volcano, maplot, sigtable, file = tmp_samplesheet)
+  save(filtered_samples, volcano, maplot, sigtable, paired, file = tmp_samplesheet)
   scripts  <- gsub(pattern = "SAMPLE_RData", replace = tmp_samplesheet, x = scripts)
   filename <- paste0("DGEA_",tag)
   writeLines(scripts, con=paste0(filename,".Rmd"))
@@ -63,7 +66,7 @@ process_dds_res <- function(tx2gene, dds) {
   return(output)
 }
 
-run_deseq_salmon <- function(samplesheet, spikein=FALSE, countsFromAbundance, lengthcorrection) {
+run_deseq_salmon <- function(samplesheet, spikein=FALSE, paired=FALSE,countsFromAbundance, lengthcorrection) {
   files <- file.path(DIR_salmon, samplesheet$sample, "quant.sf")
   names(files) <- samplesheet$sample
   tx2gene <- fread(FILE_tx2gene, col.names = c("transcript_id", "gene_id", "gene_name"))
@@ -71,39 +74,22 @@ run_deseq_salmon <- function(samplesheet, spikein=FALSE, countsFromAbundance, le
   samplesheet <- samplesheet[colnames(txi$counts),]
 
   if (lengthcorrection) {
-    ddsTxi <- DESeqDataSetFromTximport(txi,
-                                       colData = samplesheet,
-                                       design = ~ group)
+    if (paired) {
+      ddsTxi <- DESeqDataSetFromTximport(txi,
+                                         colData = samplesheet,
+                                         design = ~batch + group)
+    } else {
+      ddsTxi <- DESeqDataSetFromTximport(txi,
+                                         colData = samplesheet,
+                                         design = ~ group)
+    }
   } else {
     # 3mRNAseq
-    ddsTxi <- DESeqDataSetFromTximport(txi, samplesheet, ~group)
-  }
-
-  # ERCC normalization #####################
-  if (spikein==TRUE) {
-    ddsTxi <- estimateSizeFactors_ERCC(ddsTxi)
-  }
-  ##########################################
-  dds <- DESeq(ddsTxi)
-  output <- process_dds_res(tx2gene, dds)
-  return(output)
-}
-
-run_deseq_salmon_batch <- function(samplesheet, spikein=FALSE, countsFromAbundance, lengthcorrection) {
-  files <- file.path(DIR_salmon, samplesheet$sample, "quant.sf")
-  names(files) <- samplesheet$sample
-  tx2gene <- fread(FILE_tx2gene, col.names = c("transcript_id", "gene_id", "gene_name"))
-
-  txi <- tximport(files, type="salmon", tx2gene=tx2gene[,c(1,2)])
-  samplesheet <- samplesheet[colnames(txi$counts),]
-
-  if (lengthcorrection) {
-    ddsTxi <- DESeqDataSetFromTximport(txi,
-                                       colData = samplesheet,
-                                       design = ~batch + group)
-  } else {
-    # 3mRNAseq
-    ddsTxi <- DESeqDataSetFromTximport(txi, samplesheet, ~batch + group)
+    if (paired) {
+      ddsTxi <- DESeqDataSetFromMatrix(txi$counts, samplesheet, ~batch + group)
+    } else {
+      ddsTxi <- DESeqDataSetFromMatrix(txi$counts, samplesheet, ~group)
+    }
   }
 
   # ERCC normalization #####################

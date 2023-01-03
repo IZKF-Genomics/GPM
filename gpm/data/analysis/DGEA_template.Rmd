@@ -56,13 +56,12 @@ File_xlsx_res <- paste0('DGEA_',Tag_this_analysis,'_res.xlsx')
 
 Differential gene expression analysis is done with DESEQ2 package in R [@love2014moderated] and follows the instruction for Salmon quantification ([Analyzing RNA-seq data with DESeq2](https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html)).
 
+This analysis is done with PAIRED data.
+
 ```{r, echo=FALSE, results="hide", warning=FALSE, message=FALSE}
-deseq_output <- run_deseq_salmon(filtered_samples, spikein=spikein_ERCC,
+deseq_output <- run_deseq_salmon(filtered_samples, spikein=spikein_ERCC, paired=paired,
                                  countsFromAbundance=countsFromAbundance,
                                  lengthcorrection=lengthcorrection)
-# deseq_output <- run_deseq_salmon_batch(filtered_samples, spikein=spikein_ERCC,
-#                                        countsFromAbundance=countsFromAbundance,
-#                                        lengthcorrection=lengthcorrection)
 ```
 
 # Interactive Figures {.tabset}
