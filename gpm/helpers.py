@@ -269,6 +269,8 @@ def tardir(path, tar_name):
 
     cmd = " ".join(["tar","-hcf",tar_name,"--absolute-names", path])
     returned_value = subprocess.call(cmd, shell=True)
+    cmd = " ".join(["md5sum", tar_name,">", tar_name+".md5"])
+    returned_value = subprocess.call(cmd, shell=True)
 
 def tar_exports(export_dir, nobehaviour):
     if export_dir == ".":
