@@ -5,7 +5,7 @@ import os
 # import fnmatch
 from .gpm import GPM
 from . import version
-from .helpers import generate_samples, write_file_run_bcl2fastq, write_file_run_cellranger_mkfastq, copyfromdata, show_tree, move_igv, tar_exports, export_empty_folder, get_gpmconfig, get_gpmdata_path
+from .helpers import generate_samples, generate_samples_scrna, write_file_run_bcl2fastq, write_file_run_cellranger_mkfastq, copyfromdata, show_tree, move_igv, tar_exports, export_empty_folder, get_gpmconfig, get_gpmdata_path
 # from pathlib import Path
 import datetime
 # import collections
@@ -103,14 +103,23 @@ def init(fastq, name):
               fastq=fastq, name=name, load_config=False)
     
     gpm.show_config()
-    gpm.show_tree()
-
-    # Todo 
-    click.echo()
-    click.echo(click.style("Next steps:", fg='bright_green'))
-    click.echo("1. Generate the sample sheet under nfcore directory. Ref: gpm samplesheet")
-    click.echo("2. Check the command in nfcore/run_nfcore_"+app.lower()+".sh")
-    click.echo("3. Run the command in screen session with bash nfcore/run_nfcore_"+app.lower()+".sh")
+    
+    if app == "scRNAseq":
+        # In the single-cell RNA-seq the samplesheet is generated with the init command
+        generate_samples_scrna(fastq_dir=fastq, samplesheet_file=f"./{name}/nfcore/samplesheet.csv")
+        gpm.show_tree()
+        click.echo()
+        click.echo(click.style("Next steps:", fg='bright_green'))
+        click.echo("1. Check the command in nfcore/run_nfcore_"+app.lower()+".sh")
+        click.echo("2. Run the command in screen session with bash nfcore/run_nfcore_"+app.lower()+".sh")
+    else:
+        # Todo
+        gpm.show_tree()
+        click.echo()
+        click.echo(click.style("Next steps:", fg='bright_green'))
+        click.echo("1. Generate the sample sheet under nfcore directory. Ref: gpm samplesheet")
+        click.echo("2. Check the command in nfcore/run_nfcore_"+app.lower()+".sh")
+        click.echo("3. Run the command in screen session with bash nfcore/run_nfcore_"+app.lower()+".sh")
  
 ###################################################################
 ## samplesheet

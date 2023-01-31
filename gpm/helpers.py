@@ -109,6 +109,7 @@ def fastq_dir_to_samplesheet(
     sanitise_name=False,
     sanitise_name_delimiter="_",
     sanitise_name_index=1,
+    sc=False,
 ):
     def sanitize_sample(path, extension):
         """Retrieve sample id from filename"""
@@ -154,14 +155,20 @@ def fastq_dir_to_samplesheet(
             os.makedirs(out_dir)
 
         with open(samplesheet_file, "w") as fout:
-            header = ["sample", "fastq_1", "fastq_2", "strandedness"]
+            if sc:
+                header = ["sample", "fastq_1", "fastq_2"]
+            else:
+                header = ["sample", "fastq_1", "fastq_2", "strandedness"]
             fout.write(",".join(header) + "\n")
             for sample, reads in sorted(read_dict.items()):
                 for idx, read_1 in enumerate(reads["R1"]):
                     read_2 = ""
                     if idx < len(reads["R2"]):
                         read_2 = reads["R2"][idx]
-                    sample_info = ",".join([sample, read_1, read_2, strandedness])
+                    if sc:
+                        sample_info = ",".join([sample, read_1, read_2])
+                    else:
+                        sample_info = ",".join([sample, read_1, read_2, strandedness])
                     fout.write(f"{sample_info}\n")
     else:
         error_str = (
@@ -193,6 +200,19 @@ def generate_samples(STRANDEDNESS, FASTQ_DIR, SAMPLESHEET_FILE,
         sanitise_name=SANITISE_NAME,
         sanitise_name_delimiter=SANITISE_NAME_DELIMITER,
         sanitise_name_index=SANITISE_NAME_INDEX,
+    )
+
+def generate_samples_scrna(fastq_dir, samplesheet_file):
+    """
+    Reads must be Must be aligned with: "[Sample Name]_S1_L00[Lane Number]_[Read Type]_001.fastq.gz"
+    Besides that, the sample name given in the samplesheet must be the same that is present in the reads name.
+    As explained here: https://nf-co.re/scrnaseq/2.1.0/usage#if-using-cellranger
+    """
+    fastq_dir_to_samplesheet(
+        fastq_dir=fastq_dir,
+        samplesheet_file=samplesheet_file,
+        sanitise_name=True,
+        sc=True,
     )
 
 def write_file_run_bcl2fastq(rawfolder, targetfolder):
