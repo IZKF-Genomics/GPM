@@ -53,9 +53,10 @@ def demultiplex(raw, output, sc):
     
     if sc:
         write_file_run_cellranger_mkfastq(raw, output)
+        copyfromdata("cellranger/samplesheet.csv", output)
     else:
         write_file_run_bcl2fastq(raw, output)
-    copyfromdata("bcl2fastq/samplesheet.csv", output)
+        copyfromdata("bcl2fastq/samplesheet.csv", output)
 
     show_tree(output)
     click.echo()
