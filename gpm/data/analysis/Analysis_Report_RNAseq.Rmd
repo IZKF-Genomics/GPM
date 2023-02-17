@@ -16,6 +16,7 @@ bibliography: references.bib
 ---
 
 ```{r conig, echo=FALSE, results="hide", warning=FALSE, message=FALSE}
+# rmarkdown::render('Analysis_Report_RNAseq.Rmd', output_format = 'html_document', output_file ='Analysis_Report_RNAseq.html')
 library(stringr)
 library("readr")
 library(tidyr)
