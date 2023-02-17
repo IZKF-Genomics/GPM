@@ -2,11 +2,16 @@
 # nextflow run nf-core/scrnaseq -profile test,docker
 
 
-nextflow run nf-core/scrnaseq -r 2.1.0 -profile docker \
+nextflow run nf-core/scrnaseq -profile docker \
     --input samplesheet.csv \
-    --outdir result \
-    --reads 'FASTQ_DIR/*/*_R{1,2}_*.fastq.gz' \
-    --type '10x' \
-    --chemistry 'V3' \
-    --genome gencode_hg38 \ # Please define the genome ID: hg38, mm10
-    --multiqc_title TITLE_NAME
+    --outdir results \
+    --genome GRCh38 \
+    --cellranger_index {cellranger-genome-reference} \ 
+    --aligner cellranger  \
+    --protocol 10XV3
+
+
+# Options for --genome:
+# GRCh38, GRCm39, mm10
+# Example for --cellranger_index: (Specify a pre-calculated cellranger index. Has to correspond and match the genome parameter's type)
+# '/data/shared_env/10xGenomics/refdata-gex-GRCh38-2020-A'
