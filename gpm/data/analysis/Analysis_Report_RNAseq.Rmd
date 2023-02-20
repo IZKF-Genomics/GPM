@@ -112,6 +112,7 @@ save(DIR_base,DIR_project,DIR_salmon,
      FILE_tx2gene,
      organism,
      Fig_width,Fig_height,
+     countsFromAbundance,lengthcorrection,
      CUTOFF_Quantification, CUTOFF_ADJP, spikein_ERCC,
      samples, file = paste0(DIR_project, "data.RData"))
 ```

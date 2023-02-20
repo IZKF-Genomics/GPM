@@ -86,9 +86,9 @@ run_deseq_salmon <- function(samplesheet, spikein=FALSE, paired=FALSE,countsFrom
   } else {
     # 3mRNAseq
     if (paired) {
-      ddsTxi <- DESeqDataSetFromMatrix(txi$counts, samplesheet, ~batch + group)
+      ddsTxi <- DESeqDataSetFromMatrix(round(txi$counts), samplesheet, ~batch + group)
     } else {
-      ddsTxi <- DESeqDataSetFromMatrix(txi$counts, samplesheet, ~group)
+      ddsTxi <- DESeqDataSetFromMatrix(round(txi$counts), samplesheet, ~group)
     }
   }
 
