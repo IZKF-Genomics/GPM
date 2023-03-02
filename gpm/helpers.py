@@ -251,6 +251,26 @@ def write_file_run_cellranger_mkfastq(rawfolder, targetfolder):
         for line in contents:
             print(line, file=f2)
 
+def write_file_run_cellranger_merge_lanes(rawfolder, targetfolder):
+    data_dir = os.path.join(os.path.dirname(__file__), "data", "cellranger")
+    original = os.path.join(data_dir, "run_merge_lanes.sh")
+    target = os.path.join(targetfolder, "run_merge_lanes.sh")
+    with open(original) as f1:
+        contents = [l.strip() for l in f1.readlines()]
+    flowcell_id = targetfolder.split("/")[-1][-9:]
+    FASTQ_path = os.path.join(targetfolder, "mkfastq", "outs", "fastq_path", flowcell_id)
+
+    modifier = {"CELLRANGER_FASTQ_PATH": FASTQ_path,
+                "OUTPUT_DIR": os.path.join(targetfolder, "merged_fastq")}
+    for i,line in enumerate(contents):
+        for old, new in modifier.items():
+            if old in line:
+                contents[i] = line.replace(old, new)
+
+    with open(target, "w") as f2:
+        for line in contents:
+            print(line, file=f2)
+
 def copyfromdata(filename, targetdir):
     data_dir = os.path.join(os.path.dirname(__file__), "data")
     original = os.path.join(data_dir, filename)

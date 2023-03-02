@@ -5,7 +5,7 @@ import os
 # import fnmatch
 from .gpm import GPM
 from . import version
-from .helpers import generate_samples, generate_samples_scrna, write_file_run_bcl2fastq, write_file_run_cellranger_mkfastq, copyfromdata, show_tree, move_igv, tar_exports, export_empty_folder, get_gpmconfig, get_gpmdata_path
+from .helpers import generate_samples, generate_samples_scrna, write_file_run_bcl2fastq, write_file_run_cellranger_mkfastq, write_file_run_cellranger_merge_lanes, copyfromdata, show_tree, move_igv, tar_exports, export_empty_folder, get_gpmconfig, get_gpmdata_path
 # from pathlib import Path
 import datetime
 # import collections
@@ -50,9 +50,9 @@ def demultiplex(raw, output, sc):
         click.echo(output)
         sys.exit()
 
-    
     if sc:
         write_file_run_cellranger_mkfastq(raw, output)
+        write_file_run_cellranger_merge_lanes(raw, output)
         copyfromdata("cellranger/samplesheet.csv", output)
     else:
         write_file_run_bcl2fastq(raw, output)
