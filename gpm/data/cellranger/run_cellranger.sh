@@ -4,7 +4,7 @@
 # bash run_cellranger.sh
 
 # Please execute this command in the directory OUTPUT_DIR
-cellranger mkfastq --id=mkfastq \
+cellranger mkfastq --id=mkfastq --localcores=30 \
                    --run=FLOWCELL_DIR \
                    --csv=./samplesheet.csv
 
