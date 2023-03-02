@@ -63,9 +63,9 @@ def demultiplex(raw, output, sc):
     click.echo(click.style("Next steps:", fg='bright_green'))
     click.echo("1. Modify samplesheet.csv with the proper information. Please add Sample_Project with the correct format (YYMMDD_Provider_PI_Institute_App).")
     if sc:
-        click.echo("2. Check and modify run_cellranger.sh")
-        click.echo("3. Run run_cellranger.sh with the command below: (Recommend to run it in screen session)")
-        click.echo("\tbash run_cellranger.sh")
+        click.echo("2. Check and modify run_cellranger_mkfastq.sh")
+        click.echo("3. Run run_cellranger_mkfastq.sh with the command below: (Recommend to run it in screen session)")
+        click.echo("\tbash run_cellranger_mkfastq.sh")
     else:
         click.echo("2. Check and modify run_bcl2fastq.sh")
         click.echo("3. Run run_bcl2fastq.sh with the command below: (Recommend to run it in screen session)")
@@ -112,6 +112,13 @@ def init(fastq, name):
         click.echo(click.style("Next steps:", fg='bright_green'))
         click.echo("1. Check the command in nfcore/run_nfcore_"+app.lower()+".sh")
         click.echo("2. Run the command in screen session with bash nfcore/run_nfcore_"+app.lower()+".sh")
+    elif app == "scVDJseq":
+        # In the single-cell VDJ-seq the samplesheet is generated with the init command
+        gpm.show_tree()
+        click.echo()
+        click.echo(click.style("Next steps:", fg='bright_green'))
+        click.echo("1. Check the command in cellranger/run_cellranger_scVDJseq.sh")
+        click.echo("2. Run the command in screen session with bash cellranger/run_cellranger_scVDJseq.sh")
     else:
         # Todo
         gpm.show_tree()

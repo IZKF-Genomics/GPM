@@ -235,8 +235,8 @@ def write_file_run_bcl2fastq(rawfolder, targetfolder):
 
 def write_file_run_cellranger_mkfastq(rawfolder, targetfolder):
     data_dir = os.path.join(os.path.dirname(__file__), "data", "cellranger")
-    original = os.path.join(data_dir, "run_cellranger.sh")
-    target = os.path.join(targetfolder, "run_cellranger.sh")
+    original = os.path.join(data_dir, "run_cellranger_mkfastq.sh")
+    target = os.path.join(targetfolder, "run_cellranger_mkfastq.sh")
     with open(original) as f1:
         contents = [l.strip() for l in f1.readlines()]
     
