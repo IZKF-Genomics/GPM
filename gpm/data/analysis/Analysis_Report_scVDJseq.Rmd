@@ -84,9 +84,8 @@ Raw data was demultiplexed with cellranger mkfastq (10x Genomics v6.1.1) to gene
 
 # Reports of Cellranger multi for GEX and VDJ
 
-### [Sample 1](GPM_URL_2_Processed_data/Sample_1/outs/per_sample_outs/Sample_1/web_summary.html")
-
-### [Sample 2](GPM_URL_2_Processed_data/Sample_2/outs/per_sample_outs/Sample_2/web_summary.html")
+### [Sample 1](GPM_URL_2_Processed_data/Sample_1/outs/per_sample_outs/Sample_1/web_summary.html)
+### [Sample 2](GPM_URL_2_Processed_data/Sample_2/outs/per_sample_outs/Sample_2/web_summary.html)
 
 # References
 
