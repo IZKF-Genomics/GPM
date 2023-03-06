@@ -28,7 +28,7 @@ DIR_base <- "GPM_DIR_BASE/"
 DIR_project <- paste0(DIR_base, "analysis/")
 DIR_cellranger <- paste0(DIR_base, "cellranger/")
 DIR_multi_output <- paste0(DIR_cellranger, "multi_output/")
-DIR_count_published <- "GPM_URL_2_Processed_data/cellranger/count/"
+DIR_multi_output_published <- "GPM_URL_2_Processed_data/multi_output/"
 ```
 
 ![](RWTH_IZKF_GF_Logo_rgb.png)
@@ -55,7 +55,6 @@ Please refer to our [Publication Policy](https://genomics.rwth-aachen.de/service
       + sample_feature_bc_matrix
       + bam and bai files
       + other analysis results (umap, tsne, pca, diffexp and clustering)
-      
     * vdj folder
       + vloupe file for browsing in Loupe browser
       + consensus files (fasta, fai, bam, bai, annotation)
@@ -87,11 +86,11 @@ Raw data was demultiplexed with cellranger mkfastq (10x Genomics v7.1.0) to gene
 # Reports of Cellranger multi for GEX and VDJ
 
 ```{r load, echo=FALSE, results="hide", warning=FALSE, message=FALSE}
-samples <- list.dirs(path = DIR_count, full.names = F, recursive = F)
+samples <- list.dirs(path = DIR_multi_output, full.names = F, recursive = F)
 summaryFiles <- vector(mode="list", length=length(samples))
 names(summaryFiles) <- samples
 for (i in 1:length(samples)) {
-  summaryFiles[[i]] <- paste0(DIR_count_published,samples[[i]],"/outs/web_summary.html")
+  summaryFiles[[i]] <- paste0(DIR_multi_output_published,samples[[i]],"/outs/web_summary.html")
 }
 ```
 
@@ -103,8 +102,6 @@ for( i in 1:length(samples)){
 }
 ```
 
-### [Sample 1](GPM_URL_2_Processed_data/Sample_1/outs/per_sample_outs/Sample_1/web_summary.html)
-### [Sample 2](GPM_URL_2_Processed_data/Sample_2/outs/per_sample_outs/Sample_2/web_summary.html)
 
 # References
 
