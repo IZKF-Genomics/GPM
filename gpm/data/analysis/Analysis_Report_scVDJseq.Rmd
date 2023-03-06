@@ -80,7 +80,7 @@ Please make sure that you store these data in a lab-wise level. Genomics Facilit
 
 # Method description
 
-Raw data was demultiplexed with cellranger mkfastq (10x Genomics v6.1.1) to generate fastq files for both GEX and VDJ libraries. The fastq files were then analyzed by the cellranger multi with default parameters. This report was generated using custom scripts in R version 4.2.2. 
+Raw data was demultiplexed with cellranger mkfastq (10x Genomics v7.1.0) to generate fastq files for both GEX and VDJ libraries. The fastq files were then analyzed by the cellranger multi with default parameters. This report was generated using custom scripts in R version 4.2.2. 
 
 # Reports of Cellranger multi for GEX and VDJ
 
