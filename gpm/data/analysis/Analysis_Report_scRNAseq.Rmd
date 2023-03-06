@@ -72,7 +72,7 @@ Please make sure that you store these data in a lab-wise level. Genomics Facilit
 
 FASTQ files were generated using cellranger mkfastq (10x Genomics). The generated FASTQ files are analyzed by nfcore/scrnaseq pipeline (version 2.1.0) with cellranger aligner. This report was generated using custom scripts in R version 4.2.2. 
 
-# Reports of Cellranger
+# Reports of cellranger
 
 ```{r load, echo=FALSE, results="hide", warning=FALSE, message=FALSE}
 samples <- list.dirs(path = DIR_count, full.names = F, recursive = F)
