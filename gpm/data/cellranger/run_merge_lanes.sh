@@ -5,8 +5,8 @@
 #  3) Run MultiQC
 #  4) Delete merged FASTQs (Because these files are only used for QC, not for downstream analyses)
 
-FASTQ_Inout="CELLRANGER_FASTQ_PATH"
-FASTQ_Output="OUTPUT_DIR"
+FASTQ_Inout="../CELLRANGER_FASTQ_PATH"
+FASTQ_Output="../OUTPUT_DIR"
 
 ###### Merging lanes #######################################
 mkdir -p $FASTQ_Output
