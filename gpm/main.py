@@ -233,7 +233,7 @@ def clean(ctx, targetfolder, no):
             listfiles = glob.glob(target_pattern)
             if listfiles:
                 size_of_files = sum([os.stat(f).st_size for f in listfiles])
-                if size_of_files == 0:
+                if size_of_files == 4096:
                     size_of_files = sum([get_size(f) for f in listfiles])
                 size_of_files = round(size_of_files/(1024*1024*1024),3)
                 click.echo("Clean {:7.3f} GB: {}".format(size_of_files, target_pattern))

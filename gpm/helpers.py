@@ -427,5 +427,4 @@ def get_size(start_path):
             # skip if it is symbolic link
             if not os.path.islink(fp):
                 total_size += os.path.getsize(fp)
-
     return total_size
