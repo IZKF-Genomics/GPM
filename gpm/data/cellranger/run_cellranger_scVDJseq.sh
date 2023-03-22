@@ -9,13 +9,14 @@ mkdir -p ./multi_output
 
 Local_Cores=30
 
-Sample_ID="sample_1"
-# Sample_ID="sample_1 sample_2"
-
 cd ./multi_output
+
+Sample_ID=`ls ../${multi_config}*.csv`
 for sample in ${Sample_ID}; do
-  Config_File="../multi_config_${sample}.csv"
-  cellranger multi --id=$sample --csv=$Config_File --localcores=$Local_Cores
+  sample_name=${sample#*config_}
+  sample_name=${sample_name%.csv*}
+  Config_File="../${sample}.csv"
+  cellranger multi --id=$sample_name --csv=$Config_File --localcores=$Local_Cores
 done
 cd ../
 
