@@ -5,7 +5,7 @@ import os
 # import fnmatch
 from .gpm import GPM
 from . import version
-from .helpers import generate_samples, generate_samples_scrna, write_file_run_bcl2fastq, write_file_run_cellranger_mkfastq, write_file_run_cellranger_merge_lanes, copyfromdata, show_tree, move_igv, tar_exports, export_empty_folder, get_gpmconfig, get_gpmdata_path
+from .helpers import generate_samples, generate_samples_scrna, write_file_run_bcl2fastq, write_file_run_cellranger_mkfastq, write_file_run_cellranger_merge_lanes, copyfromdata, show_tree, move_igv, tar_exports, export_empty_folder, get_gpmconfig, get_size
 # from pathlib import Path
 import datetime
 # import collections
@@ -225,7 +225,7 @@ def tar_export(export_dir, no):
 @click.pass_context
 def clean(ctx, targetfolder, no):
     """Clean the temporary files and folders in target folders which shouldn't be archived or backup, such as *fastq.gz, nf-core work folder and result folder."""
-
+    
     def clear_a_folder(target):
         for p in get_gpmconfig("Clean","patterns"):
             target_pattern = os.path.join(target,p)
@@ -233,6 +233,8 @@ def clean(ctx, targetfolder, no):
             listfiles = glob.glob(target_pattern)
             if listfiles:
                 size_of_files = sum([os.stat(f).st_size for f in listfiles])
+                if size_of_files == 0:
+                    size_of_files = sum([get_size(f) for f in listfiles])
                 size_of_files = round(size_of_files/(1024*1024*1024),3)
                 click.echo("Clean {:7.3f} GB: {}".format(size_of_files, target_pattern))
                 # click.echo("Clean "+target_pattern)
