@@ -5,7 +5,7 @@ import os
 # import fnmatch
 from .gpm import GPM
 from . import version
-from .helpers import generate_samples, generate_samples_scrna, write_file_run_bcl2fastq, write_file_run_cellranger_mkfastq, write_file_run_cellranger_merge_lanes, copyfromdata, show_tree, move_igv, tar_exports, export_empty_folder, get_gpmconfig, get_size
+from .helpers import generate_samples, generate_samples_scrna, write_file_run_bcl2fastq, write_file_run_cellranger_mkfastq, write_file_run_cellranger_merge_lanes, copyfromdata, show_tree, move_igv, tar_exports, export_empty_folder, get_gpmconfig, get_size, write_file_run_qc
 # from pathlib import Path
 import datetime
 # import collections
@@ -54,13 +54,25 @@ def demultiplex(raw, output, sc):
         write_file_run_cellranger_mkfastq(raw, output)
         write_file_run_cellranger_merge_lanes(raw, output)
         copyfromdata("cellranger/samplesheet.csv", output)
+        # If MiSeq was used as the sequencer the data is already demultiplexed!
+        if "miseq" in raw:
+            write_file_run_qc(raw, output)
+
     else:
         write_file_run_bcl2fastq(raw, output)
         copyfromdata("bcl2fastq/samplesheet.csv", output)
+        if "miseq" in raw:
+            write_file_run_qc(raw, output)
 
     show_tree(output)
     click.echo()
     click.echo(click.style("Next steps:", fg='bright_green'))
+    if "miseq" in raw:
+        click.echo("i. Check and modify run_qc.sh")
+        click.echo("ii. Run run_qc.sh with the command below: (Recommend to run it in screen session)")
+        click.echo("\tbash run_qc.sh")
+        click.echo("iii. In case a re-run of demultiplexing is required:")
+            
     click.echo("1. Modify samplesheet.csv with the proper information. Please add Sample_Project with the correct format (YYMMDD_Provider_PI_Institute_App).")
     if sc:
         click.echo("2. Check and modify run_cellranger_mkfastq.sh")
