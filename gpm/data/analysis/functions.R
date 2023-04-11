@@ -438,13 +438,10 @@ miRNAseq_maplot_plotly <- function(res_combined) {
 }
 
 miRNAseq_heatmap_plotly <- function(res_combined) {
-  res_reorder <- res_combined[order(res_combined$padj, decreasing = FALSE), ]
-  res_reorder <- res_reorder[1:500,]
+  res_reorder <- res_miRNA$res_combined[res_miRNA$res_combined$sig == "Sig.", ]
   heatmap_t <- log10(res_reorder[,10:(dim(res_reorder)[2])]+1)
   rownames(heatmap_t) <- c()
-  # heatmaply(heatmap_t, main = "Heatmap of miRNAs ranked by adj. p-value",
-  #           method = "plotly")
-  heatmaply(heatmap_t, main = "Heatmap of top 500 miRNAs ranked by adj. p-value",
+  heatmaply(heatmap_t, main = "Heatmap of DE miRNAs",
             method = "plotly", #labRow=res_reorder$gene_name,
             xlab = "Samples", ylab = "miRNA", width = Fig_width, height = Fig_height+200,
             showticklabels = c(TRUE, FALSE), show_dendrogram = c(FALSE, TRUE),
@@ -507,9 +504,7 @@ miRNAseq_heatmap_ggplot2 <- function(res_miRNA){
     else
       return(0)
   }
-
-  res_reorder <- res_miRNA$res_combined[order(res_miRNA$res_combined$padj, decreasing = FALSE), ]
-  res_reorder <- res_reorder[1:500,]
+  res_reorder <- res_miRNA$res_combined[res_miRNA$res_combined$sig == "Sig.", ]
   samples_names <- colnames(res_reorder)[10:(dim(res_reorder)[2])]
   heatmap_t <- scale(log10(res_reorder[,10:(dim(res_reorder)[2])]+1))
   ord <- hclust( dist(heatmap_t, method = "euclidean"), method = "ward.D" )$order
@@ -521,7 +516,7 @@ miRNAseq_heatmap_ggplot2 <- function(res_miRNA){
   heatmap_t$sample <- factor( heatmap_t$sample, levels = samples_names)
 
   fig <- ggplot(heatmap_t, aes(sample, gene_name, fill=Expression)) +
-        geom_tile() + ggtitle("Heatmap of top 500 genes ranked by padj") +
+        geom_tile() + ggtitle("Heatmap of DE genes") +
         ylab("Genes") + xlab("Samples") + scale_fill_viridis() +
         theme(plot.title = element_text(hjust = 0.5),
               axis.ticks.y = element_blank(),
