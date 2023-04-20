@@ -5,7 +5,7 @@ import os
 # import fnmatch
 from .gpm import GPM
 from . import version
-from .helpers import generate_samples, generate_samples_scrna, write_file_run_bcl2fastq, write_file_run_cellranger_mkfastq, write_file_run_cellranger_merge_lanes, copyfromdata, show_tree, move_igv, tar_exports, export_empty_folder, get_gpmconfig, get_size, write_file_run_qc
+from .helpers import generate_config_file, generate_samples, generate_samples_scrna, write_file_run_bcl2fastq, write_file_run_cellranger_mkfastq, write_file_run_cellranger_merge_lanes, copyfromdata, show_tree, move_igv, tar_exports, export_empty_folder, get_gpmconfig, get_size, write_file_run_qc
 # from pathlib import Path
 import datetime
 # import collections
@@ -37,7 +37,8 @@ def main():
 @click.option('-r', '--raw', help=helps["raw"], required=True)
 @click.option('-o', '--output', help=helps["demultiplex_output"], required=True)
 @click.option('-sc', default=False, show_default=True, help="Flag for single-cell sequencing, otherwise bulk sequencing is set as default.")
-def demultiplex(raw, output, sc):
+@click.option('-n', '--name', default=None, help=helps["name"], required=False)
+def demultiplex(raw, output, sc, name):
     """A wrapper of bcl2fastq programm and cellranger mkfastq for demultiplexing."""
     # if not output:
     #     rawname = os.path.basename(raw)
@@ -63,6 +64,11 @@ def demultiplex(raw, output, sc):
         copyfromdata("bcl2fastq/samplesheet.csv", output)
         if "miseq" in raw:
             write_file_run_qc(raw, output)
+
+    if name:
+        # Generate config file in case an export needed without any analysis
+        fastq = os.path.join(os.getcwd(), output)
+        generate_config_file(name, fastq,)
 
     show_tree(output)
     click.echo()

@@ -11,6 +11,10 @@ import string
 from configparser import ConfigParser
 import codecs
 import json
+import configparser
+import getpass
+from datetime import date, datetime
+from gpm import version
 
 class DisplayablePath(object):
     display_filename_prefix_middle = '├──'
@@ -448,3 +452,55 @@ def get_size(start_path):
             if not os.path.islink(fp):
                 total_size += os.path.getsize(fp)
     return total_size
+
+
+def generate_config_file(name, fastq):
+    base = os.path.join(os.getcwd(), name)
+    config_path = os.path.join(base, "config.ini")
+    split_name = name.split("_")
+    
+    #seqdate
+    seqdate = split_name[0]
+    try:
+        datetime.datetime.strptime(seqdate, "%y%m%d")
+    except ValueError:
+        click.echo("This is the incorrect date string format. It should be YYMMDD")
+        sys.exit()
+    # app
+    application = split_name[4]
+    if application not in get_gpmconfig("GPM","APPLICATIONS"):
+        click.echo("Please type exactly the app name in the list: "+" ".join(get_gpmconfig("GPM","APPLICATIONS")))
+        sys.exit()
+    # surnames
+    provider = split_name[1].capitalize()
+    piname = split_name[2].capitalize()
+    institute = split_name[3]
+
+    if not os.path.isfile(config_path):
+        cfgfile = open(config_path, "w")
+        Config = configparser.ConfigParser(strict=False)
+        Config.add_section("Project")
+        Config.set("Project", "Name", name)
+        Config.set("Project", "Sequencing Date", seqdate)
+        Config.set("Project", "Principal investigator", piname)
+        Config.set("Project", "Sample Provider", provider)
+        Config.set("Project", "Institute", institute)
+        Config.set("Project", "Application", application)
+        today = date.today()
+        Config.set("Project", "Created Date", today.isoformat())
+        now = datetime.now()
+        Config.set("Project", "Created Time", now.strftime("%H:%M:%S"))
+        Config.set("Project", "GPM Version", version)
+        username = getpass.getuser()
+        Config.set("Project", "User", username)
+        Config.set("Project", "FASTQ Path", fastq)
+        Config.set("Project", "Base Path", base)
+
+        Config.add_section("Log")
+        Config.set("Log", now.strftime("%Y-%m-%d %H-%M-%S"), username + " gpm demultiplex " + base)
+
+        Config.write(cfgfile)
+        cfgfile.close()
+    else:
+        click.echo("***** config.ini file exists already. Please remove it if you want to create a new config.ini.")
+        sys.exit()
