@@ -37,3 +37,14 @@ jobs:
     - name: Test with pytest
       run: |
         pytest
+    - name: Re install 'main' branch in case of failure
+      if: always()
+      run: |
+        pytest
+        run: |
+          if [[ ${{ job.status }} == 'failure' ]]; then
+            git fetch
+            git checkout origin/main
+            python -m pip install --upgrade pip
+            pip install -r requirements.txt
+          fi
