@@ -20,6 +20,8 @@ bibliography: references.bib
 library(stringr)
 library("readr")
 library(tidyr)
+library(dplyr)
+library(openxlsx)
 library(data.table)
 options(warn = -1)
 options(knitr.duplicate.label = "allow")

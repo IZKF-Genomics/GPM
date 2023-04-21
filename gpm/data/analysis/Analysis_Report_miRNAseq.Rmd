@@ -19,6 +19,8 @@ bibliography: references.bib
 library("heatmaply")
 library("readr")
 library(tidyr)
+library(dplyr)
+library(openxlsx)
 library(data.table)
 options(warn = -1)
 
