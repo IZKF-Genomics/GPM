@@ -8,4 +8,4 @@ cellranger mkfastq --id=mkfastq --localcores=30 \
                    --run=FLOWCELL_DIR \
                    --csv=./samplesheet.csv
 
-# Below script can be used to run cellranger count by modifying sample names and adding project name.
+bash run_merge_lanes.sh
