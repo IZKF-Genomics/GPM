@@ -1,4 +1,4 @@
-# Please make sure cellranger-6.1.1 is available in your environment
+# Please make sure cellranger-7.1.0 is available in your environment
 # You should review the paramenters and run:
 # screen -S cellranger
 # bash run_cellranger.sh
