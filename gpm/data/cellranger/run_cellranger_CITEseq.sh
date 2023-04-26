@@ -1,6 +1,6 @@
 #!/bin/bash -l
 
-#make sure cellranger-6.1.1 is available in your environment
+#make sure cellranger-7.1.0 is available in your environment
 #otherwise scource shared enviroment from /data/shared_env/shared_paths.sh
 #this script can be run directly from shell
 
