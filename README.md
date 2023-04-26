@@ -27,12 +27,12 @@ gpm --help
 ### Bulk sequencing applications:
 
 ```
-gpm demultiplex --raw PATH_TO_BCL --output OUTPUT_DIR
+gpm demultiplex --raw PATH_TO_BCL --output OUTPUT_DIR --name YYMMDD_Name1_Name2_Institute_App
 ```
 This command will prepare two files for you:
 - samplesheet.csv
 - run_bcl2fastq.sh
-
+- config.ini: (only in case name is specied) All the initial information required for fastq/bcl export.
 You will have to modify samplesheet.csv with your sample information and indeces, then run run_bcl2fastq.sh by the following command:
 ```
 screen -S fastq
