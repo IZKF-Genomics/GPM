@@ -1,16 +1,18 @@
 import sys
 import click
+import configparser
 # import re
 import os
 # import fnmatch
 from .gpm import GPM
 from . import version
-from .helpers import generate_samples, generate_samples_scrna, write_file_run_bcl2fastq, write_file_run_cellranger_mkfastq, write_file_run_cellranger_merge_lanes, copyfromdata, show_tree, move_igv, tar_exports, export_empty_folder, get_gpmconfig, get_size, write_file_run_qc
+from .helpers import generate_samples, generate_samples_scrna, write_file_run_bcl2fastq, write_file_run_cellranger_mkfastq, write_file_run_cellranger_merge_lanes, copyfromdata, show_tree, move_igv, tar_exports, export_empty_folder, get_gpmconfig, get_size, write_file_run_qc, update_config_with_name, generate_config_file
 # from pathlib import Path
 import datetime
 # import collections
 import glob
 import subprocess
+
 
 helps = {"raw": 'Enter the path to the directory for the BCL raw data, e.g. 210903_NB501289_0495_AHLLHTBGXJ',
          "app": "Choose the application ("+" ".join(get_gpmconfig("GPM","APPLICATIONS"))+")",
@@ -50,6 +52,10 @@ def demultiplex(raw, output, sc, miseq):
         click.echo("The defined output directory exists.")
         click.echo(output)
         sys.exit()
+    
+    # Generate config file in case an export needed without any analysis
+    fastq = os.path.join(os.getcwd(), output)
+    generate_config_file(fastq, output, raw)
 
     if sc:
         write_file_run_cellranger_mkfastq(raw, output)
@@ -114,7 +120,8 @@ def init(fastq, name):
     gpm = GPM(seqdate=seqdate, application=app, 
               provider=provider, piname=piname, institute=institute,
               fastq=fastq, name=name, load_config=False)
-    
+    # TODO: add the bcl path to the confidg file (first set and then write!)\
+    gpm.add_bcl_to_config()
     gpm.show_config()
     
     if app == "scRNAseq":
@@ -175,6 +182,35 @@ def analysis(config_file):
               provider=None, piname=None, institute=None, fastq=None, name=None)
     gpm.analysis()
     gpm.show_tree()
+
+###################################################################
+## export_raw
+###################################################################
+@main.command()
+@click.argument('export_dir')
+@click.option('-n', '--name', help=helps["name"], required=True)
+@click.option('-c','--config', default="config.ini", show_default=True, help="Define the config.ini file of an existed project.")
+@click.option('-s', '--symprefix', default="/mnt/nextgen", show_default=True, help="Define the prefix of soft link from web server to computational server.")
+@click.option('-multiqc', is_flag=True, default=False, show_default=True, flag_value=True, help="Include multiqc report")
+def export_raw(export_dir, name, config, symprefix, multiqc):
+    """Prepare the Rmd templates for basic analysis"""
+    # Add the new data to the config file
+    Config = configparser.ConfigParser()
+    config_path = os.path.join(os.getcwd(),config)
+    Config.read(config_path)
+    Config = update_config_with_name(name, Config)
+
+    cfgfile = open(config_path, "w")
+    Config.write(cfgfile)
+    cfgfile.close()
+
+    # Export according to the config file 
+    gpm = GPM(load_config=config, seqdate=None, application=None, 
+            provider=None, piname=None, institute=None, fastq=None, name=None)
+    gpm.export_raw(export_dir, symprefix,  Config["Project"]["Base Path"], Config["Project"]["FASTQ Path"], multiqc, tar=False )
+    gpm.add_htaccess(export_dir)
+    gpm.create_user(export_dir)
+
 
 ###################################################################
 ## export

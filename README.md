@@ -32,6 +32,7 @@ gpm demultiplex --raw PATH_TO_BCL --output OUTPUT_DIR
 This command will prepare two files for you:
 - samplesheet.csv
 - run_bcl2fastq.sh
+- config.ini
 
 You will have to modify samplesheet.csv with your sample information and indeces, then run run_bcl2fastq.sh by the following command:
 ```
@@ -85,6 +86,21 @@ gpm analysis config.ini
 ```
 
 This command will generate several Rmd files under analsis folder with all the parameters are properly defined according to the project information. Eventually, Analysis_Report_APP.html could be the landing page for the clients where they can download the data, browse the results and read the analysis reports.
+
+## Export Raw
+
+```
+- `gpm export-raw --symprefix MOUNT_PREFIX --config config.ini -multiqc --name YYMMDD_Name1_Name2_Institute_App EXPORT_DIR_PATH
+```
+- multiqc is a bolean flag indicating if the multiqc report needs to be included as well.
+- The name of the project folder is strictly controlled:
+    - YYMMDD: The date must be a valid date.
+    - Name1: The surname of the contact person.
+    - Name2: The surname of the PI or the group name.
+    - Institute: The name of the department or company.
+    - App: The application defined in the gpm.config file.
+
+This command will create a folder in the export dir path, containg the sym links to the fastq folder, bcl folder, and optionally the multiqc report.
 
 ## Configuration files
 

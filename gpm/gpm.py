@@ -7,7 +7,7 @@ import sys
 import shutil
 import click
 import glob
-from .helpers import DisplayablePath, tardir, htpasswd_create_user, get_gpmconfig, get_gpmdata_path, get_config
+from .helpers import DisplayablePath, tardir, htpasswd_create_user, get_gpmconfig, get_gpmdata_path, get_config, tar_exports
 from pathlib import Path
 
 
@@ -137,6 +137,31 @@ class GPM():
             Config.write(cfgfile)
             cfgfile.close()
 
+    def add_bcl_to_config(self):
+        """Adding the bcl path to the project's config file from the fastq config file"""
+        # Getting the path from the fastq config file
+        demultiplexing_config_path = os.path.join(self.fastq, "config.ini")
+        if not os.path.isfile(demultiplexing_config_path):
+            click.echo("***** config.ini file doesn't exist in the *fastq folder*. unable to add bcl path to the config file")
+            sys.exit()
+        else:
+            Config_demultiplexing = configparser.ConfigParser()
+            Config_demultiplexing.read(demultiplexing_config_path)
+            click.echo("line 151: demultiplexing_config_path: " + demultiplexing_config_path)
+            bcl_path = Config_demultiplexing["Project"]["BCL Path"]
+
+        #Update the bcl path in the project's config file  
+        if not os.path.isfile(self.config_path):
+            click.echo("***** config.ini file doesn't exist in the *project folder*. unable to add bcl path to the config file")
+            sys.exit()
+        else:
+            Config = configparser.ConfigParser()
+            Config.read(self.config_path)
+            Config.set("Project", "BCL Path", bcl_path)
+            cfgfile = open(self.config_path, "w")
+            Config.write(cfgfile)
+            cfgfile.close()
+
     def show_config(self):
         """Show config file in the terminal"""
         click.echo(click.style("Config file:", fg='bright_green'))
@@ -188,6 +213,30 @@ class GPM():
                                 if ll[1] == k:
                                     ll[1] = v
                             self.export_structure.append(ll)
+
+    def export_raw(self, export_dir, symprefix, bcl, fastq, multiqc="", tar=False) :
+        self.update_config("gpm export_raw")
+        export_dir = os.path.abspath(export_dir)
+        # Create the target folder
+        os.makedirs(export_dir)
+        #For BCL files
+        origin_file = bcl
+        target = os.path.join(export_dir, 'BCL')
+        os.symlink(symprefix+origin_file, target, target_is_directory=True)
+        # os.symlink("/mnt/nextgen"+"/data/fastq/240424_NB501289_0695_AHL2W3BGXN/", "/mnt/web/var/www/html/data/240424_Huellen_Seibler_FHAachen_ampliseq", target_is_directory=True)
+        #For FASTQ files
+        origin_file = fastq
+        target = os.path.join(export_dir, 'FASTQ')
+        os.symlink(symprefix+origin_file, target, target_is_directory=True)
+        # For multiqc report
+        if multiqc:
+            origin_file = glob.glob("**/multiqc_report.html", recursive=True)[0]
+            origin_file = os.path.join(os.getcwd(), origin_file)
+            target = os.path.join(export_dir, 'multiqc')
+            os.symlink(symprefix+origin_file, target, target_is_directory=False)
+        # Tar the export:
+        if tar:
+            tar_exports(export_dir, False)
 
     def export(self, export_dir, symprefix, tar=False):
         def handle_rename(export_dir, entry):
