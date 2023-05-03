@@ -37,7 +37,8 @@ def main():
 @click.option('-r', '--raw', help=helps["raw"], required=True)
 @click.option('-o', '--output', help=helps["demultiplex_output"], required=True)
 @click.option('-sc', default=False, show_default=True, help="Flag for single-cell sequencing, otherwise bulk sequencing is set as default.")
-def demultiplex(raw, output, sc):
+@click.option('-miseq', default=False, show_default=True, help="Flag for using autamitaclly the fastq presented under the miseq folder")
+def demultiplex(raw, output, sc, miseq):
     """A wrapper of bcl2fastq programm and cellranger mkfastq for demultiplexing."""
     # if not output:
     #     rawname = os.path.basename(raw)
@@ -55,19 +56,19 @@ def demultiplex(raw, output, sc):
         write_file_run_cellranger_merge_lanes(raw, output)
         copyfromdata("cellranger/samplesheet.csv", output)
         # If MiSeq was used as the sequencer the data is already demultiplexed!
-        if "miseq" in raw:
+        if miseq:
             write_file_run_qc(raw, output)
 
     else:
         write_file_run_bcl2fastq(raw, output)
         copyfromdata("bcl2fastq/samplesheet.csv", output)
-        if "miseq" in raw:
+        if miseq:
             write_file_run_qc(raw, output)
 
     show_tree(output)
     click.echo()
     click.echo(click.style("Next steps:", fg='bright_green'))
-    if "miseq" in raw:
+    if miseq:
         click.echo("i. Check and modify run_qc.sh")
         click.echo("ii. Run run_qc.sh with the command below: (Recommend to run it in screen session)")
         click.echo("\tbash run_qc.sh")
