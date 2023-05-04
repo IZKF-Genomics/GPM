@@ -192,7 +192,8 @@ def analysis(config_file):
 @click.option('-c','--config', default="config.ini", show_default=True, help="Define the config.ini file of an existed project.")
 @click.option('-s', '--symprefix', default="/mnt/nextgen", show_default=True, help="Define the prefix of soft link from web server to computational server.")
 @click.option('-multiqc', is_flag=True, default=False, show_default=True, flag_value=True, help="Include multiqc report")
-def export_raw(export_dir, name, config, symprefix, multiqc):
+@click.option('-tar', is_flag=True, default=False, show_default=True, flag_value=True, help="tar the export folder")
+def export_raw(export_dir, name, config, symprefix, multiqc, tar):
     """Prepare the Rmd templates for basic analysis"""
     # Add the new data to the config file
     Config = configparser.ConfigParser()
@@ -207,7 +208,7 @@ def export_raw(export_dir, name, config, symprefix, multiqc):
     # Export according to the config file 
     gpm = GPM(load_config=config, seqdate=None, application=None, 
             provider=None, piname=None, institute=None, fastq=None, name=None)
-    gpm.export_raw(export_dir, symprefix,  Config["Project"]["Base Path"], Config["Project"]["FASTQ Path"], multiqc, tar=False )
+    gpm.export_raw(export_dir, symprefix,  Config["Project"]["Base Path"], Config["Project"]["FASTQ Path"], multiqc, tar )
     gpm.add_htaccess(export_dir)
     gpm.create_user(export_dir)
 
