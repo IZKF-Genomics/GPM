@@ -223,17 +223,10 @@ class GPM():
         origin_file = bcl
         target = os.path.join(export_dir, 'BCL')
         os.symlink(symprefix+origin_file, target, target_is_directory=True)
-        # os.symlink("/mnt/nextgen"+"/data/fastq/240424_NB501289_0695_AHL2W3BGXN/", "/mnt/web/var/www/html/data/240424_Huellen_Seibler_FHAachen_ampliseq", target_is_directory=True)
         #For FASTQ files
         origin_file = fastq
         target = os.path.join(export_dir, 'FASTQ')
         os.symlink(symprefix+origin_file, target, target_is_directory=True)
-        # For multiqc report
-        if multiqc:
-            origin_file = glob.glob("**/multiqc_report.html", recursive=True)[0]
-            origin_file = os.path.join(os.getcwd(), origin_file)
-            target = os.path.join(export_dir, 'multiqc')
-            os.symlink(symprefix+origin_file, target, target_is_directory=False)
         # Tar the export:
         if tar:
             tar_exports(export_dir, False)
@@ -285,9 +278,9 @@ class GPM():
                         target = os.path.join(target_dir, os.path.basename(matching_file))
                         os.symlink(symprefix+matching_file, target, target_is_directory=False)
         
-    def create_user(self, export_dir):
+    def create_user(self, export_dir, raw_export=False):
         export_URL = os.path.join(get_gpmconfig("GPM","EXPORT_URL"), self.name)
-        htpasswd_create_user(export_dir, export_URL, self.provider.lower(), self.app)
+        htpasswd_create_user(export_dir, export_URL, self.provider.lower(), self.app, raw_export)
 
     def add_htaccess(self, export_dir):
         # data_dir = os.path.join(os.path.dirname(__file__), "data")
@@ -308,3 +301,4 @@ class GPM():
         tardir(os.path.join(export_dir, "2_Processed_data"), os.path.join(compressed_folder, self.name+"_2_Processed_data.tar"))
         tardir(os.path.join(export_dir, "3_Reports"), os.path.join(compressed_folder, self.name+"_3_Reports.tar"))
         
+

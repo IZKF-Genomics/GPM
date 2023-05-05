@@ -208,9 +208,15 @@ def export_raw(export_dir, name, config, symprefix, multiqc, tar):
     # Export according to the config file 
     gpm = GPM(load_config=config, seqdate=None, application=None, 
             provider=None, piname=None, institute=None, fastq=None, name=None)
-    gpm.export_raw(export_dir, symprefix,  Config["Project"]["Base Path"], Config["Project"]["FASTQ Path"], multiqc, tar )
+    gpm.export_raw(export_dir, symprefix,  Config["Project"]["BCL Path"], Config["Project"]["FASTQ Path"], multiqc, tar )
     gpm.add_htaccess(export_dir)
-    gpm.create_user(export_dir)
+    gpm.create_user(export_dir, raw_export=True)
+
+    # print multiqc report link
+    export_URL = os.path.join(get_gpmconfig("GPM","EXPORT_URL"), name)
+    multiqc_path = glob.glob("**/multiqc_report.html", recursive=True)[0]
+    multiqc_exported_path = os.path.join( export_URL, "FASTQ", multiqc_path)
+    click.echo("MultiQC report:\t" + multiqc_exported_path)
 
 
 ###################################################################
@@ -223,7 +229,6 @@ def export_raw(export_dir, name, config, symprefix, multiqc, tar):
 @click.option('-analysis', default="", show_default=True, help="Define the source of analysis folder for soft linking.")
 @click.option('-bcl', default="", show_default=True, help="Define the source of BCL folder for soft linking.")
 @click.option('-fastq', default="", show_default=True, help="Define the source of FASTQ folder for soft linking.")
-@click.option('-multiqc', default="", show_default=True, help="Define the source of the multiqc report for soft linking.")
 @click.option('-symprefix', default="/mnt/nextgen", show_default=True, help="Define the prefix of soft link from web server to computational server.")
 def export(export_dir, config, user, analysis, bcl, fastq, multiqc, symprefix):
     """Export the raw data, processed data and reports to the export directory by creating soft links without moving around the big files."""

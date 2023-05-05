@@ -90,7 +90,7 @@ This command will generate several Rmd files under analsis folder with all the p
 ## Export Raw
 
 ```
-- `gpm export-raw --symprefix MOUNT_PREFIX --config config.ini -multiqc --name YYMMDD_Name1_Name2_Institute_App EXPORT_DIR_PATH
+- `gpm export-raw --symprefix MOUNT_PREFIX --config config.ini --name YYMMDD_Name1_Name2_Institute_App EXPORT_DIR_PATH
 ```
 - multiqc is a bolean flag indicating if the multiqc report needs to be included as well.
 - The name of the project folder is strictly controlled:

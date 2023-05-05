@@ -369,7 +369,7 @@ def tar_exports(export_dir, nobehaviour):
     # tardir(os.path.join(export_dir, "2_Processed_data"), os.path.join(compressed_folder, name+"_2_Processed_data.tar"))
     # tardir(os.path.join(export_dir, "3_Reports"), os.path.join(compressed_folder, name+"_3_Reports.tar"))
         
-def htpasswd_create_user(target_dir, url, username, app):
+def htpasswd_create_user(target_dir, url, username, app, raw_export=False):
     """Create the new user in the target directory with password"""
     export_base_path = Path(target_dir).parent.absolute()
     if os.path.exists(os.path.join(export_base_path, ".htpasswd")):
@@ -383,7 +383,7 @@ def htpasswd_create_user(target_dir, url, username, app):
         click.echo()
         click.echo(click.style("Create new user for export directory:", fg='bright_green'))
         click.echo("Directory:\t" + target_dir)
-        if app:
+        if app and not raw_export:
             if app in ["RNAseq", "tRNAseq", "mRNAseq", "3mRNAseq"]:
                 app = "RNAseq"
             click.echo("URL:\t" + url + "/3_Reports/analysis/Analysis_Report_" + app + ".html")
