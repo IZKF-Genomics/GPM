@@ -32,37 +32,39 @@ library(DT)
 # Integrated analysis
 
 ```{r, echo=FALSE, results="hide", warning=FALSE, message=FALSE}
-load_table <- function(fname, merging=FALSE) {
-  # label <- "LPS_vs_DNP_in_WT"
-#   res <- fread(paste0("GO_", label, "_res.csv"))
+load_table <- function(fname, merged_table=NA, merging=FALSE) {
+  # label <- "AP2_vs_Control"
+  # res <- fread(paste0("GO_", label, "_res.csv"))
   label <- gsub("GO_", "", fname)
   label <- gsub("_res.csv", "", label)
   res <- fread(fname)
   res <- res[,c("query","p_value","term_id","term_name")]
   res <- reshape(res, idvar = c("term_id", "term_name"), timevar = "query", direction = "wide")
-  
+
   if (length(colnames(res)<4)) {
     if (!("p_value.Up" %in% colnames(res))) {res$p_value.Up <- NA}
-    if (!("p_value.Down" %in% colnames(res))) {res$p_value.Down <- NA} 
+    if (!("p_value.Down" %in% colnames(res))) {res$p_value.Down <- NA}
   }
   res <- res[,c("term_id", "term_name","p_value.Up","p_value.Down")]
   colnames(res) <- c("term_id", "term_name",
                      paste0(label,".Up"), paste0(label,".Down"))
-  if (merging!=FALSE) {
-    res <- merge(merging, res, by=c("term_id", "term_name"), all = T)
+  if (merging==FALSE) {
+    print("no merging")
+  } else {
+    res <- merge(merged_table, res, by=c("term_id", "term_name"), all = T)
   }
   return(res)
 }
 
 fnames <- list.files(pattern = "*res.csv")
-
+# fnames <- c()
 for (i in 1:length(fnames)) {
   print(fnames[i])
   # print(dim(merged_table))
     if (i==1) {
         merged_table <- load_table(fnames[i])
         } else {
-        merged_table <- load_table(fnames[i], merging=merged_table)
+        merged_table <- load_table(fnames[i], merged_table=merged_table, merging=TRUE)
     }
 }
  
