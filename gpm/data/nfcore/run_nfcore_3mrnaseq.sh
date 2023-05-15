@@ -2,11 +2,11 @@
 # nextflow run nf-core/rnaseq -profile test,docker
 
 ################## GPM samplesheet #####################
-# gpm samplesheet -st 'forward' samplesheet.csv FASTQ_DIR
+# gpm samplesheet -st 'forward' -sn true -si  samplesheet.csv FASTQ_DIR
 
 nextflow run nf-core/rnaseq -r 3.8.1 -profile docker \
      --input samplesheet.csv --clip_r1 12 --outdir results \
-     --genome gencode_GRCh38 \
+     # --genome gencode_GRCh38 \
      # --genome gencode_GRCm39 \
      --gencode --featurecounts_group_type gene_type \
      --star_index false --save_reference \
@@ -14,7 +14,7 @@ nextflow run nf-core/rnaseq -r 3.8.1 -profile docker \
 
 
 # Options for --genome:
-# gencode_GRCm39, gencode_mm10, hg38, mm10
+# gencode_GRCh38, gencode_GRCm39, hg38, mm10
 # Useful options: 
 # --removeRiboRNA
 # 
