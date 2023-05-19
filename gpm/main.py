@@ -229,6 +229,7 @@ def export_raw(export_dir, name, config, symprefix, multiqc, tar):
 @click.option('-analysis', default="", show_default=True, help="Define the source of analysis folder for soft linking.")
 @click.option('-bcl', default="", show_default=True, help="Define the source of BCL folder for soft linking.")
 @click.option('-fastq', default="", show_default=True, help="Define the source of FASTQ folder for soft linking.")
+@click.option('-multiqc', default="", show_default=True, help="Define the source of MultiQC folder for soft linking.")
 @click.option('-symprefix', default="/mnt/nextgen", show_default=True, help="Define the prefix of soft link from web server to computational server.")
 def export(export_dir, config, user, analysis, bcl, fastq, multiqc, symprefix):
     """Export the raw data, processed data and reports to the export directory by creating soft links without moving around the big files."""
