@@ -21,6 +21,94 @@ spikein_ERCC2method <- function(spikein_ERCC) {
 }
 
 ###########################################################
+## Simple comparison, no duplicates
+###########################################################
+
+add_SimpleComparison <- function(salmon_count_table, group_base, group_comp) {
+  description <- paste(group_comp, "vs", group_base)
+  filetag <- str_replace_all(description, " ", "_")
+  scripts  <- readLines("SimpleComparison_template.Rmd")
+  scripts  <- gsub(pattern = "TITLEDESCRIPTION", replace = description, x = scripts)
+  scripts  <- gsub(pattern = "FILETAG", replace = filetag, x = scripts)
+  scripts  <- gsub(pattern = "SALMON_COUNT_TABLE", replace = salmon_count_table, x = scripts)
+  scripts  <- gsub(pattern = "GROUP_BASE", replace = group_base, x = scripts)
+  scripts  <- gsub(pattern = "GROUP_COMP", replace = group_comp, x = scripts)
+  filename <- paste0("SimpleComparison_",filetag)
+  writeLines(scripts, con=paste0(filename,".Rmd"))
+}
+
+simple_PCA_ggplot2 <- function(salmon_count_table) {
+  count_table <- read.table(file = salmon_count_table, sep = '\t', header = TRUE)[, c(-1,-2)]
+  t <- t(count_table)
+  prin_comp <- prcomp(t, rank. = 2)
+  components <- prin_comp[["x"]]
+  components <- data.frame(components)
+  components <- cbind(components, rownames(t))
+  components$labels <- colnames(count_table)
+  
+  fig <- ggplot(components, aes(PC1, PC2, label=labels)) +
+    geom_point(size=3, color="royalblue") + theme_bw() +
+    ggtitle("PCA") + geom_text_repel() +
+    theme(plot.title = element_text(hjust = 0.5))
+  fig
+  
+}
+
+simple_comparison <- function(salmon_count_table, group_base, group_comp, File_xlsx_res) {
+  count_table <- read.table(file = salmon_count_table, sep = '\t', header = TRUE)
+  count_table <- count_table[, c("gene_id", "gene_name", group_base, group_comp)]
+  count_table[group_base] <- count_table[group_base] + 0.1
+  count_table[group_comp] <- count_table[group_comp] + 0.1
+  
+  count_table["mean"] <- rowMeans(count_table[,c(group_base, group_comp)])
+  count_table["diff"] <- (count_table[group_comp] / count_table[group_base])
+  count_table[paste0("log2_", group_base)] <- log2(count_table[group_base])
+  count_table[paste0("log2_", group_comp)] <- log2(count_table[group_comp])
+  count_table$log2_mean <- log2(count_table$mean)
+  count_table$log2_diff <- log2(count_table$diff)
+  # file_tag <- paste(group_comp, "vs", group_base, sep = "_")
+  # excelfile <- paste0("count_table_",file_tag,".xlsx")
+  write.xlsx(count_table, file = File_xlsx_res, colNames = TRUE, rowNames=FALSE)
+  # cat(paste0("[Download count table: ",excelfile,"](",excelfile,")"))
+  return(count_table)
+}
+
+simple_ma <- function(count_table, group_base, group_comp) {
+  # MA plot
+  fig_ma <- plot_ly(x = unlist(count_table$log2_mean),
+                    y = unlist(count_table$log2_diff),
+                    text = count_table$gene_name,
+                    hoverinfo = 'text',
+                    type = 'scatter', mode = 'markers',
+                    marker = list(opacity = 0.2),
+                    showlegend = T)  %>%
+            layout(
+              title = "MA plot",
+              xaxis = list(title = "Mean Expression (log2)"),
+              yaxis = list(title = paste("Fold Change (log2)", group_comp, "/", group_base))
+            )
+  fig_ma
+}
+
+simple_sc <- function(count_table, group_base, group_comp) {
+  # Count scatter
+  fig_sc <- plot_ly(x = unlist(count_table[paste0("log2_", group_base)]),
+                    y = unlist(count_table[paste0("log2_", group_comp)]),
+                    text = count_table$gene_name,
+                    hoverinfo = 'text',
+                    type = 'scatter', mode = 'markers',
+                    marker = list(opacity = 0.2),
+                    showlegend = T)  %>%
+            layout(
+              title = "Normalized Read Count",
+              xaxis = list(title = group_base),
+              yaxis = list(title = group_comp)
+            )
+  fig_sc
+}
+
+
+###########################################################
 ## RNAseq
 ###########################################################
 

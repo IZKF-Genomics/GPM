@@ -23,6 +23,9 @@ library(tidyr)
 library(dplyr)
 library(openxlsx)
 library(data.table)
+# library(plotly)
+# library(ggrepel)
+# set.seed(42)
 options(warn = -1)
 options(knitr.duplicate.label = "allow")
 
@@ -118,6 +121,26 @@ save(DIR_base,DIR_project,DIR_salmon,
      CUTOFF_Quantification, CUTOFF_ADJP, spikein_ERCC,
      samples, file = paste0(DIR_project, "data.RData"))
 ```
+
+
+```{r, echo=FALSE, results="asis", warning=FALSE, message=FALSE}
+simple_PCA_ggplot2(salmon_count_table=paste0(DIR_salmon,"/salmon.merged.gene_counts_length_scaled.tsv"))
+```
+
+<!-- # Comparisons without duplicates
+
+```{r, echo=FALSE, results="hide", warning=FALSE, message=FALSE}
+group_base=""
+group_comp=""
+filetag <- paste0(group_comp, "_vs_",group_base)
+description <- str_replace_all(filetag, "_", " ")
+add_SimpleComparison(salmon_count_table=paste0(DIR_salmon,"/salmon.merged.gene_counts_length_scaled.tsv"), 
+                     group_base=group_base, group_comp=group_comp)
+rmarkdown::render(paste0('SimpleComparison_',filetag,'.Rmd'), output_format = 'html_document',
+                  output_file = paste0('SimpleComparison_',filetag,'.html'))
+```
+
+### [`r description`](`r paste0('SimpleComparison_',filetag,'.html')`) -->
 
 # Differential Gene Expression Analysis
 
