@@ -316,11 +316,16 @@ RNAseq_PCA_ggplot2 <- function(deseq_output, samples2) {
   components <- cbind(components, rownames(t))
   labels <- samples2$sample
   labels_group <- samples2$group
-
+  if (length(unique(labels_group)) > 9) {
+    library(Polychrome)
+    mypalette <- as.vector(glasbey.colors(length(unique(labels_group))))
+  } else {
+    mypalette <- "Set1"
+  }
   fig <- ggplot(components, aes(PC1, PC2, color=labels_group)) +
-        geom_point(size=3) + theme_bw() + scale_color_brewer(palette = "Set1") +
-        labs(color = "Groups") + ggtitle("PCA") +
-        theme(plot.title = element_text(hjust = 0.5))
+    geom_point(size=3) + theme_bw() + scale_fill_manual(values = mypalette) +
+    labs(color = "Groups") + ggtitle("PCA") +
+    theme(plot.title = element_text(hjust = 0.5))
   fig
 }
 
