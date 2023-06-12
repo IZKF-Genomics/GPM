@@ -1,0 +1,140 @@
+---
+title: "Gene Set Enrichment Analysis"
+author:
+GPM_AUTHORS
+date: "Last compiled on `r format(Sys.time(), '%d %B, %Y')`"
+output:
+  html_document:
+    df_print: paged
+    toc: true
+    toc_float:
+      toc_collapsed: true
+    toc_depth: 3
+    number_sections: false
+    theme: lumen
+bibliography: references.bib
+---
+
+```{r, echo=FALSE, results="hide", warning=FALSE, message=FALSE}
+Tag_this_analysis <- "GSEA"
+pvalueCutoff_GO <- 0.05
+
+load("data.RData")
+
+library(dplyr)
+library(ggplot2)
+library(msigdbi)
+library(DT)
+library(fgsea)
+library(org.Hs.eg.db)
+library(clusterProfiler)
+
+if (organism == "hsapiens") {
+  library(org.Hs.eg.db)
+  list.files("/data/shared_env/GMT/msigdb_v2023.1.Hs_GMTs")
+  MSIGGMT <- "/data/shared_env/GMT/msigdb_v2023.1.Hs_GMTs/h.all.v2023.1.Hs.symbols.gmt"
+} else if (organism == "mmusculus") {
+  library(org.Mm.eg.db)
+  list.files("/data/shared_env/GMT/msigdb_v2023.1.Mm_GMTs")
+  MSIGGMT <- "/data/shared_env/GMT/msigdb_v2023.1.Mm_GMTs/h.all.v2023.1.Mm.symbols.gmt"
+}
+
+```
+
+### [Back to front page](Analysis_Report_RNAseq.html)
+
+GSEA stands for Gene Set Enrichment Analysis. It is a computational method used in genomics and bioinformatics to determine whether a predefined set of genes or gene sets exhibits statistically significant differences in expression or functional behavior between two biological conditions. 
+
+The main goal of GSEA is to identify whether a particular gene set, such as a pathway or a functional group of genes, is significantly enriched in a gene expression dataset. It provides a way to interpret high-throughput gene expression data in the context of known biological pathways or gene sets.
+
+The GSEA algorithm takes a ranked list of genes based on their differential expression or other relevant metrics and determines if genes in a predefined gene set are distributed towards the top (upregulated) or bottom (downregulated) of the ranked list more than would be expected by chance. This analysis helps to identify whether the genes in the gene set are coordinately regulated in a biologically meaningful way.
+
+GSEA has been widely used in various areas of genomics research, including cancer biology, drug discovery, and functional genomics. It provides insights into the underlying biological mechanisms and pathways associated with different phenotypes or experimental conditions.
+
+The output of GSEA typically includes enrichment scores, normalized enrichment scores (NES), p-values, and false discovery rates (FDR) for each gene set, indicating the degree of enrichment and the statistical significance. Researchers can then interpret the results to gain insights into the biological processes or pathways that are differentially regulated between the analyzed conditions.
+
+GSEA is implemented in various software packages and tools, including the original GSEA software developed by the Broad Institute, as well as other packages in R and Python, providing researchers with flexible options for conducting gene set enrichment analysis based on their specific datasets and research questions.
+
+```{r, echo=FALSE, results="hide", warning=FALSE, message=FALSE}
+run_GSEA <- function(label) {
+  GENE_LIST <- paste0("DGEA_", label, "_genes_stats.csv")
+
+  exp = read.csv(GENE_LIST, header=TRUE)
+  exp <- exp %>% 
+  dplyr::select(gene_name, log2FoldChange) %>% 
+  na.omit() %>% 
+  distinct() %>% 
+  group_by(gene_name) %>% 
+  summarize(stat=mean(log2FoldChange))
+  expvector <- as.numeric(c(exp$stat))
+  names(expvector) <- exp$gene_name
+  
+  gene_sets <- read.gmt(MSIGGMT)
+  pathways <- gmtPathways(MSIGGMT)
+
+  # Show the first few pathways, and within those, show only the first few genes. 
+  # pathways.hallmark %>% 
+  #   head() %>% 
+  #   lapply(head)
+  
+  # Perform GSEA
+  fgseaRes <- fgsea(pathways = pathways, stats = expvector, nperm = 1000)
+  
+  fgseaResTidy <- fgseaRes %>%
+  as_tibble() %>%
+  arrange(desc(NES))
+  
+  write.table(apply(fgseaResTidy,2,as.character), file = paste0(Tag_this_analysis, "_", label,"_res.csv"))
+  
+  return(fgseaResTidy)
+}
+
+show_GSEA_table <- function(fgseaResTidy) {
+  # Show in a nice table:
+  fgseaResTidy %>% 
+    dplyr::select(-leadingEdge, -ES, -nMoreExtreme) %>% 
+    arrange(padj) %>% 
+    DT::datatable()
+}
+
+show_GSEA_figure <- function(fgseaResTidy) {
+  ggplot(fgseaResTidy, aes(reorder(pathway, NES), NES)) +
+  geom_col(aes(fill=padj<0.05)) +
+  coord_flip() +
+  labs(x="Pathway", y="Normalized Enrichment Score",
+       title="Hallmark pathways NES from GSEA") + theme_minimal()
+}
+
+fnames <- list.files(pattern = "*genes_stats.csv")
+fnames <- fnames[fnames !="DGEA_All_samples_genes_stats.csv"]
+labels <- gsub("DGEA_", "", fnames)
+labels <- gsub("_genes_stats.csv", "", labels)
+
+```
+
+
+# GSEA on Hallmark Genesets {.tabset}
+
+## HF_ST_vs_LF_LT
+
+```{r, echo=FALSE, results='markup', warning=FALSE, message=FALSE, fig.height=6, fig.width=8}
+fgseaResTidy <- run_GSEA(label="HF_ST_vs_LF_LT")
+show_GSEA_figure(fgseaResTidy)
+show_GSEA_table(fgseaResTidy)
+```
+
+
+# Resources
+
+* [GSEA/Molecular Signatures Database](https://www.gsea-msigdb.org/gsea/msigdb)
+* [Fast Gene Set Enrichment Analysis](https://github.com/ctlab/fgsea)
+
+# References
+
+<div id="refs"></div>
+
+# R session information
+
+```{r, echo=FALSE, results='markup', warning=FALSE, message=TRUE}
+sessionInfo()
+```
