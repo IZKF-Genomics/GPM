@@ -72,6 +72,12 @@ deseq_output <- run_deseq_salmon(filtered_samples, spikein=spikein_ERCC, paired=
 RNAseq_PCA_plotly(deseq_output$norm_count, filtered_samples)
 ```
 
+## 3D-PCA
+
+```{r, echo=FALSE, results='asis', warning=FALSE, message=FALSE}
+RNAseq_3D_PCA_plotly(deseq_output$norm_count, filtered_samples)
+```
+
 `r if(volcano){"## Volcano plot"}`
 
 ```{r, echo=FALSE, results="asis", warning=FALSE, message=FALSE, eval=volcano}

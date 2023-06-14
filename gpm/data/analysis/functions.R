@@ -229,6 +229,20 @@ RNAseq_PCA_plotly <- function(normalized_counts2, samples) {
   fig
 }
 
+RNAseq_3D_PCA_plotly <- function(normalized_counts2, samples) {
+  t <- t(normalized_counts2[, c(-1,-2)])
+  prin_comp <- prcomp(t, rank. = 3)
+  components <- prin_comp[["x"]]
+  components <- data.frame(components)
+  components <- cbind(components, rownames(t))
+  labels <- samples$sample
+  labels_group <- samples$group
+  fig <- plot_ly(components, x = ~PC1, y = ~PC2,  z = ~PC3,  color = labels_group, text = labels,
+                 width = Fig_width, height = Fig_height,
+                 type = 'scatter3d', mode = 'markers')
+  fig
+}
+
 RNAseq_volcano_plotly <- function(res_combined) {
   pal <- c("red", "royalblue")
   pal <- setNames(pal, c("Sig. genes", "Non-sig."))
@@ -489,6 +503,20 @@ miRNAseq_PCA_plotly <- function(normalized_counts, samples) {
   fig <- plot_ly(components, x = ~PC1, y = ~PC2, color = labels_group, text = labels,
                  width = Fig_width, height = Fig_height,
                  type = 'scatter', mode = 'markers')
+  fig
+}
+
+miRNAseq_3D_PCA_plotly <- function(normalized_counts, samples) {
+  t <- t(normalized_counts)
+  prin_comp <- prcomp(t, rank. = 3)
+  components <- prin_comp[["x"]]
+  components <- data.frame(components)
+  components <- cbind(components, rownames(t))
+  labels <- samples$sample
+  labels_group <- samples$group
+  fig <- plot_ly(components, x = ~PC1, y = ~PC2,  z = ~PC3,  color = labels_group, text = labels,
+                 width = Fig_width, height = Fig_height,
+                 type = 'scatter3d', mode = 'markers')
   fig
 }
 

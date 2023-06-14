@@ -74,6 +74,12 @@ res_miRNA <- miRNAseq_deseq2(FILE_counts_mature, FILE_counts_hairpin, samples2)
 miRNAseq_PCA_plotly(res_miRNA$norm_counts, samples2)
 ```
 
+## 3D-PCA
+
+```{r, echo=FALSE, results='asis', warning=FALSE, message=FALSE}
+miRNAseq_3D_PCA_plotly(deseq_output$norm_count, filtered_samples)
+```
+
 ## Volcano plot
 
 ```{r, echo=FALSE, results="asis", warning=FALSE, message=FALSE}
