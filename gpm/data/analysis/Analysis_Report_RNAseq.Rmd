@@ -47,6 +47,8 @@ CUTOFF_ADJP <- 0.05
 # spikein_ERCC <- FALSE
 # organism <- "hsapiens"
 # organism <- "mmusculus"
+# organism <- "rattus"
+
 ##### totalRNAseq, mRNAseq
 # countsFromAbundance="lengthScaledTPM"
 # lengthcorrection=TRUE
