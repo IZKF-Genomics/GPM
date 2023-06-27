@@ -1,0 +1,16 @@
+default:
+  spikein_ERCC: true  # Choose either true or false
+  organism: "hsapiens"  # Choose one of "hsapiens", "mmusculus", or "rattus"
+  paired: TRUE
+
+totalRNAseq:
+  countsFromAbundance: "lengthScaledTPM"
+  lengthcorrection: true
+
+mRNAseq:
+  countsFromAbundance: "lengthScaledTPM"
+  lengthcorrection: true
+
+3mRNAseq:
+  countsFromAbundance: "no"
+  lengthcorrection: false
