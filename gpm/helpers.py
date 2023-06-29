@@ -4,17 +4,18 @@ import sys
 import glob
 import shutil
 import click
-import tarfile
+# import tarfile
 import subprocess
 import random
 import string
 from configparser import ConfigParser
-import codecs
+# import codecs
 import json
 import configparser
 import getpass
 from datetime import date, datetime
 from gpm import version
+
 
 class DisplayablePath(object):
     display_filename_prefix_middle = '├──'
@@ -58,7 +59,8 @@ class DisplayablePath(object):
             for p in ignore_paths:
                 if p in str(child):
                     tag_ignore = True
-            if not tag_ignore: new_children.append(child)
+            if not tag_ignore:
+                new_children.append(child)
 
         count = 1
         for path in new_children:
@@ -75,12 +77,6 @@ class DisplayablePath(object):
     @classmethod
     def _default_criteria(cls, path):
         return True
-
-    @property
-    def displayname(self):
-        if self.path.is_dir():
-            return self.path.name + '/'
-        return self.path.name
 
     def displayable(self):
         if self.parent is None:
@@ -134,25 +130,26 @@ def fastq_dir_to_samplesheet(
         See also https://stackoverflow.com/questions/6773584/how-is-pythons-glob-glob-ordered
         """
         return sorted(
-            glob.glob(os.path.join(fastq_dir, f"*{extension}"), recursive=False)
+            glob.glob(os.path.join(fastq_dir, f"*{extension}"), 
+                      recursive=False)
         )
 
     read_dict = {}
 
-    ## Get read 1 files
+    # Get read 1 files
     for read1_file in get_fastqs(read1_extension):
         sample = sanitize_sample(read1_file, read1_extension)
         if sample not in read_dict:
             read_dict[sample] = {"R1": [], "R2": []}
         read_dict[sample]["R1"].append(read1_file)
 
-    ## Get read 2 files
+    # Get read 2 files
     if not single_end:
         for read2_file in get_fastqs(read2_extension):
             sample = sanitize_sample(read2_file, read2_extension)
             read_dict[sample]["R2"].append(read2_file)
 
-    ## Write to file
+    # Write to file
     if len(read_dict) > 0:
         out_dir = os.path.dirname(samplesheet_file)
         if out_dir and not os.path.exists(out_dir):
@@ -186,9 +183,10 @@ def fastq_dir_to_samplesheet(
         sys.exit(1)
 
 
-def generate_samples(STRANDEDNESS, FASTQ_DIR, SAMPLESHEET_FILE, 
-            READ1_EXTENSION, READ2_EXTENSION, SINGLE_END, 
-            SANITISE_NAME, SANITISE_NAME_DELIMITER, SANITISE_NAME_INDEX):
+def generate_samples(STRANDEDNESS, FASTQ_DIR, SAMPLESHEET_FILE,
+                     READ1_EXTENSION, READ2_EXTENSION, SINGLE_END,
+                     SANITISE_NAME, SANITISE_NAME_DELIMITER,
+                     SANITISE_NAME_INDEX):
 
     strandedness = "unstranded"
     if STRANDEDNESS in ["unstranded", "forward", "reverse"]:
@@ -206,6 +204,7 @@ def generate_samples(STRANDEDNESS, FASTQ_DIR, SAMPLESHEET_FILE,
         sanitise_name_index=SANITISE_NAME_INDEX,
     )
 
+
 def generate_samples_scrna(fastq_dir, samplesheet_file):
     """
     Reads must be Must be aligned with: "[Sample Name]_S1_L00[Lane Number]_[Read Type]_001.fastq.gz"
@@ -219,12 +218,13 @@ def generate_samples_scrna(fastq_dir, samplesheet_file):
         sc=True,
     )
 
+
 def write_file_run_bcl2fastq(rawfolder, targetfolder):
     data_dir = os.path.join(os.path.dirname(__file__), "data", "bcl2fastq")
     original = os.path.join(data_dir, "run_bcl2fastq.sh")
     target = os.path.join(targetfolder, "run_bcl2fastq.sh")
     with open(original) as f1:
-        contents = [l.strip() for l in f1.readlines()]
+        contents = [le.strip() for le in f1.readlines()]
     
     modifier = {"FLOWCELL_DIR": rawfolder,
                 "OUTPUT_DIR": targetfolder}
@@ -237,17 +237,18 @@ def write_file_run_bcl2fastq(rawfolder, targetfolder):
         for line in contents:
             print(line, file=f2)
 
+
 def write_file_run_qc(rawfolder, targetfolder):
     data_dir = os.path.join(os.path.dirname(__file__), "data", "bcl2fastq")
     original = os.path.join(data_dir, "run_qc.sh")
     target = os.path.join(targetfolder, "run_qc.sh")
     raw_folder_extended = os.path.join(rawfolder, "Alignment_1" , "*" , "Fastq")
     with open(original) as f1:
-        contents = [l.strip() for l in f1.readlines()]
-    
+        contents = [le.strip() for le in f1.readlines()]
+
     modifier = {"FASTQ_DIR": raw_folder_extended,
                 "OUTPUT_DIR": targetfolder}
-    for i,line in enumerate(contents):
+    for i, line in enumerate(contents):
         for old, new in modifier.items():
             if old in line:
                 contents[i] = line.replace(old, new)
@@ -262,11 +263,11 @@ def write_file_run_cellranger_mkfastq(rawfolder, targetfolder):
     original = os.path.join(data_dir, "run_cellranger_mkfastq.sh")
     target = os.path.join(targetfolder, "run_cellranger_mkfastq.sh")
     with open(original) as f1:
-        contents = [l.strip() for l in f1.readlines()]
+        contents = [le.strip() for le in f1.readlines()]
     
     modifier = {"FLOWCELL_DIR": rawfolder,
                 "OUTPUT_DIR": targetfolder}
-    for i,line in enumerate(contents):
+    for i, line in enumerate(contents):
         for old, new in modifier.items():
             if old in line:
                 contents[i] = line.replace(old, new)
@@ -274,19 +275,21 @@ def write_file_run_cellranger_mkfastq(rawfolder, targetfolder):
     with open(target, "w") as f2:
         for line in contents:
             print(line, file=f2)
+
 
 def write_file_run_cellranger_merge_lanes(rawfolder, targetfolder):
     data_dir = os.path.join(os.path.dirname(__file__), "data", "cellranger")
     original = os.path.join(data_dir, "run_merge_lanes.sh")
     target = os.path.join(targetfolder, "run_merge_lanes.sh")
     with open(original) as f1:
-        contents = [l.strip() for l in f1.readlines()]
+        contents = [le.strip() for le in f1.readlines()]
     flowcell_id = targetfolder.split("/")[-1][-9:]
-    FASTQ_path = os.path.join(targetfolder, "mkfastq", "outs", "fastq_path", flowcell_id)
+    FASTQ_path = os.path.join(targetfolder, "mkfastq", "outs",
+                              "fastq_path", flowcell_id)
 
     modifier = {"CELLRANGER_FASTQ_PATH": FASTQ_path,
                 "OUTPUT_DIR": os.path.join(targetfolder, "merged_fastq")}
-    for i,line in enumerate(contents):
+    for i, line in enumerate(contents):
         for old, new in modifier.items():
             if old in line:
                 contents[i] = line.replace(old, new)
@@ -294,6 +297,7 @@ def write_file_run_cellranger_merge_lanes(rawfolder, targetfolder):
     with open(target, "w") as f2:
         for line in contents:
             print(line, file=f2)
+
 
 def copyfromdata(filename, targetdir):
     data_dir = os.path.join(os.path.dirname(__file__), "data")
@@ -301,17 +305,20 @@ def copyfromdata(filename, targetdir):
     target = os.path.join(targetdir, filename.split("/")[-1])
     shutil.copyfile(original, target)
 
+
 def show_tree(base):
-    click.echo(click.style("The current status of the project directory:", fg='bright_green'))
+    click.echo(click.style("The current status of the project directory:",
+                           fg='bright_green'))
     paths = DisplayablePath.make_tree(Path(base))
     for path in paths:
         click.echo(path.displayable())
+
 
 def move_igv(igv_session):
     # define path
     igv_path = os.path.abspath(igv_session)
     # copy the file
-    result_dir = os.path.abspath(os.path.join(igv_path ,"../../.."))
+    result_dir = os.path.abspath(os.path.join(igv_path, "../../.."))
     target = os.path.join(result_dir, "igv_session.xml")
     shutil.copyfile(igv_path, target)
     # remove relative path
@@ -331,10 +338,11 @@ def tardir(path, tar_name):
     # archive and compress
     # tar -cf - "${SOURCE}" | pv -p -s "${SOURCE_SIZE}k" | xz -6 --threads=6 -c -
 
-    cmd = " ".join(["tar","-hcf",tar_name,"--absolute-names", path])
+    cmd = " ".join(["tar", "-hcf", tar_name, "--absolute-names", path])
     returned_value = subprocess.call(cmd, shell=True)
-    cmd = " ".join(["md5sum", tar_name,">", tar_name+".md5"])
+    cmd = " ".join(["md5sum", tar_name, ">", tar_name+".md5"])
     returned_value = subprocess.call(cmd, shell=True)
+
 
 def tar_exports(export_dir, nobehaviour):
     if export_dir == ".":
@@ -350,7 +358,7 @@ def tar_exports(export_dir, nobehaviour):
 
     for filename in os.listdir(export_dir):
         pathfile = os.path.join(export_dir, filename)
-        tarfile = os.path.join(compressed_folder, name+"_" +filename+".tar")
+        tarfile = os.path.join(compressed_folder, name+"_" + filename + ".tar")
         if os.path.islink(pathfile):
             pathfile = os.readlink(pathfile)
             base_dirs = ["/mnt/nextgen", "/mnt/nextgen2", "/mnt/nextgen3"]
@@ -358,17 +366,15 @@ def tar_exports(export_dir, nobehaviour):
                 if pathfile.startswith(base_dir):
                     # Getting the relative path of the directory
                     rel_path = os.path.relpath(pathfile, base_dir)
-                    pathfile=os.path.join("/", rel_path)
+                    pathfile = os.path.join("/", rel_path)
         if os.path.isdir(pathfile) and filename != "compressed_tars":
             click.echo(click.style("Tar the folder:", fg='bright_green'))
-            click.echo(pathfile +click.style(" => ", fg='bright_green')+ tarfile)
+            click.echo(pathfile + click.style(" => ",
+                                              fg='bright_green') + tarfile)
             if not nobehaviour:
                 tardir(pathfile, tarfile)
 
-    # tardir(os.path.join(export_dir, "1_Raw_data"), os.path.join(compressed_folder, name+"_1_Raw_data.tar"))
-    # tardir(os.path.join(export_dir, "2_Processed_data"), os.path.join(compressed_folder, name+"_2_Processed_data.tar"))
-    # tardir(os.path.join(export_dir, "3_Reports"), os.path.join(compressed_folder, name+"_3_Reports.tar"))
-        
+   
 def htpasswd_create_user(target_dir, url, username, app, raw_export=False):
     """Create the new user in the target directory with password"""
     export_base_path = Path(target_dir).parent.absolute()
@@ -376,17 +382,22 @@ def htpasswd_create_user(target_dir, url, username, app, raw_export=False):
         shutil.copy(os.path.join(export_base_path, ".htpasswd"), 
                     os.path.join(target_dir, ".htpasswd"))
         password = generate_password()
-        cmd = " ".join(["htpasswd", "-b", os.path.join(target_dir,".htpasswd"), username, password])
+        cmd = " ".join(["htpasswd", "-b",
+                        os.path.join(target_dir, ".htpasswd"), 
+                        username, password])
         # returned_value = subprocess.call(cmd, shell=True)
         # print(cmd)
         subprocess.run(cmd, shell=True)
         click.echo()
-        click.echo(click.style("Create new user for export directory:", fg='bright_green'))
+        click.echo(click.style("Create new user for export directory:",
+                               fg='bright_green'))
         click.echo("Directory:\t" + target_dir)
         if app and not raw_export:
             if app in ["RNAseq", "tRNAseq", "mRNAseq", "3mRNAseq"]:
                 app = "RNAseq"
-            click.echo("URL:\t" + url + "/3_Reports/analysis/Analysis_Report_" + app + ".html")
+            click.echo("".join(["URL:\t", url,
+                                "/3_Reports/analysis/Analysis_Report_",
+                                app, ".html"]))
         else:
             click.echo("URL:\t" + url)
         click.echo("user:\t" + username)
@@ -394,13 +405,16 @@ def htpasswd_create_user(target_dir, url, username, app, raw_export=False):
     else:
         click.echo("Skip setting htpasswd")
 
+
 def create_user(export_dir, export_URL, username):
     htpasswd_create_user(export_dir, export_URL, username, None)
+
 
 def generate_password():
     source = string.ascii_letters + string.digits
     result_str = ''.join((random.choice(source) for i in range(12)))
     return result_str
+
 
 def export_empty_folder(export_URL, export_dir, config, user):
     export_dir = os.path.abspath(export_dir)
@@ -410,25 +424,31 @@ def export_empty_folder(export_URL, export_dir, config, user):
     # data_dir = os.path.join(os.path.dirname(__file__), "data")
     htaccess_path = get_config("htaccess")
     with open(htaccess_path) as f1:
-        contents = [l.rstrip() for l in f1.readlines()]
-    for i,line in enumerate(contents):
+        contents = [le.rstrip() for le in f1.readlines()]
+    for i, line in enumerate(contents):
         if "GPM_TITLE_NAME" in line:
-            contents[i] = line.replace("GPM_TITLE_NAME", os.path.basename(export_dir))
+            contents[i] = line.replace("GPM_TITLE_NAME",
+                                       os.path.basename(export_dir))
 
     with open(os.path.join(export_dir, ".htaccess"), "w") as f2:
         for line in contents:
             print(line, file=f2)
     # Create user
-    htpasswd_create_user(export_dir, os.path.join(export_URL, os.path.basename(export_dir)), 
+    htpasswd_create_user(export_dir,
+                         os.path.join(export_URL,
+                                      os.path.basename(export_dir)), 
                          user.lower(), None)
 
+
 def get_gpmdata_path():
-    return os.path.expanduser(os.getenv("GPMDATA", os.path.join(os.getenv("HOME"), "gpmdata")))
+    return os.path.expanduser(os.getenv("GPMDATA",
+                                        os.path.join(os.getenv("HOME"),
+                                                     "gpmdata")))
+
 
 def get_gpmconfig(section, item):
-    # Return the content in the config file. The user defined config has higher priority than the default config.
-    
-    
+    # Return the content in the config file. The user defined config has
+    # higher priority than the default config.
     # config.read_file(codecs.open(gpmconfig, "r", "utf8"))
     gpmconfig = os.path.join(get_gpmdata_path(), "gpm.config.user")
     if not os.path.exists(gpmconfig):
@@ -439,17 +459,19 @@ def get_gpmconfig(section, item):
     # config.read_file(codecs.open(gpmconfig, "r", "utf8"))
     # print(config.sections())
     # print(config[section][item])
-        # config.read_file(codecs.open(gpmconfig, "r", "utf8"))
+    # config.read_file(codecs.open(gpmconfig, "r", "utf8"))
     res = config.get(section, item)
-    if res[0] == "[": 
+    if res[0] == "[":
         res = json.loads(res)
-    return(res)
+    return res
+
 
 def get_config(config_name):
     cfg_path = os.path.join(get_gpmdata_path(), config_name+".user")
     if not os.path.exists(cfg_path):
         cfg_path = os.path.join(get_gpmdata_path(), config_name)
-    return(cfg_path)
+    return cfg_path
+
 
 def get_size(start_path):
     total_size = 0
@@ -461,10 +483,11 @@ def get_size(start_path):
                 total_size += os.path.getsize(fp)
     return total_size
 
+
 def generate_config_file(fastq, output, raw):
     base = os.path.join(os.getcwd(), output)
     config_path = os.path.join(base, "config.ini")
-    
+
     if not os.path.isfile(config_path):
         cfgfile = open(config_path, "w")
         Config = configparser.ConfigParser(strict=False)
@@ -481,30 +504,34 @@ def generate_config_file(fastq, output, raw):
         Config.set("Project", "Base Path", base)
 
         Config.add_section("Log")
-        Config.set("Log", now.strftime("%Y-%m-%d %H-%M-%S"), username + " gpm demultiplex " + base)
+        Config.set("Log", now.strftime("%Y-%m-%d %H-%M-%S"),
+                   username + " gpm demultiplex " + base)
 
         Config.write(cfgfile)
         cfgfile.close()
     else:
-        click.echo("***** config.ini file exists already. Please remove it if you want to create a new config.ini.")
+        click.echo("""***** config.ini file exists already. Please remove it 
+                   if you want to create a new config.ini.""")
         sys.exit()
 
 
 def update_config_with_name(name, Config):
-    """Adding to the config file the details about the project (required for export)"""
+    """Adding to the config file the details about the project 
+    (required for export)"""
     split_name = name.split("_")
     seqdate = split_name[0]
-    #seqdate
+    # seqdate
     try:
         datetime.strptime(seqdate, "%y%m%d")
     except ValueError:
-        click.echo("This is the incorrect date string format. It should be YYMMDD")
+        click.echo("""This is the incorrect date string format. 
+                   It should be YYMMDD""")
         sys.exit()
 
     # app
     application = split_name[4]
-    if application not in get_gpmconfig("GPM","APPLICATIONS"):
-        click.echo("Please type exactly the app name in the list: "+" ".join(get_gpmconfig("GPM","APPLICATIONS")))
+    if application not in get_gpmconfig("GPM", "APPLICATIONS"):
+        click.echo("Please type exactly the app name in the list: "+" ".join(get_gpmconfig("GPM", "APPLICATIONS")))
         sys.exit()
     # surnames
     provider = split_name[1].capitalize()
@@ -516,6 +543,5 @@ def update_config_with_name(name, Config):
     Config.set("Project", "Sample Provider", provider)
     Config.set("Project", "Institute", institute)
     Config.set("Project", "Application", application)
-    
-    return Config
 
+    return Config

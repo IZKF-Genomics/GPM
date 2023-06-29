@@ -14,20 +14,27 @@ import glob
 import subprocess
 
 
-helps = {"raw": 'Enter the path to the directory for the BCL raw data, e.g. 210903_NB501289_0495_AHLLHTBGXJ',
-         "app": "Choose the application ("+" ".join(get_gpmconfig("GPM","APPLICATIONS"))+")",
-         "name": "Enter the name of the new project in the format of YYMMDD_ProviderSurname_PISurname_Institute_Application",
+helps = {"raw": 'Enter the path to the directory for the BCL raw data, '
+                'e.g. 210903_NB501289_0495_AHLLHTBGXJ',
+         "app": "Choose the application ("
+                " ".join(get_gpmconfig("GPM", "APPLICATIONS"))+")",
+         "name": "Enter the name of the new project in the format of "
+                 "YYMMDD_ProviderSurname_PISurname_Institute_Application",
          "base": "Define the base directory of the project",
-         "demultiplex_output": "Define the output directory for bcl2fastq. This folder should have the same name as run folder.",
+         "demultiplex_output": "Define the output directory for bcl2fastq. "
+                        "This folder should have the same name as run folder.",
          "fastq": "Define the directory to the FASTQ files."}
 
 ###################################################################
-## Main function
+# Main function
 ###################################################################
+
+
 @click.group()
 @click.version_option(version)
 def main():
-    """Genomic Project Manager is a project management CLI for bioinformatic workflows of IZKF Genomic Facility.
+    """Genomic Project Manager is a project management CLI for bioinformatic 
+       workflows of IZKF Genomic Facility.
        Contact: ckuo@ukaachen.de 
     """
     pass
@@ -37,11 +44,17 @@ def main():
 ###################################################################
 @main.command()
 @click.option('-r', '--raw', help=helps["raw"], required=True)
-@click.option('-o', '--output', help=helps["demultiplex_output"], required=True)
-@click.option('-sc', default=False, show_default=True, help="Flag for single-cell sequencing, otherwise bulk sequencing is set as default.")
-@click.option('-miseq', default=False, show_default=True, help="Flag for using autamitaclly the fastq presented under the miseq folder")
+@click.option('-o', '--output',
+              help=helps["demultiplex_output"], required=True)
+@click.option('-sc', default=False, show_default=True, 
+              help="Flag for single-cell sequencing, "
+                   "otherwise bulk sequencing is set as default.")
+@click.option('-miseq', default=False, show_default=True, 
+              help="Flag for using autamitaclly the fastq "
+                   "presented under the miseq folder")
 def demultiplex(raw, output, sc, miseq):
-    """A wrapper of bcl2fastq programm and cellranger mkfastq for demultiplexing."""
+    """A wrapper of bcl2fastq programm and cellranger mkfastq for 
+    demultiplexing."""
     # if not output:
     #     rawname = os.path.basename(raw)
     #     output = os.path.join("/fastq", rawname)
@@ -76,23 +89,28 @@ def demultiplex(raw, output, sc, miseq):
     click.echo(click.style("Next steps:", fg='bright_green'))
     if miseq:
         click.echo("i. Check and modify run_qc.sh")
-        click.echo("ii. Run run_qc.sh with the command below: (Recommend to run it in screen session)")
+        click.echo("ii. Run run_qc.sh with the command below:"
+                   "(Recommend to run it in screen session)")
         click.echo("\tbash run_qc.sh")
         click.echo("iii. In case a re-run of demultiplexing is required:")
             
-    click.echo("1. Modify samplesheet.csv with the proper information. Please add Sample_Project with the correct format (YYMMDD_Provider_PI_Institute_App).")
+    click.echo("1. Modify samplesheet.csv with the proper information. "
+               "Please add Sample_Project with the correct format "
+               "(YYMMDD_Provider_PI_Institute_App).")
     if sc:
         click.echo("2. Check and modify run_cellranger_mkfastq.sh")
-        click.echo("3. Run run_cellranger_mkfastq.sh with the command below: (Recommend to run it in screen session)")
+        click.echo("3. Run run_cellranger_mkfastq.sh with the command below: "
+                   "(Recommend to run it in screen session)")
         click.echo("\tbash run_cellranger_mkfastq.sh")
     else:
         click.echo("2. Check and modify run_bcl2fastq.sh")
-        click.echo("3. Run run_bcl2fastq.sh with the command below: (Recommend to run it in screen session)")
+        click.echo("3. Run run_bcl2fastq.sh with the command below: "
+                   "(Recommend to run it in screen session)")
         click.echo("\tbash run_bcl2fastq.sh")
 
 
 ###################################################################
-## init: Initiate a new project for analyses
+# init: Initiate a new project for analyses
 ###################################################################
 @main.command()
 @click.option('-fq', '--fastq', help=helps["fastq"], required=True)
