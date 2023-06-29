@@ -169,7 +169,8 @@ def fastq_dir_to_samplesheet(
                     if sc:
                         sample_info = ",".join([sample, read_1, read_2])
                     else:
-                        sample_info = ",".join([sample, read_1, read_2, strandedness])
+                        sample_info = ",".join([sample, read_1, read_2,
+                                                strandedness])
                     fout.write(f"{sample_info}\n")
     else:
         error_str = (
