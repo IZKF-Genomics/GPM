@@ -6,7 +6,7 @@ import os
 # import fnmatch
 from .gpm import GPM
 from . import version
-from .helpers import generate_samples, generate_samples_scrna, write_file_run_bcl2fastq, write_file_run_cellranger_mkfastq, write_file_run_cellranger_merge_lanes, copyfromdata, show_tree, move_igv, tar_exports, export_empty_folder, get_gpmconfig, get_size, write_file_run_qc, update_config_with_name, generate_config_file
+from .helpers import generate_samples, generate_samples_scrna, generate_samples_16s, write_file_run_bcl2fastq, write_file_run_cellranger_mkfastq, write_file_run_cellranger_merge_lanes, copyfromdata, show_tree, move_igv, tar_exports, export_empty_folder, get_gpmconfig, get_size, write_file_run_qc, update_config_with_name, generate_config_file
 # from pathlib import Path
 import datetime
 # import collections
@@ -157,6 +157,14 @@ def init(fastq, name):
         click.echo(click.style("Next steps:", fg='bright_green'))
         click.echo("1. Check the command in cellranger/run_cellranger_scVDJseq.sh")
         click.echo("2. Run the command in screen session with bash cellranger/run_cellranger_scVDJseq.sh")
+    elif app == "16s":
+        # In the 16s amplicon sequencing the samplesheet is generated with the init command
+        generate_samples_16s(fastq_dir=fastq, samplesheet_file=f"./{name}/nfcore/samplesheet.csv")
+        gpm.show_tree()
+        click.echo()
+        click.echo(click.style("Next steps:", fg='bright_green'))
+        click.echo("1. Check the command in nfcore/run_nfcore_"+app.lower()+".sh")
+        click.echo("2. Run the command in screen session with bash nfcore/run_nfcore_"+app.lower()+".sh")
     else:
         # Todo
         gpm.show_tree()

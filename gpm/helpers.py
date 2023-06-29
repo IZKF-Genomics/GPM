@@ -110,6 +110,7 @@ def fastq_dir_to_samplesheet(
     sanitise_name_delimiter="_",
     sanitise_name_index=1,
     sc=False,
+    r16s=False
 ):
     def sanitize_sample(path, extension):
         """Retrieve sample id from filename"""
@@ -158,6 +159,8 @@ def fastq_dir_to_samplesheet(
         with open(samplesheet_file, "w") as fout:
             if sc:
                 header = ["sample", "fastq_1", "fastq_2"]
+            elif r16s: 
+                header = ["sampleID", "forwardReads", "reverseReads","run"]
             else:
                 header = ["sample", "fastq_1", "fastq_2", "strandedness"]
             fout.write(",".join(header) + "\n")
@@ -168,6 +171,8 @@ def fastq_dir_to_samplesheet(
                         read_2 = reads["R2"][idx]
                     if sc:
                         sample_info = ",".join([sample, read_1, read_2])
+                    elif r16s:
+                        sample_info = ",".join([sample, read_1, read_2],"")
                     else:
                         sample_info = ",".join([sample, read_1, read_2, strandedness])
                     fout.write(f"{sample_info}\n")
@@ -218,6 +223,14 @@ def generate_samples_scrna(fastq_dir, samplesheet_file):
         sc=True,
     )
 
+def generate_samples_16s(FASTQ_DIR, SAMPLESHEET_FILE):
+
+    fastq_dir_to_samplesheet(
+        fastq_dir=FASTQ_DIR,
+        samplesheet_file=SAMPLESHEET_FILE,
+        sanitise_name=True,
+        r16s=True
+    )
 
 def write_file_run_bcl2fastq(rawfolder, targetfolder):
     data_dir = os.path.join(os.path.dirname(__file__), "data", "bcl2fastq")
