@@ -1,5 +1,5 @@
 ################## test script ##################
-# nextflow run nf-core/rnaseq -profile test,docker
+# nextflow run nf-core/ampliseq -profile test,docker --outdir ./results
 
 nextflow run nf-core/ampliseq  -profile docker \
     --input samplesheet.csv \

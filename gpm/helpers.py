@@ -172,7 +172,7 @@ def fastq_dir_to_samplesheet(
                     if sc:
                         sample_info = ",".join([sample, read_1, read_2])
                     elif r16s:
-                        sample_info = ",".join([sample, read_1, read_2],"")
+                        sample_info = ",".join([sample, read_1, read_2],"1")
                     else:
                         sample_info = ",".join([sample, read_1, read_2, strandedness])
                     fout.write(f"{sample_info}\n")
@@ -224,7 +224,9 @@ def generate_samples_scrna(fastq_dir, samplesheet_file):
     )
 
 def generate_samples_16s(FASTQ_DIR, SAMPLESHEET_FILE):
-
+    """
+    Reads must be Must be aligned with: "[Sample Name]_S1_L00[Lane Number]_[Read Type]_001.fastq.gz". column "run" is not defined yet.
+    """
     fastq_dir_to_samplesheet(
         fastq_dir=FASTQ_DIR,
         samplesheet_file=SAMPLESHEET_FILE,
