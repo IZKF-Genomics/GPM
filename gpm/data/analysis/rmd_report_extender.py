@@ -100,13 +100,11 @@ for comparison in comparisons:
 with open(rmd_analysis_file, 'r') as file:
     rmd_contents = file.read()
 
-# Insert the comparsions sections content into the R Markdown contents
-marker_position = rmd_contents.find(group_comparison_marker)
-updated_rmd_contents = rmd_contents[:marker_position] + comparison_section_content + rmd_contents[marker_position:]
+# Replace the group comparison marker with the comparison section content
+updated_rmd_contents = rmd_contents.replace(group_comparison_marker, comparison_section_content, 1)
 
-# Insert the sample upload section content into the R Markdown contents
-marker_position = updated_rmd_contents.find(group_comparison_marker)
-updated_rmd_contents = rmd_contents[:marker_position] + sample_upload_content + rmd_contents[marker_position:]
+# Replace the sample upload marker with the sample upload section content
+updated_rmd_contents = updated_rmd_contents.replace(sample_upload_marker, sample_upload_content, 1)
 
 # Write the updated contents back to the R Markdown file
 with open(rmd_analysis_file, 'w') as file:
