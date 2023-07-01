@@ -64,24 +64,9 @@ lengthcorrection <- config[[rna_seq_type]]$lengthcorrection
 method_des <- organism2method_des(organism) 
 spikein_method <- spikein_ERCC2method(spikein_ERCC)
 
-################# Loading samples ################################################
-## Load sample sheets from nf-core configuration
-samples <- read.table(file.path(DIR_base,"/nfcore/samplesheet.csv"), header=TRUE, sep = ",")
-rownames(samples) <- samples$sample
-
-d <- samples %>% separate(sample, c("group", "batch"))
-samples$group <- d$group
-samples$batch <- d$batch
-
-
-# labels_group <- c("GLP2", "CTRL", "GLP2", "Sham", "GLP2", "Sham", "GLP2", "CTRL", "Sham",
-#                   "GLP2", "CTRL", "CTRL", "GLP2", "Sham", "GLP2", "CTRL", "Sham")
-# samples$group <- labels_group
-# d <- samples %>% separate(sample, c("cell", "rest"))
-# samples$cell <- d$cell
-# samples$rename <- paste0(samples$group, "_", samples$sample)
-
 ```
+
+# SAMPLE_UPLOAD_POINTER
 
 
 ![](RWTH_IZKF_GF_Logo_rgb.png)
