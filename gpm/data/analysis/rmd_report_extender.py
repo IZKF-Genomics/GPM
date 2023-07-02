@@ -9,7 +9,7 @@ import pandas as pd
 
 SECTION_TEMPLATE = """
 ```{r, echo=FALSE, results="hide", warning=FALSE, message=FALSE}
-description <- DESCRIPTION
+description <- "DESCRIPTION"
 filetag <- str_replace_all(description, " ", "_")
 samples2 <- samples
 samples2$VARIABLE <- factor(samples2$VARIABLE, levels = c("GROUP_B","GROUP_A"))
@@ -31,7 +31,7 @@ rownames(samples) <- samples$sample
 
 UPLOADING_SAMPLES_SUFFIX = """
 # samples$VARIABLE <- labels_group
-# d <- samples %>% separate(sample, c("cell", "rest"))
+# d <- samples %>% separate(sample, c("group", "batch"), sep = "_")
 # samples$cell <- d$cell
 # samples$rename <- paste0(samples$VARIABLE, "_", samples$sample)
 ```
@@ -58,7 +58,7 @@ analysis_samplesheet_df = pd.read_csv(os.path.join(os.getcwd(),'samplesheet.csv'
 variable_columns = analysis_samplesheet_df.columns[3:].tolist()
 
 columns_string = 'c({})'.format(', '.join(['"{}"'.format(col) for col in variable_columns]))
-seperation_string = "d <- samples %>% separate(sample," + columns_string + ")\n"
+seperation_string = "d <- samples %>% separate(sample," + columns_string + ', sep = "_")\n'
 
 for variable in variable_columns:
     seperation_string += f"samples${variable} <- d${variable} \n"

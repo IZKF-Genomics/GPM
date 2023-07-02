@@ -140,7 +140,7 @@ rmarkdown::render(paste0('SimpleComparison_',filetag,'.Rmd'), output_format = 'h
 ### All Samples 3d PCA plot
 ```{r, echo=FALSE, results="asis", warning=FALSE, message=FALSE, dpi=600, fig.width=6, fig.height=4}
 description <- "All samples"
-filtered_samples <- samples[complete.cases(filtered_samples$group),]
+filtered_samples <- samples[complete.cases(samples$group),]
 deseq_output <- run_deseq_salmon(filtered_samples, spikein=spikein_ERCC, paired=paired,
                                  countsFromAbundance=countsFromAbundance,
                                  lengthcorrection=lengthcorrection)
