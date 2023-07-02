@@ -56,7 +56,6 @@ config <- yaml::yaml.load_file("config.yml")
 
 spikein_ERCC <- config$default$spikein_ERCC
 organism <- config$default$organism
-paired <- config$default$paired
 
 countsFromAbundance <- config[[rna_seq_type]]$countsFromAbundance
 lengthcorrection <- config[[rna_seq_type]]$lengthcorrection

@@ -13,7 +13,7 @@ description <- "DESCRIPTION"
 filetag <- str_replace_all(description, " ", "_")
 samples2 <- samples
 samples2$VARIABLE <- factor(samples2$VARIABLE, levels = c("GROUP_B","GROUP_A"))
-add_DGEA(description, filetag, samples2, paired=paired)
+add_DGEA(description, filetag, samples2, paired=PAIRED)
 rmarkdown::render(paste0('DGEA_',filetag,'.Rmd'), output_format = 'html_document',
                   output_file = paste0('DGEA_',filetag,'.html'))
 ```
@@ -87,6 +87,7 @@ for comparison in comparisons:
     current_section = current_section.replace('VARIABLE', comparison['variable'])
     current_section = current_section.replace('GROUP_B', comparison['reference'])
     current_section = current_section.replace('GROUP_A', comparison['target'])
+    current_section = current_section.replace('PAIRED', comparison['paired'])
     current_section += "\n\n"
 
     comparison_section_content += current_section
