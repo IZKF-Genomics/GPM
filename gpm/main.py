@@ -183,6 +183,13 @@ def analysis(config_file):
     gpm.analysis()
     gpm.show_tree()
 
+    click.echo()
+    click.echo(click.style("Next steps (in the analysis folder):", fg='bright_green'))
+    click.echo("1. Adjust config.yml with the appropriate parameters for your project.")
+    click.echo("2. In the samplesheet.csv file rename the generated columns accordingly to your experimental structure.")
+    click.echo("3. Add your comparisons to the contrasts.csv file.")
+    click.echo("4. Run run_analysis.sh in a screen session.")
+
 ###################################################################
 ## export_raw
 ###################################################################
