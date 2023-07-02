@@ -27,7 +27,7 @@ library(yaml)
 library(DESeq2)
 library("tximport")
 library("tximportData")
-# library(plotly)
+library(plotly)
 # library(ggrepel)
 # set.seed(42)
 options(warn = -1)
@@ -140,7 +140,7 @@ rmarkdown::render(paste0('SimpleComparison_',filetag,'.Rmd'), output_format = 'h
 ```{r, echo=FALSE, results="asis", warning=FALSE, message=FALSE, dpi=600, fig.width=6, fig.height=4}
 description <- "All samples"
 filtered_samples <- samples[complete.cases(samples$group),]
-deseq_output <- run_deseq_salmon(filtered_samples, spikein=spikein_ERCC, paired=paired,
+deseq_output <- run_deseq_salmon(filtered_samples, spikein=spikein_ERCC, paired=FALSE,
                                  countsFromAbundance=countsFromAbundance,
                                  lengthcorrection=lengthcorrection)
 RNAseq_3D_PCA_plotly(deseq_output$norm_count, filtered_samples)
