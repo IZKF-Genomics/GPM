@@ -65,8 +65,16 @@ spikein_method <- spikein_ERCC2method(spikein_ERCC)
 
 ```
 
-# SAMPLE_UPLOAD_POINTER
-
+```{r, echo=FALSE, results="hide", warning=FALSE, message=FALSE}
+################# Loading samples ################################################
+## Load sample sheets (originated from the nf-core pipeline run configuration)
+samples <- read.table(file.path(DIR_base,"/analysis/samplesheet.csv"), header=TRUE, sep = ",")
+rownames(samples) <- samples$sample
+# samples$VARIABLE <- labels_group
+# d <- samples %>% separate(sample, c("group", "batch"), sep = "_")
+# samples$cell <- d$cell
+# samples$rename <- paste0(samples$VARIABLE, "_", samples$sample)
+```
 
 ![](RWTH_IZKF_GF_Logo_rgb.png)
 
