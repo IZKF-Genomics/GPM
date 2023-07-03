@@ -33,6 +33,8 @@ if (organism == "hsapiens") {
   library(org.Hs.eg.db)
 } else if (organism == "mmusculus") {
   library(org.Mm.eg.db)
+} else if (organism == "rattus") {
+  library(org.Rn.eg.db)
 }
 
 table_gostres <- function(gostres_table) {

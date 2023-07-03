@@ -1,0 +1,6 @@
+id,variable,reference,target,blocking
+e.g.:
+condition_control_treated,condition,control,treated,
+condition_control_treated_blockrep,condition,control,treated,replicate;batch
+
+
