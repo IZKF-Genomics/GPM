@@ -130,20 +130,6 @@ save(DIR_base,DIR_project,DIR_salmon,
      samples, file = paste0(DIR_project, "data.RData"))
 ```
 
-<!-- # Comparisons without duplicates
-
-```{r, echo=FALSE, results="hide", warning=FALSE, message=FALSE}
-group_base=""
-group_comp=""
-filetag <- paste0(group_comp, "_vs_",group_base)
-description <- str_replace_all(filetag, "_", " ")
-add_SimpleComparison(salmon_count_table=paste0(DIR_salmon,"/salmon.merged.gene_counts_length_scaled.tsv"), 
-                     group_base=group_base, group_comp=group_comp)
-rmarkdown::render(paste0('SimpleComparison_',filetag,'.Rmd'), output_format = 'html_document',
-                  output_file = paste0('SimpleComparison_',filetag,'.html'))
-```
-
-### [`r description`](`r paste0('SimpleComparison_',filetag,'.html')`) -->
 
 # Differential Gene Expression Analysis
 
@@ -166,6 +152,7 @@ library(org.Rn.eg.db)
 Tag_this_analysis <- "All_Samples"
 File_stats <- paste0('DGEA_',Tag_this_analysis,'_genes_stats.csv')
 File_norm_expression <- paste0('DGEA_',Tag_this_analysis,'_norm_exp_quant.csv')
+File_xlsx_res <- paste0('DGEA_',Tag_this_analysis,'_res.xlsx')
 
 
 cols <- c("ENSEMBL", "SYMBOL", "GENENAME")
