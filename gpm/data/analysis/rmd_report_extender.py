@@ -11,11 +11,16 @@ SECTION_TEMPLATE = """
 ```{r, echo=FALSE, results="hide", warning=FALSE, message=FALSE}
 description <- "DESCRIPTION"
 filetag <- str_replace_all(description, " ", "_")
+description <- str_replace_all(filetag, "_", " ")
 samples2 <- samples
 samples2$VARIABLE <- factor(samples2$VARIABLE, levels = c("GROUP_B","GROUP_A"))
 add_DGEA(description, filetag, samples2, paired=PAIRED)
-rmarkdown::render(paste0('DGEA_',filetag,'.Rmd'), output_format = 'html_document',
-                  output_file = paste0('DGEA_',filetag,'.html'))
+
+if ( re_render == FALSE ) {
+    rmarkdown::render(paste0('DGEA_',filetag,'.Rmd'), output_format = 'html_document',
+                    output_file = paste0('DGEA_',filetag,'.html'))
+}
+            
 ```
 ### [`r description`](`r paste0('DGEA_',filetag,'.html')`)
 """
