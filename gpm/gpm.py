@@ -15,6 +15,8 @@ from .helpers import (
     get_gpmdata_path,
     get_config,
     tar_exports)
+
+import pandas as pd
 from pathlib import Path
 
 
@@ -222,7 +224,26 @@ class GPM():
     def analysis(self):
         self.load_structure()
         self.populate_files(command="analysis")
+        self.generate_analysis_samplesheet()
         self.update_config("gpm analysis")
+
+    def generate_analysis_samplesheet(self):
+        cwd = os.getcwd()
+        nfcore_folder_path = os.path.join(cwd, 'nfcore')
+        # read nfcore samplesheet
+        nfcore_samplesheet_df = pd.read_csv(os.path.join(nfcore_folder_path,'samplesheet.csv'))
+        # Create analysis sample sheet
+        analysis_samplesheet_df = nfcore_samplesheet_df.drop('strandedness', axis=1)
+        partial_names = analysis_samplesheet_df['sample'].str.split('_', expand=True)
+        column_names = [f"column_{i+1}" for i in range(partial_names.shape[1])]
+        analysis_samplesheet_df[column_names] = partial_names
+
+        analysis_folder_path = os.path.join(cwd, 'analysis')
+        output_file_path = os.path.join(os.path.join(analysis_folder_path,'samplesheet.csv'))
+
+        with open(output_file_path, "w") as file:
+            analysis_samplesheet_df.to_csv(file, index=False)
+
 
     def load_export_config(self):
         convert_list = {"GPM_FASTQ": self.fastq}
