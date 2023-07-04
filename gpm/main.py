@@ -9,6 +9,7 @@ from . import version
 from .helpers import (
     generate_samples,
     generate_samples_scrna,
+    generate_samples_16s,
     write_file_run_bcl2fastq,
     write_file_run_cellranger_mkfastq,
     write_file_run_cellranger_merge_lanes,
