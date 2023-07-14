@@ -17,6 +17,8 @@ bibliography: references.bib
 
 ```{r conig, echo=FALSE, results="hide", warning=FALSE, message=FALSE}
 # rmarkdown::render('Analysis_Report_RNAseq.Rmd', output_format = 'html_document', output_file ='Analysis_Report_RNAseq.html')
+library(knitr)
+library(kableExtra)
 library(stringr)
 library("readr")
 library(tidyr)
@@ -27,7 +29,7 @@ library(yaml)
 library(DESeq2)
 library("tximport")
 library("tximportData")
-# library(plotly)
+library(plotly)
 # library(ggrepel)
 # set.seed(42)
 options(warn = -1)
@@ -56,7 +58,6 @@ config <- yaml::yaml.load_file("config.yml")
 
 spikein_ERCC <- config$default$spikein_ERCC
 organism <- config$default$organism
-paired <- config$default$paired
 
 countsFromAbundance <- config[[rna_seq_type]]$countsFromAbundance
 lengthcorrection <- config[[rna_seq_type]]$lengthcorrection
@@ -64,10 +65,19 @@ lengthcorrection <- config[[rna_seq_type]]$lengthcorrection
 method_des <- organism2method_des(organism) 
 spikein_method <- spikein_ERCC2method(spikein_ERCC)
 
+re_render <- FALSE
 ```
 
-# SAMPLE_UPLOAD_POINTER
-
+```{r, echo=FALSE, results="hide", warning=FALSE, message=FALSE}
+################# Loading samples ################################################
+## Load sample sheets (originated from the nf-core pipeline run configuration)
+samples <- read.table(file.path(DIR_base,"/analysis/samplesheet.csv"), header=TRUE, sep = ",")
+rownames(samples) <- samples$sample
+# samples$VARIABLE <- labels_group
+# d <- samples %>% separate(sample, c("group", "batch"), sep = "_")
+# samples$cell <- d$cell
+# samples$rename <- paste0(samples$VARIABLE, "_", samples$sample)
+```
 
 ![](RWTH_IZKF_GF_Logo_rgb.png)
 
@@ -91,7 +101,7 @@ Please refer to our [Publication Policy](https://genomics.rwth-aachen.de/service
 3. [Reports](GPM_URL_3_Reports):
     * [MultiQC reports](GPM_URL_3_Reports/multiqc/multiqc_report.html) for the quality check
     * Basic analysis of the Genomics Facility (This report)
-    * [ERCC Spike-in Analysis](ERCC.html)
+    `r if (spikein_ERCC) "* [ERCC Spike-in Analysis](ERCC.html)" else ""`
 4. [Compressed files for download](GPM_URL_TAR):
     * Three tar files are available for download the above three folders.
   
@@ -120,35 +130,79 @@ save(DIR_base,DIR_project,DIR_salmon,
      samples, file = paste0(DIR_project, "data.RData"))
 ```
 
-<!-- # Comparisons without duplicates
-
-```{r, echo=FALSE, results="hide", warning=FALSE, message=FALSE}
-group_base=""
-group_comp=""
-filetag <- paste0(group_comp, "_vs_",group_base)
-description <- str_replace_all(filetag, "_", " ")
-add_SimpleComparison(salmon_count_table=paste0(DIR_salmon,"/salmon.merged.gene_counts_length_scaled.tsv"), 
-                     group_base=group_base, group_comp=group_comp)
-rmarkdown::render(paste0('SimpleComparison_',filetag,'.Rmd'), output_format = 'html_document',
-                  output_file = paste0('SimpleComparison_',filetag,'.html'))
-```
-
-### [`r description`](`r paste0('SimpleComparison_',filetag,'.html')`) -->
 
 # Differential Gene Expression Analysis
 
 ### All Samples 3d PCA plot
 ```{r, echo=FALSE, results="asis", warning=FALSE, message=FALSE, dpi=600, fig.width=6, fig.height=4}
 description <- "All samples"
-filtered_samples <- samples[complete.cases(filtered_samples$group),]
-deseq_output <- run_deseq_salmon(filtered_samples, spikein=spikein_ERCC, paired=paired,
+filtered_samples <- samples[complete.cases(samples$group),]
+deseq_output <- run_deseq_salmon(filtered_samples, spikein=spikein_ERCC, paired=FALSE,
                                  countsFromAbundance=countsFromAbundance,
                                  lengthcorrection=lengthcorrection)
 RNAseq_3D_PCA_plotly(deseq_output$norm_count, filtered_samples)
 ```
 
+
+```{r, echo=FALSE, results='asis', warning=FALSE, message=FALSE}
+library(org.Hs.eg.db)
+library(org.Mm.eg.db)
+library(org.Rn.eg.db)
+
+Tag_this_analysis <- "All_Samples"
+File_stats <- paste0('DGEA_',Tag_this_analysis,'_genes_stats.csv')
+File_norm_expression <- paste0('DGEA_',Tag_this_analysis,'_norm_exp_quant.csv')
+File_xlsx_res <- paste0('DGEA_',Tag_this_analysis,'_res.xlsx')
+
+
+cols <- c("ENSEMBL", "SYMBOL", "GENENAME")
+ensemblkeys <- gsub("\\.[0-9]*$", "", deseq_output$deseq2res$gene_id)
+if (organism == "hsapiens") {
+  genenames <- select(org.Hs.eg.db, keys=ensemblkeys, columns=cols, keytype="ENSEMBL")
+} else if (organism == "mmusculus") {
+  genenames <- select(org.Mm.eg.db, keys=ensemblkeys, columns=cols, keytype="ENSEMBL")
+} else if (organism == "rattus") {
+  genenames <- select(org.Rn.eg.db, keys=ensemblkeys, columns=cols, keytype="ENSEMBL")
+}
+genenames <- genenames[match(ensemblkeys, genenames$ENSEMBL), ]
+deseq_output$deseq2res <- cbind(deseq_output$deseq2res, genenames)
+
+write.csv(deseq_output$deseq2res,paste0(DIR_project, File_stats))
+write.csv(deseq_output$norm_count,paste0(DIR_project, File_norm_expression))
+
+wb <- createWorkbook()
+addWorksheet(wb, "DGEA_stats")
+writeData(wb, "DGEA_stats", deseq_output$deseq2res)
+addWorksheet(wb, "norm_exp_quant")
+writeData(wb, "norm_exp_quant", deseq_output$norm_count)
+## Save workbook to working directory
+saveWorkbook(wb, file = File_xlsx_res, overwrite = TRUE)
+```
+
+* *Download CSV file for the expression quantification of all 'All Samples' genes:* [`r File_norm_expression`](`r File_norm_expression`)
+
+
 <!-- ### [Correlation analysis](DGEA_correlation_analysis.html)
 ### [Genesets Comparisons](DGEA_Geneset_Comparisons.html) -->
+
+## Sub-reports {.tabset}
+
+### samplesheet
+```{r echo=FALSE, results='asis'}
+samplesheet_file <- read.csv("samplesheet.csv")
+samplesheet_file <- subset(samplesheet_file, select = -c(fastq_1, fastq_2))
+kable(samplesheet_file) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), full_width = FALSE)
+```
+
+### contrasts
+```{r echo=FALSE, results='asis'}
+contrasts_file <- read.csv("contrasts.csv")
+kable(contrasts_file) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), full_width = FALSE)
+```
+
+## {-}
 
 
 # GROUP_COMPARISON_POINTER

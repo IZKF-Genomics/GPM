@@ -1,7 +1,6 @@
 default:
   spikein_ERCC: FALSE  # Choose either TRUE or FALSE
   organism: "hsapiens"  # Choose one of "hsapiens", "mmusculus", or "rattus"
-  paired: TRUE # Choose either TRUE or FALSE
 
 totalRNAseq:
   countsFromAbundance: "lengthScaledTPM"
