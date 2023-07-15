@@ -7,6 +7,7 @@ import sys
 import shutil
 import click
 import glob
+import subprocess
 from .helpers import (
     DisplayablePath,
     tardir,
@@ -271,16 +272,79 @@ class GPM():
         os.makedirs(export_dir)
         # For BCL files
         origin_file = bcl
-        target = os.path.join(export_dir, 'BCL')
-        os.symlink(symprefix+origin_file, target, target_is_directory=True)
+        bcl_path = os.path.join(export_dir, 'BCL')
+        os.symlink(symprefix+origin_file, bcl_path, target_is_directory=True)
         # For FASTQ files
         origin_file = fastq
-        target = os.path.join(export_dir, 'FASTQ')
-        os.symlink(symprefix+origin_file, target, target_is_directory=True)
+        fastq_path = os.path.join(export_dir, 'FASTQ')
+        os.symlink(symprefix+origin_file, fastq_path, target_is_directory=True)
         # Tar the export:
         if tar:
             tar_exports(export_dir, False)
+        self.generate_demultiplexing_report(export_dir, bcl_path, fastq_path, tar)
+        # Link the new generated report into the export folder:
+        demultiplexing_report_path = os.path.join(export_dir, 'demultiplexing_report.html')
+        origin_file = os.path.join(os.getcwd(), 'demultiplexing_report.html')
+        os.symlink(symprefix+origin_file, demultiplexing_report_path, target_is_directory=False)
 
+    def generate_demultiplexing_report(self, export_dir, bcl_path, fastq_path, tar):
+        """
+        Generate demultiplexing report by rendering a R markdown file, which is generated 
+        specifically for this demultiplexing-project.
+        """
+        data_dir = os.path.join(os.path.dirname(__file__), "data")
+        gpm_logo_image_path = os.path.join(data_dir, 'analysis/RWTH_IZKF_GF_Logo_rgb.png')
+        # shutil.copyfile(original, gpm_logo_image)
+
+        demultiplexing_report_path  = os.path.join(data_dir, 'bcl2fastq/demultiplexing_report.Rmd')
+        with open(demultiplexing_report_path, "rb") as f1:
+            demultiplexing_report_template = [le.decode('utf8', 'ignore').rstrip() 
+                        for le in f1.readlines()]
+
+        tar_export_path = os.path.join(export_dir, "compressed_tars")
+        multiqc_export_path = os.path.join(fastq_path, "multiqc/multiqc_report.html")
+        modifier = { "<TITLE>": self.name,
+                    "<EXPORT_DIRECTORY>": export_dir,
+                    "<TAR_DIRECTORY>": tar_export_path,
+                    "<MULTIQC_PATH>": multiqc_export_path,
+                    "<BCL_PATH>": bcl_path,
+                    "<FASTQ_PATH>":fastq_path,
+                    "<IZKF_LOGO>": gpm_logo_image_path
+                    }
+        
+        for i, line in enumerate(demultiplexing_report_template):
+            for old, new in modifier.items():
+                if old in line:
+                    demultiplexing_report_template[i] = demultiplexing_report_template[i].replace(old, new)
+
+        # Create demultiplexing_report.Rmd inside the working folder
+        with open(os.path.join(os.getcwd(),'demultiplexing_report.Rmd') , "w") as f2:
+            for line in demultiplexing_report_template:
+                print(line, file=f2)
+
+        commands = '''
+        previous_env=$(conda info --envs | grep "*" | awk '{print $1}')
+        conda activate rstudio
+        rmarkdown::render('demultiplexing_report.Rmd', output_format = 'html_document', output_file ='demultiplexing_report.html')
+        conda activate $previous_env
+        '''
+
+        # Run the Bash commands
+        process = subprocess.Popen(commands, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+        # Wait for the process to finish and get the output and error (if any)
+        output, error = process.communicate()
+
+        # Print the output
+        print("Output:")
+        print(output.decode())
+
+        # Print the error
+        print("Error:")
+        print(error.decode())
+        
+    
+    
     def export(self, export_dir, symprefix, tar=False):
         def handle_rename(export_dir, entry):
             # print(os.path.basename(entry[1]))
