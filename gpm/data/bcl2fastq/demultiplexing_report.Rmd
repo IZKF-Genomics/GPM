@@ -14,7 +14,7 @@ output:
     toc_depth: 3
     number_sections: false
     theme: lumen
-bibliography: references.bib
+bibliography: <REFERENCES>
 ---
 
 ```{r conig, echo=FALSE, results="hide", warning=FALSE, message=FALSE}
@@ -75,7 +75,7 @@ FASTQ files were generated using bcl2fastq (Illumina).
 
 ### samplesheet used for bcl2fastq
 ```{r echo=FALSE, results='asis'}
-sample_sheet <- readLines("tmp_samplesheet.csv")
+sample_sheet <- readLines("samplesheet.csv")
 # Find the index of the [Data] section
 data_start_index <- grep("\\[Data\\]", sample_sheet)
 

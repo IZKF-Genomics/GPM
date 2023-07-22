@@ -281,19 +281,25 @@ class GPM():
         # Tar the export:
         if tar:
             tar_exports(export_dir, False)
-        self.generate_demultiplexing_report(export_dir, bcl_path, fastq_path, tar)
+        self.generate_demultiplexing_report()
         # Link the new generated report into the export folder:
         demultiplexing_report_path = os.path.join(export_dir, 'demultiplexing_report.html')
         origin_file = os.path.join(os.getcwd(), 'demultiplexing_report.html')
         os.symlink(symprefix+origin_file, demultiplexing_report_path, target_is_directory=False)
 
-    def generate_demultiplexing_report(self, export_dir, bcl_path, fastq_path, tar):
+    def generate_demultiplexing_report(self):
         """
         Generate demultiplexing report by rendering a R markdown file, which is generated 
         specifically for this demultiplexing-project.
         """
         data_dir = os.path.join(os.path.dirname(__file__), "data")
         gpm_logo_image_path = os.path.join(data_dir, 'analysis/RWTH_IZKF_GF_Logo_rgb.png')
+        references = os.path.join(data_dir, 'analysis/references.bib')
+        export_URL = str(os.path.join(get_gpmconfig("GPM", "EXPORT_URL"), self.name))
+        bcl_path = os.path.join(export_URL, "BCL")
+        fastq_path = os.path.join(export_URL, "FASTQ")
+        tar_export_path = os.path.join(export_URL, "compressed_tars")
+        multiqc_export_path = os.path.join(export_URL, "FASTQ/multiqc/multiqc_report.html")
         # shutil.copyfile(original, gpm_logo_image)
 
         demultiplexing_report_path  = os.path.join(data_dir, 'bcl2fastq/demultiplexing_report.Rmd')
@@ -301,10 +307,9 @@ class GPM():
             demultiplexing_report_template = [le.decode('utf8', 'ignore').rstrip() 
                         for le in f1.readlines()]
 
-        tar_export_path = os.path.join(export_dir, "compressed_tars")
-        multiqc_export_path = os.path.join(fastq_path, "multiqc/multiqc_report.html")
         modifier = { "<TITLE>": self.name,
-                    "<EXPORT_DIRECTORY>": export_dir,
+                    "<REFERENCES>": references,
+                    "<EXPORT_DIRECTORY>": export_URL,
                     "<TAR_DIRECTORY>": tar_export_path,
                     "<MULTIQC_PATH>": multiqc_export_path,
                     "<BCL_PATH>": bcl_path,
@@ -322,12 +327,7 @@ class GPM():
             for line in demultiplexing_report_template:
                 print(line, file=f2)
 
-        commands = '''
-        previous_env=$(conda info --envs | grep "*" | awk '{print $1}')
-        conda activate rstudio
-        rmarkdown::render('demultiplexing_report.Rmd', output_format = 'html_document', output_file ='demultiplexing_report.html')
-        conda activate $previous_env
-        '''
+        commands = '/opt/miniconda3/envs/rstudio/bin/Rscript -e "rmarkdown::render(\'demultiplexing_report.Rmd\', output_format = \'html_document\', output_file =\'demultiplexing_report.html\')"'
 
         # Run the Bash commands
         process = subprocess.Popen(commands, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
