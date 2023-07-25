@@ -18,7 +18,7 @@ bibliography: <REFERENCES>
 ---
 
 ```{r conig, echo=FALSE, results="hide", warning=FALSE, message=FALSE}
-# rmarkdown::render('demultiplexing_report.Rmd', output_format = 'html_document', output_file ='demultiplexing_report.html')
+# rmarkdown::render('demultiplexing_report.Rmd', output_format = 'html_document', output_file ='Demultiplexing_Report.html')
 library(knitr)
 library(kableExtra)
 library(stringr)
@@ -82,7 +82,7 @@ data_start_index <- grep("\\[Data\\]", sample_sheet)
 # Extract the [Data] section
 data_section <- read.csv(text = paste(sample_sheet[(data_start_index + 1):length(sample_sheet)], collapse = "\n"), header = FALSE)
 
-kable(data_section) %>%
+kable(data_section, col.names = NULL) %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), full_width = FALSE)
 ```
 

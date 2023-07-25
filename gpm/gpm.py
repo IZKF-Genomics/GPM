@@ -327,7 +327,7 @@ class GPM():
             for line in demultiplexing_report_template:
                 print(line, file=f2)
 
-        commands = '/opt/miniconda3/envs/rstudio/bin/Rscript -e "rmarkdown::render(\'demultiplexing_report.Rmd\', output_format = \'html_document\', output_file =\'demultiplexing_report.html\')"'
+        commands = '/opt/miniconda3/envs/rstudio/bin/Rscript -e "rmarkdown::render(\'demultiplexing_report.Rmd\', output_format = \'html_document\', output_file =\'Demultiplexing_Report.html\')"'
 
         # Run the Bash commands
         process = subprocess.Popen(commands, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
