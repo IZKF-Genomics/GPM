@@ -10,7 +10,8 @@ nextflow run nf-core/rnaseq -r 3.8.1 -profile docker \
      # --genome gencode_GRCm39 \
      --gencode --featurecounts_group_type gene_type \
      --star_index false --save_reference \
-     #--additional_fasta /data/genomes/spikein/ERCC_ExFold_RNA_SpikeIn_Mixes/ERCC92.fa  
+     #--additional_fasta /data/genomes/spikein/ERCC_ExFold_RNA_SpikeIn_Mixes/ERCC92.fa \
+     #--with_umi --umitools_extract_method "regex" --umitools_bc_pattern "^(?P<umi_1>.{6})(?P<discard_1>.{4}).*" 
 
 
 # Options for --genome:
