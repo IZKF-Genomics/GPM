@@ -283,8 +283,8 @@ class GPM():
             tar_exports(export_dir, False)
         self.generate_demultiplexing_report()
         # Link the new generated report into the export folder:
-        demultiplexing_report_path = os.path.join(export_dir, 'demultiplexing_report.html')
-        origin_file = os.path.join(os.getcwd(), 'demultiplexing_report.html')
+        demultiplexing_report_path = os.path.join(export_dir, 'Demultiplexing_Report.html')
+        origin_file = os.path.join(os.getcwd(), 'Demultiplexing_Report.html')
         os.symlink(symprefix+origin_file, demultiplexing_report_path, target_is_directory=False)
 
     def generate_demultiplexing_report(self):
@@ -302,7 +302,7 @@ class GPM():
         multiqc_export_path = os.path.join(export_URL, "FASTQ/multiqc/multiqc_report.html")
         # shutil.copyfile(original, gpm_logo_image)
 
-        demultiplexing_report_path  = os.path.join(data_dir, 'bcl2fastq/demultiplexing_report.Rmd')
+        demultiplexing_report_path  = os.path.join(data_dir, 'bcl2fastq/Demultiplexing_Report.Rmd')
         with open(demultiplexing_report_path, "rb") as f1:
             demultiplexing_report_template = [le.decode('utf8', 'ignore').rstrip() 
                         for le in f1.readlines()]
@@ -323,11 +323,11 @@ class GPM():
                     demultiplexing_report_template[i] = demultiplexing_report_template[i].replace(old, new)
 
         # Create demultiplexing_report.Rmd inside the working folder
-        with open(os.path.join(os.getcwd(),'demultiplexing_report.Rmd') , "w") as f2:
+        with open(os.path.join(os.getcwd(),'Demultiplexing_Report.Rmd') , "w") as f2:
             for line in demultiplexing_report_template:
                 print(line, file=f2)
 
-        commands = '/opt/miniconda3/envs/rstudio/bin/Rscript -e "rmarkdown::render(\'demultiplexing_report.Rmd\', output_format = \'html_document\', output_file =\'Demultiplexing_Report.html\')"'
+        commands = '/opt/miniconda3/envs/rstudio/bin/Rscript -e "rmarkdown::render(\'Demultiplexing_Report.Rmd\', output_format = \'html_document\', output_file =\'Demultiplexing_Report.html\')"'
 
         # Run the Bash commands
         process = subprocess.Popen(commands, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)

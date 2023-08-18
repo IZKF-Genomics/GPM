@@ -18,7 +18,7 @@ bibliography: <REFERENCES>
 ---
 
 ```{r conig, echo=FALSE, results="hide", warning=FALSE, message=FALSE}
-# rmarkdown::render('demultiplexing_report.Rmd', output_format = 'html_document', output_file ='Demultiplexing_Report.html')
+# rmarkdown::render('Demultiplexing_Report.Rmd', output_format = 'html_document', output_file ='Demultiplexing_Report.html')
 library(knitr)
 library(kableExtra)
 library(stringr)
@@ -56,12 +56,6 @@ Please refer to our [Publication Policy](https://genomics.rwth-aachen.de/service
 2. [Multiqc Report](<MULTIQC_PATH>)
 3. [Compressed files for download](<TAR_DIRECTORY>):
     * Three tar files are available for download the above three folders.
-
-In the command line environment, you can also download everything by the commands below with the given username and password from us:
-
-```
-wget -r -nH -np -nd -P --user USERNAME --password PASSWORD -A '*.tar' https://genomics.rwth-aachen.de/data/230626_Phadke_Liedtke_MedIII_3mRNAseq/compressed_tars -P 230626_Phadke_Liedtke_MedIII_3mRNAseq
-```
 
 Please make sure that you store these data in a lab-wise level. Genomics Facility won't store your data forever and these data should still be accessible even after someone leaves your lab. Please refer to our [Data Management Policy](https://genomics.rwth-aachen.de/services/data-management-policy/).
 
