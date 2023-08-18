@@ -266,14 +266,6 @@ def export_raw(export_dir, name, config, symprefix, multiqc, tar):
     gpm = GPM(load_config=config, seqdate=None, application=None, 
             provider=None, piname=None, institute=None, fastq=None, name=None)
     gpm.export_raw(export_dir, symprefix,  Config["Project"]["BCL Path"], Config["Project"]["FASTQ Path"], multiqc, tar )
-    gpm.add_htaccess(export_dir)
-    gpm.create_user(export_dir, raw_export=True)
-
-    # print multiqc report link
-    export_URL = os.path.join(get_gpmconfig("GPM","EXPORT_URL"), name)
-    multiqc_path = glob.glob("**/multiqc_report.html", recursive=True)[0]
-    multiqc_exported_path = os.path.join( export_URL, "FASTQ", multiqc_path)
-    click.echo("MultiQC report:\t" + multiqc_exported_path)
 
 
 ###################################################################

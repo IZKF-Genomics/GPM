@@ -278,6 +278,15 @@ class GPM():
         origin_file = fastq
         fastq_path = os.path.join(export_dir, 'FASTQ')
         os.symlink(symprefix+origin_file, fastq_path, target_is_directory=True)
+
+        self.add_htaccess(export_dir)
+        self.create_user(export_dir, raw_export=True)
+        # print multiqc report link
+        export_URL = os.path.join(get_gpmconfig("GPM","EXPORT_URL"), self.name)
+        multiqc_path = glob.glob("**/multiqc_report.html", recursive=True)[0]
+        multiqc_exported_path = os.path.join( export_URL, "FASTQ", multiqc_path)
+        click.echo("MultiQC report:\t" + multiqc_exported_path)
+
         # Tar the export:
         if tar:
             tar_exports(export_dir, False)
