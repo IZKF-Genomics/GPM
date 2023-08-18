@@ -238,7 +238,7 @@ class GPM():
             analysis_samplesheet_df = nfcore_samplesheet_df.drop('strandedness',
                                                                  axis=1)
         except:
-            pass
+            analysis_samplesheet_df = nfcore_samplesheet_df
         partial_names = analysis_samplesheet_df['sample'].str.split('_', expand=True)
         column_names = [f"column_{i+1}" for i in range(partial_names.shape[1])]
         analysis_samplesheet_df[column_names] = partial_names
