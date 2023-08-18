@@ -306,7 +306,7 @@ class GPM():
         multiqc_export_path = os.path.join(export_URL, "FASTQ/multiqc/multiqc_report.html")
         # shutil.copyfile(original, gpm_logo_image)
 
-        demultiplexing_report_path  = os.path.join(data_dir, 'bcl2fastq/Demultiplexing_Report.Rmd')
+        demultiplexing_report_path  = os.path.join(data_dir, 'bcl2fastq/demultiplexing_report.Rmd')
         with open(demultiplexing_report_path, "rb") as f1:
             demultiplexing_report_template = [le.decode('utf8', 'ignore').rstrip() 
                         for le in f1.readlines()]
