@@ -73,6 +73,11 @@ sample_sheet <- readLines("samplesheet.csv")
 # Find the index of the [Data] section
 data_start_index <- grep("\\[Data\\]", sample_sheet)
 
+# In case we are dealing with single cell samplesheet.
+if (length(data_start_index) == 0) {
+  data_start_index <- 0
+}
+
 # Extract the [Data] section
 data_section <- read.csv(text = paste(sample_sheet[(data_start_index + 1):length(sample_sheet)], collapse = "\n"), header = FALSE)
 
