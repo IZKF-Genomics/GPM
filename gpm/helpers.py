@@ -365,24 +365,25 @@ def tar_exports(export_dir, nobehaviour):
         export_dir = os.getcwd()
     export_dir = export_dir.rstrip("/")
     name = os.path.basename(export_dir)
+    # Create compressed_tars folder
     compressed_folder = os.path.join(export_dir, "compressed_tars")
     if not os.path.exists(compressed_folder):
         click.echo(click.style("Create the folder:", fg='bright_green'))
         click.echo(compressed_folder)
         if not nobehaviour:
             os.makedirs(compressed_folder)
-
+    # 
     for filename in os.listdir(export_dir):
         pathfile = os.path.join(export_dir, filename)
         tarfile = os.path.join(compressed_folder, name+"_" + filename + ".tar")
-        if os.path.islink(pathfile):
-            pathfile = os.readlink(pathfile)
-            base_dirs = ["/mnt/nextgen", "/mnt/nextgen2", "/mnt/nextgen3"]
-            for base_dir in base_dirs:
-                if pathfile.startswith(base_dir):
-                    # Getting the relative path of the directory
-                    rel_path = os.path.relpath(pathfile, base_dir)
-                    pathfile = os.path.join("/", rel_path)
+        # if os.path.islink(pathfile):
+        #     pathfile = os.readlink(pathfile)
+        #     base_dirs = ["/mnt/nextgen", "/mnt/nextgen2", "/mnt/nextgen3"]
+        #     for base_dir in base_dirs:
+        #         if pathfile.startswith(base_dir):
+        #             # Getting the relative path of the directory
+        #             rel_path = os.path.relpath(pathfile, base_dir)
+        #             pathfile = os.path.join("/", rel_path)
         if os.path.isdir(pathfile) and filename != "compressed_tars":
             click.echo(click.style("Tar the folder:", fg='bright_green'))
             click.echo(pathfile + click.style(" => ",
