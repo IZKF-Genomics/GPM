@@ -115,10 +115,26 @@ Please make sure that you store these data in a lab-wise level. Genomics Facilit
 
 \textcolor{red}{Your data will be deleted according to this policy automatically. Please download everything.}
 
+```{r, echo=FALSE}
+# Function to run a command and capture its output
+run_command <- function(command) {
+  output <- system(command, intern = TRUE)
+  return(output)
+}
+
+r_version <- R.Version()$version.string
+docker_version <-  run_command("docker -v") # '24.0.2'
+nextflow_version <- '23.04.1'
+trimgalore_version <- '0.6.7'
+salmon_version <- 'v1.5.2'
+star_version <- '2.7.10a'
+DESeq2_version <- 'v.1.32.0'
+nfcore_version <- '3.8.1'
+```
+
 # Method description
 
-FASTQ files were generated using bcl2fastq (Illumina). To facilitate reproducible analysis, samples were processed using the publicly available nf-core/RNA-seq pipeline version 3.5 [@ewels2020nf] implemented in Nextflow 21.10.6 [@di2017nextflow] using Docker 20.10.12 [@merkel2014docker] with the minimal command. In brief, lane-level reads were trimmed using Trim Galore 0.6.7 [@felix_krueger_2021_5127899] and aligned to the `r method_des` using STAR 2.7.9a [@dobin2013star]. `r spikein_method` Gene-level and transcript-level quantification was done by Salmon v1.5.2 [@patro2017salmon]. All analysis was performed using custom scripts in R version 4.1.1 using the DESeq2 v.1.32.0 framework [@love2014moderated].
-
+FASTQ files were generated using bcl2fastq (Illumina). To facilitate reproducible analysis, samples were processed using the publicly available nf-core/RNA-seq pipeline version `r nfcore_version` (Ewels et al. 2020) implemented in Nextflow `r nextflow_version` (Di Tommaso et al. 2017) using Docker `r docker_version` (Merkel 2014) with the minimal command. In brief, lane-level reads were trimmed using Trim Galore `r trimgalore_version` (Krueger et al. 2021) and aligned to the human genome (GRCh38.p13) using STAR `r star_version` (Dobin et al. 2013). Gene-level and transcript-level quantification was done by Salmon `r salmon_version` (Patro et al. 2017). All analysis was performed using custom scripts in R version `r r_version` using the DESeq2 `r DESeq2_version` framework (Love, Huber, and Anders 2014) with default parameters.
 
 ```{r saveobjects, echo=FALSE, results="hide", warning=FALSE, message=FALSE}
 save(DIR_base,DIR_project,DIR_salmon,
