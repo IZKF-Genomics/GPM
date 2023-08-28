@@ -376,6 +376,7 @@ def tar_exports(export_dir, nobehaviour):
     for filename in os.listdir(export_dir):
         pathfile = os.path.join(export_dir, filename)
         tarfile = os.path.join(compressed_folder, name+"_" + filename + ".tar")
+        print("1 "+pathfile)
         # if os.path.islink(pathfile):
         #     pathfile = os.readlink(pathfile)
         #     base_dirs = ["/mnt/nextgen", "/mnt/nextgen2", "/mnt/nextgen3"]
@@ -389,6 +390,8 @@ def tar_exports(export_dir, nobehaviour):
             click.echo(pathfile + click.style(" => ",
                                               fg='bright_green') + tarfile)
             if not nobehaviour:
+                print("2 "+pathfile)
+                print("2 "+tarfile)
                 tardir(pathfile, tarfile)
 
    
