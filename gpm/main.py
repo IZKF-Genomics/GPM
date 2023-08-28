@@ -11,6 +11,7 @@ from .helpers import (
     generate_samples_scrna,
     generate_samples_16s,
     write_file_run_bcl2fastq,
+    write_file_run_idemux,
     write_file_run_cellranger_mkfastq,
     write_file_run_cellranger_merge_lanes,
     copyfromdata, show_tree,
@@ -67,7 +68,9 @@ def main():
 @click.option('-miseq', default=False, show_default=True, 
               help="Flag for using autamitaclly the fastq "
                    "presented under the miseq folder")
-def demultiplex(raw, output, sc, miseq):
+@click.option('-i','--idemux', default=False, show_default=True, 
+              help="")
+def demultiplex(raw, output, sc, miseq, idemux):
     """A wrapper of bcl2fastq programm and cellranger mkfastq for 
     demultiplexing."""
     # if not output:
@@ -89,6 +92,15 @@ def demultiplex(raw, output, sc, miseq):
         write_file_run_cellranger_mkfastq(raw, output)
         write_file_run_cellranger_merge_lanes(raw, output)
         copyfromdata("cellranger/samplesheet.csv", output)
+        # If MiSeq was used as the sequencer the data is already demultiplexed!
+        if miseq:
+            write_file_run_qc(raw, output)
+
+    elif idemux:
+        write_file_run_idemux(raw, output)
+        copyfromdata("bcl2fastq/blank_sample.csv", output)
+        copyfromdata("bcl2fastq/samplesheet_idemux.csv", output)
+
         # If MiSeq was used as the sequencer the data is already demultiplexed!
         if miseq:
             write_file_run_qc(raw, output)
@@ -117,6 +129,11 @@ def demultiplex(raw, output, sc, miseq):
         click.echo("3. Run run_cellranger_mkfastq.sh with the command below: "
                    "(Recommend to run it in screen session)")
         click.echo("\tbash run_cellranger_mkfastq.sh")
+    elif idemux:
+        click.echo("2. Check and modify run_idemux.sh")
+        click.echo("3. Check and modify samplesheet_idemux.csv")
+        click.echo("4. Run run_idemux.sh with the command below: (Recommend to run it in screen session)")
+        click.echo("\tbash run_bcl2fastq.sh")
     else:
         click.echo("2. Check and modify run_bcl2fastq.sh")
         click.echo("3. Run run_bcl2fastq.sh with the command below: "
@@ -266,14 +283,6 @@ def export_raw(export_dir, name, config, symprefix, multiqc, tar):
     gpm = GPM(load_config=config, seqdate=None, application=None, 
             provider=None, piname=None, institute=None, fastq=None, name=None)
     gpm.export_raw(export_dir, symprefix,  Config["Project"]["BCL Path"], Config["Project"]["FASTQ Path"], multiqc, tar )
-    gpm.add_htaccess(export_dir)
-    gpm.create_user(export_dir, raw_export=True)
-
-    # print multiqc report link
-    export_URL = os.path.join(get_gpmconfig("GPM","EXPORT_URL"), name)
-    multiqc_path = glob.glob("**/multiqc_report.html", recursive=True)[0]
-    multiqc_exported_path = os.path.join( export_URL, "FASTQ", multiqc_path)
-    click.echo("MultiQC report:\t" + multiqc_exported_path)
 
 
 ###################################################################

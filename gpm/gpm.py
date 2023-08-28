@@ -166,6 +166,19 @@ class GPM():
         """Adding the bcl path to the project's config file from the fastq
         config file"""
         # Getting the path from the fastq config file
+        current_dir = self.fastq
+        while True:
+            demultiplexing_config_path = os.path.join(current_dir, "config.ini")
+            if os.path.isfile(demultiplexing_config_path):
+                break
+            parent_dir = os.path.dirname(current_dir)
+            if parent_dir == current_dir:
+                # Reached the root directory without finding the config file
+                click.echo("***** config.ini file doesn't exist in the fastq folder or it's parent directories.\
+                            unable to add bcl path to the config file")
+                sys.exit()
+            current_dir = parent_dir
+
         demultiplexing_config_path = os.path.join(self.fastq, "config.ini")
         if not os.path.isfile(demultiplexing_config_path):
             click.echo("***** config.ini file doesn't exist in the *fastq "
@@ -282,6 +295,15 @@ class GPM():
         origin_file = fastq
         fastq_path = os.path.join(export_dir, 'FASTQ')
         os.symlink(symprefix+origin_file, fastq_path, target_is_directory=True)
+
+        self.add_htaccess(export_dir)
+        self.create_user(export_dir, raw_export=True)
+        # print multiqc report link
+        export_URL = os.path.join(get_gpmconfig("GPM","EXPORT_URL"), self.name)
+        multiqc_path = glob.glob("**/multiqc_report.html", recursive=True)[0]
+        multiqc_exported_path = os.path.join( export_URL, "FASTQ", multiqc_path)
+        click.echo("MultiQC report:\t" + multiqc_exported_path)
+
         # Tar the export:
         if tar:
             tar_exports(export_dir, False)
