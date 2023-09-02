@@ -114,13 +114,16 @@ run_command <- function(command) {
   return(output)
 }
 
+version_yaml_path = '../nfcore/results/pipeline_info/software_versions.yml'
+yaml_data <- yaml::yaml.load_file(version_yaml_path)
+
 r_version <- R.Version()$version.string
-DESeq2_version <- 'v.1.38.0'
+DESeq2_version <- yaml_data$DESEQ2_QC_STAR_SALMON$`bioconductor-deseq2`  # 'v.1.38.0'
 multiMiR_version <- '1.22.0'
-clusterProfiler_version <- '3.17'
+clusterProfiler_version <- yaml_data$SEQCLUSTER_SEQUENCES$seqcluster # '3.17'
 docker_version <- run_command("docker -v") # '24.0.2'
-nf_core_smRNAse_version <- '2.2.1'
-nextflow_version <- '23.04.1'
+nf_core_smRNAse_version <-  yaml_data$Workflow$`nf-core/smrnaseq`  # '2.2.1'
+nextflow_version <- yaml_data$Workflow$Nextflow  # '23.04.1'
 ```
 
 # Method description
