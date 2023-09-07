@@ -7,7 +7,7 @@ organism2method_des <- function(organism) {
     method_des <- "human genome (GRCh38.p13)"
   } else if (organism == "mmusculus") {
     method_des <- "mouse genome (GRCm39)"
-  } else if (organism == "rattus") {
+  } else if (organism == "rnorvegicus") {
     method_des <-	"rat genome Rnor_6.0"
   }
   return(method_des)

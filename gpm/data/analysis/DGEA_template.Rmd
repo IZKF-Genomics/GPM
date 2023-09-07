@@ -43,7 +43,7 @@ if (organism == "hsapiens") {
   library(org.Hs.eg.db)
 } else if (organism == "mmusculus") {
   library(org.Mm.eg.db)
-} else if (organism == "rattus") {
+} else if (organism == "rnorvegicus") {
   library(org.Rn.eg.db)
 }
 
