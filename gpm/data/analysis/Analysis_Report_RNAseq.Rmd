@@ -65,6 +65,9 @@ lengthcorrection <- config[[rna_seq_type]]$lengthcorrection
 method_des <- organism2method_des(organism) 
 spikein_method <- spikein_ERCC2method(spikein_ERCC)
 
+execute_go_analyses <- config$default$GO_analysis
+execute_gsea_integration <- config$default$GSEA_analysis
+
 re_render <- FALSE
 ```
 
@@ -226,14 +229,22 @@ kable(contrasts_file) %>%
 
 # GROUP_COMPARISON_POINTER
 
-<!-- # GO Analysis
 
-### [GO Analyses](GO_analyses.html)
-### [GO Integration](GO_integration.html) 
+```{r, results='asis', echo=FALSE}
+if (execute_go_analyses) {
+  rmarkdown::render("GO_analyses.Rmd", output_format = "html_document", output_file = "GO_analyses.html")
+  rmarkdown::render("GO_integration.Rmd", output_format = "html_document", output_file = "GO_integration.html")
+  cat("# GO Analysis\n")
+  cat("### [GO Analyses](GO_analyses.html)\n")
+  cat("### [GO Integration](GO_integration.html)\n")
+}
 
-# GSEA
-
-### [GSEA](GSEA.html)-->
+if (execute_gsea_integration) {
+  rmarkdown::render("GSEA.Rmd", output_format = "html_document", output_file = "GSEA.html")
+  cat("# GSEA\n")
+  cat("### [GSEA](GSEA.html)\n")
+}
+```
 
 # References
 
