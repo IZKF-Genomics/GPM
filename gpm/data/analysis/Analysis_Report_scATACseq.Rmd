@@ -22,13 +22,14 @@ library("readr")
 # library(data.table)
 options(warn = -1)
 options(knitr.duplicate.label = "allow")
+r_version <- R.Version()$version.string
 
 ################# File paths #####################################################
 DIR_base <- "GPM_DIR_BASE/"
 DIR_project <- paste0(DIR_base, "analysis/")
 DIR_cellranger <- paste0(DIR_base, "cellranger/")
 DIR_output <- paste0(DIR_cellranger, "scATACseq_output/")
-DIR_output_published <- "GPM_URL_2_Processed_data/scATACseq_output/"
+DIR_output_published <- "GPM_URL_2_Processed_data/"
 ```
 
 ![](RWTH_IZKF_GF_Logo_rgb.png)
