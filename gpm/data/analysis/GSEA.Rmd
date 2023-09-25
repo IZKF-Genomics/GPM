@@ -1,8 +1,8 @@
 ---
-title: "Gene Set Enrichment Analysis"
+title: "Gene Set Enrichment Analysis (GSEA)"
 author:
 GPM_AUTHORS
-date: "Last compiled on `r format(Sys.time(), '%d %B, %Y')`"
+	date: "Last compiled on `r format(Sys.time(), '%d %B, %Y')`"
 output:
   html_document:
     df_print: paged
@@ -17,92 +17,76 @@ bibliography: references.bib
 
 ```{r, echo=FALSE, results="hide", warning=FALSE, message=FALSE}
 Tag_this_analysis <- "GSEA"
-pvalueCutoff_GO <- 0.05
-
+pvalueCutoff_GO <- 0.01
 load("data.RData")
 
-library(dplyr)
-library(ggplot2)
-library(msigdbi)
-library(DT)
-library(fgsea)
-library(org.Hs.eg.db)
 library(clusterProfiler)
+library(enrichplot)
+library(DOSE)
+library(curl)
+library(DT)
+library(ggplot2)
 
 if (organism == "hsapiens") {
   library(org.Hs.eg.db)
-  list.files("/data/shared_env/GMT/msigdb_v2023.1.Hs_GMTs")
-  MSIGGMT <- "/data/shared_env/GMT/msigdb_v2023.1.Hs_GMTs/h.all.v2023.1.Hs.symbols.gmt"
+  organism <- org.Hs.eg.db
 } else if (organism == "mmusculus") {
   library(org.Mm.eg.db)
-  list.files("/data/shared_env/GMT/msigdb_v2023.1.Mm_GMTs")
-  MSIGGMT <- "/data/shared_env/GMT/msigdb_v2023.1.Mm_GMTs/h.all.v2023.1.Mm.symbols.gmt"
+  organism <- org.Mm.eg.db
+} else if (organism == "rnorvegicus") {
+  library(org.Rn.eg.db)
+  organism <- org.Rn.eg.db
+}
+
+table_GSEAres <- function(gostres_table) {
+  tt <- as.data.frame(gostres_table)
+  tt <- tt[, c("source", "term_id", "term_name", "p_value", "significant", "term_size", "query",
+               "query_size","intersection_size","precision","recall","effective_domain_size","source_order","parents")]
+
+  DT::datatable( tt,
+             extensions = c("FixedColumns"),
+             filter = 'top',
+             options = list( autoWidth = TRUE ,
+                             dom = 'Blftip',
+                             pageLength = 10,
+                             searchHighlight = FALSE,
+                             scrollX = TRUE,
+                             fixedColumns = list(leftColumns = 3),
+                             order = list(list(6))
+                             ),
+             class = c('compact cell-border stripe hover') ,
+             rownames = FALSE) %>% formatRound(c("p_value", "precision", "recall"), 4)
 }
 
 ```
 
 ### [Back to front page](Analysis_Report_RNAseq.html)
 
-GSEA stands for Gene Set Enrichment Analysis. It is a computational method used in genomics and bioinformatics to determine whether a predefined set of genes or gene sets exhibits statistically significant differences in expression or functional behavior between two biological conditions. 
-
-The main goal of GSEA is to identify whether a particular gene set, such as a pathway or a functional group of genes, is significantly enriched in a gene expression dataset. It provides a way to interpret high-throughput gene expression data in the context of known biological pathways or gene sets.
-
-The GSEA algorithm takes a ranked list of genes based on their differential expression or other relevant metrics and determines if genes in a predefined gene set are distributed towards the top (upregulated) or bottom (downregulated) of the ranked list more than would be expected by chance. This analysis helps to identify whether the genes in the gene set are coordinately regulated in a biologically meaningful way.
-
-GSEA has been widely used in various areas of genomics research, including cancer biology, drug discovery, and functional genomics. It provides insights into the underlying biological mechanisms and pathways associated with different phenotypes or experimental conditions.
-
-The output of GSEA typically includes enrichment scores, normalized enrichment scores (NES), p-values, and false discovery rates (FDR) for each gene set, indicating the degree of enrichment and the statistical significance. Researchers can then interpret the results to gain insights into the biological processes or pathways that are differentially regulated between the analyzed conditions.
-
-GSEA is implemented in various software packages and tools, including the original GSEA software developed by the Broad Institute, as well as other packages in R and Python, providing researchers with flexible options for conducting gene set enrichment analysis based on their specific datasets and research questions.
+GSEA[@subramanian2005gene] is a computational method used in genomics to reveal the biological significance of gene expression data. Unlike traditional methods that analyze single genes, GSEA assesses groups of genes, often organized by biological function or pathway. It identifies whether these gene sets exhibit coordinated changes in expression between experimental conditions. This approach is especially valuable for detecting subtle but meaningful shifts in gene activity. Unlike Gene Ontology (GO) analysis, which categorizes genes based on functional terms, GSEA focuses on the collective behavior of predefined gene sets, making it a powerful tool for uncovering hidden insights in large-scale gene expression datasets.
 
 ```{r, echo=FALSE, results="hide", warning=FALSE, message=FALSE}
 run_GSEA <- function(label) {
   GENE_LIST <- paste0("DGEA_", label, "_genes_stats.csv")
+  # reading in input from deseq2
+  df = read.csv(GENE_LIST, header=TRUE)
+  geneList <- df$log2FoldChange
+  names(geneList) <- df$gene_id
+  geneList <- na.omit(geneList)
+  geneList <- sort(geneList, decreasing = TRUE)
 
-  exp = read.csv(GENE_LIST, header=TRUE)
-  exp <- exp %>% 
-  dplyr::select(gene_name, log2FoldChange) %>% 
-  na.omit() %>% 
-  distinct() %>% 
-  group_by(gene_name) %>% 
-  summarize(stat=mean(log2FoldChange))
-  expvector <- as.numeric(c(exp$stat))
-  names(expvector) <- exp$gene_name
-  
-  gene_sets <- read.gmt(MSIGGMT)
-  pathways <- gmtPathways(MSIGGMT)
+  gse <- gseGO(geneList=geneList, 
+               ont ="ALL", 
+               keyType = "ENSEMBL", 
+               nPerm = 10000, 
+               minGSSize = 3, 
+               maxGSSize = 800, 
+               pvalueCutoff = 0.05, 
+               verbose = TRUE, 
+               OrgDb = organism, 
+               pAdjustMethod = "none")
 
-  # Show the first few pathways, and within those, show only the first few genes. 
-  # pathways.hallmark %>% 
-  #   head() %>% 
-  #   lapply(head)
-  
-  # Perform GSEA
-  fgseaRes <- fgsea(pathways = pathways, stats = expvector, nperm = 1000)
-  
-  fgseaResTidy <- fgseaRes %>%
-  as_tibble() %>%
-  arrange(desc(NES))
-  
-  write.table(apply(fgseaResTidy,2,as.character), file = paste0(Tag_this_analysis, "_", label,"_res.csv"))
-  
-  return(fgseaResTidy)
-}
-
-show_GSEA_table <- function(fgseaResTidy) {
-  # Show in a nice table:
-  fgseaResTidy %>% 
-    dplyr::select(-leadingEdge, -ES, -nMoreExtreme) %>% 
-    arrange(padj) %>% 
-    DT::datatable()
-}
-
-show_GSEA_figure <- function(fgseaResTidy) {
-  ggplot(fgseaResTidy, aes(reorder(pathway, NES), NES)) +
-  geom_col(aes(fill=padj<0.05)) +
-  coord_flip() +
-  labs(x="Pathway", y="Normalized Enrichment Score",
-       title="Hallmark pathways NES from GSEA") + theme_minimal()
+  write.table(gse, file = paste0(Tag_this_analysis, "_", label,"_res.csv"))
+  return(gse)
 }
 
 fnames <- list.files(pattern = "*genes_stats.csv")
@@ -112,22 +96,40 @@ labels <- gsub("_genes_stats.csv", "", labels)
 
 ```
 
+<!-- # GO analysis among treatments {.tabset} -->
+<!-- ```{r,echo=FALSE, results='asis', warning=FALSE, message=FALSE} -->
+<!-- for (lab in labels) { -->
+<!--   cat("\n## ",  lab, "\n") -->
+<!--   gostres <- run_GO(label=lab) -->
+<!--   gostplot(gostres, capped = FALSE, interactive = TRUE) -->
+<!--   cat("\n") -->
+<!-- } -->
+<!-- ``` -->
 
-# GSEA on Hallmark Genesets {.tabset}
 
-## HF_ST_vs_LF_LT
+# GROUP_COMPARISON_POINTER
 
-```{r, echo=FALSE, results='markup', warning=FALSE, message=FALSE, fig.height=6, fig.width=8}
-fgseaResTidy <- run_GSEA(label="HF_ST_vs_LF_LT")
-show_GSEA_figure(fgseaResTidy)
-show_GSEA_table(fgseaResTidy)
+
+# GSEA Plot of top gene sets {.tabset}
+```{r, echo=FALSE, results='asis', warning=FALSE, message=FALSE}
+for (i in 1:10) {
+  cat("\n## ",  GSEAres$Description[i], "\n")
+  p <- gseaplot(GSEAres, by = "all", title = GSEAres$Description[i], geneSetID = i)
+  print(p)
+  cat("\n")
+}
 ```
+
+<!-- # PubMed trend of enriched terms -->
+<!-- ```{r, echo=FALSE, results='markup', warning=FALSE, message=FALSE} -->
+<!-- terms <- GSEAres$Description[1:5] -->
+<!-- pmcplot(terms, 2010:2018, proportion=FALSE) -->
+<!-- ``` -->
 
 
 # Resources
 
-* [GSEA/Molecular Signatures Database](https://www.gsea-msigdb.org/gsea/msigdb)
-* [Fast Gene Set Enrichment Analysis](https://github.com/ctlab/fgsea)
+* [clusterProfiler](https://github.com/YuLab-SMU/clusterProfiler)
 
 # References
 
