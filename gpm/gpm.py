@@ -245,23 +245,26 @@ class GPM():
         cwd = os.getcwd()
         nfcore_folder_path = os.path.join(cwd, 'nfcore')
         # read nfcore samplesheet
-        nfcore_samplesheet_df = pd.read_csv(os.path.join(nfcore_folder_path,'samplesheet.csv'))
-        # Create analysis sample sheet
         try:
-            analysis_samplesheet_df = nfcore_samplesheet_df.drop('strandedness',
-                                                                 axis=1)
+            nfcore_samplesheet_df = pd.read_csv(os.path.join(nfcore_folder_path,'samplesheet.csv'))
+            
+            # Create analysis sample sheet
+            try:
+                analysis_samplesheet_df = nfcore_samplesheet_df.drop('strandedness',
+                                                                    axis=1)
+            except:
+                analysis_samplesheet_df = nfcore_samplesheet_df
+            partial_names = analysis_samplesheet_df['sample'].str.split('_', expand=True)
+            column_names = [f"column_{i+1}" for i in range(partial_names.shape[1])]
+            analysis_samplesheet_df[column_names] = partial_names
+
+            analysis_folder_path = os.path.join(cwd, 'analysis')
+            output_file_path = os.path.join(os.path.join(analysis_folder_path,'samplesheet.csv'))
+
+            with open(output_file_path, "w") as file:
+                analysis_samplesheet_df.to_csv(file, index=False)
         except:
-            analysis_samplesheet_df = nfcore_samplesheet_df
-        partial_names = analysis_samplesheet_df['sample'].str.split('_', expand=True)
-        column_names = [f"column_{i+1}" for i in range(partial_names.shape[1])]
-        analysis_samplesheet_df[column_names] = partial_names
-
-        analysis_folder_path = os.path.join(cwd, 'analysis')
-        output_file_path = os.path.join(os.path.join(analysis_folder_path,'samplesheet.csv'))
-
-        with open(output_file_path, "w") as file:
-            analysis_samplesheet_df.to_csv(file, index=False)
-
+            click.echo("No sample sheet is available.")
 
     def load_export_config(self):
         convert_list = {"GPM_FASTQ": self.fastq}
