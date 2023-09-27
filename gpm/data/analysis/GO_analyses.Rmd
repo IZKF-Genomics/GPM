@@ -17,7 +17,7 @@ bibliography: references.bib
 
 ```{r, echo=FALSE, results="hide", warning=FALSE, message=FALSE}
 Tag_this_analysis <- "GO"
-pvalueCutoff_GO <- 0.05
+pvalueCutoff_GO <- 0.01
 
 load("data.RData")
 
@@ -33,7 +33,7 @@ if (organism == "hsapiens") {
   library(org.Hs.eg.db)
 } else if (organism == "mmusculus") {
   library(org.Mm.eg.db)
-} else if (organism == "rattus") {
+} else if (organism == "rnorvegicus") {
   library(org.Rn.eg.db)
 }
 
@@ -72,33 +72,58 @@ Interpretation of gene lists is a key step in numerous biological data analysis 
 
 # Method
 
-For gene ontology analysis, R library gprofiler2[@kolberg2020gprofiler2] was used. Using gost function, correction_method = 'FDR' and significant=TRUE. To minimize the enrichment of gene ontologies based on a small set of genes, we used three conditions for significance assessment: false discovery rate (FDR) < `r pvalueCutoff_GO`. We used Gene Ontology (GO or by branch GO\:MF, GO\:BP, GO\:CC), Kyoto Encyclopedia of Genes and Genomes (KEGG), WikiPathways (WP) as sources.
+```{r, echo=FALSE}
+# Function to run a command and capture its output
+run_command <- function(command) {
+  output <- system(command, intern = TRUE)
+  return(output)
+}
+
+version_yaml_path <- "../nfcore/results/pipeline_info/software_versions.yml"
+yaml_data <- yaml::yaml.load_file(version_yaml_path)
+r_version <- R.Version()$version.string
+docker_version <-  run_command("docker -v")  # '24.0.2'
+nextflow_version <- yaml_data$Workflow$Nextflow  # '23.04.1'
+trimgalore_version <- yaml_data$TRIMGALORE$trimgalore  # '0.6.7'
+salmon_version <- yaml_data$SALMON_QUANT$salmon  # 'v1.5.2'
+star_version <- yaml_data$STAR_ALIGN$star # '2.7.10a'
+DESeq2_version <- yaml_data$DESEQ2_QC_STAR_SALMON$`bioconductor-deseq2`  # 'v.1.32.0'
+nfcore_version <-  yaml_data$Workflow$`nf-core/rnaseq`  # '3.8.1'
+```
+
+* [clusterProfiler](https://github.com/YuLab-SMU/clusterProfiler)
 
 <!-- intersection size (intersection between gene set vs. a number of genes in a term) > 3; and precision (intersection size divided by gene set) >0.03 -->
 
 
-```{r, echo=FALSE, results="hide", warning=FALSE, message=FALSE}
-run_GO <- function(label) {
+```{r, echo=FALSE, results="hide", warning=FALSE, message=FALSE}	
+run_GO <- function(label, direction) {
   GENE_LIST <- paste0("DGEA_", label, "_genes_stats.csv")
   # reading in input from deseq2
   df = read.csv(GENE_LIST, header=TRUE)
   df <- df[df$padj < CUTOFF_ADJP,]
   # de_gene_list <- gsub("\\.[0-9]*$", "", df$gene_id[(df$padj < pvalueCutoff)])
-  up_gene_list <- gsub("\\.[0-9]*$", "", df$gene_id[(df$padj < CUTOFF_ADJP)&(df$log2FoldChange>0)])
-  dn_gene_list <- gsub("\\.[0-9]*$", "", df$gene_id[(df$padj < CUTOFF_ADJP)&(df$log2FoldChange<0)])
-  
-  gostres <- gost(query = list("Down" = dn_gene_list,
-                               "Up" = up_gene_list), 
-                  multi_query = FALSE, evcodes = TRUE, 
-                  correction_method = "fdr", user_threshold=pvalueCutoff_GO,
-                  organism = organism, numeric_ns = "",
-                  sources=c("GO", "KEGG", "WP"))
-                  # sources=c("GO", "KEGG", "REAC", "MIRNA", "HP", "HPA", "WP"))
-  # gostplot(gostres, capped = FALSE, interactive = TRUE)
-  # p1 <- gostplot(gostres, capped = TRUE, interactive = FALSE)
-  # publish_gostplot(p1, highlight_terms = gostres_de$result$term_id)
-  write.table(gostres$result[1:11], file = paste0(Tag_this_analysis, "_", label,"_res.csv"))
-  return(gostres)
+  if (direction == "up") {
+    gene_list <- gsub("\\.[0-9]*$", "", df$gene_id[(df$padj < CUTOFF_ADJP)&(df$log2FoldChange>0)])
+  } else {
+    gene_list <- gsub("\\.[0-9]*$", "", df$gene_id[(df$padj < CUTOFF_ADJP)&(df$log2FoldChange<0)])
+  }
+
+  ego <- enrichGO(gene = gene_list,	
+                  # universe = names(geneList),
+                  keyType = "ENSEMBL",
+                  OrgDb = org.Rn.eg.db,
+                  ont = "ALL",
+                  pAdjustMethod = "fdr",
+                  pvalueCutoff = pvalueCutoff_GO,
+                  qvalueCutoff = 0.05, readable = TRUE)
+
+                  # sources=c("GO", "KEGG", "REAC", "MIRNA", "HP", "HPA", "WP"))	
+  # gostplot(gostres, capped = FALSE, interactive = TRUE)	
+  # p1 <- gostplot(gostres, capped = TRUE, interactive = FALSE)	
+  # publish_gostplot(p1, highlight_terms = gostres_de$result$term_id)	
+  write.table(ego, file = paste0(Tag_this_analysis, "_", label,"_",direction,"_res.csv"))	
+  return(ego)
 }
 
 
@@ -120,19 +145,14 @@ labels <- gsub("_genes_stats.csv", "", labels)
 <!-- } -->
 <!-- ``` -->
 
-# WT {.tabset}
+		
+# GROUP_COMPARISON_POINTER	
 
-## IL10_vs_Control_in_WT
-
-```{r, echo=FALSE, results='markup', warning=FALSE, message=FALSE}
-gostres <- run_GO(label="IL10_vs_Control_in_WT")
-gostplot(gostres, capped = FALSE, interactive = TRUE)
-```
 
 # Resources
 
 * [Gene Ontology overview](http://geneontology.org/docs/ontology-documentation/)
-* [g:Profiler](https://biit.cs.ut.ee/gprofiler/page/r)
+* [clusterProfiler](https://github.com/YuLab-SMU/clusterProfiler)
 
 # References
 

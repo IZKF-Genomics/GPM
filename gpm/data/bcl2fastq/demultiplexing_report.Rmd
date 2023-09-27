@@ -1,0 +1,91 @@
+---
+title: <TITLE>
+author:
+  - Lin Gan, Genomics Facility, lgan@ukaachen.de
+  - Chao-Chung Kuo, Genomics Facility, ckuo@ukaachen.de
+  - Fradlin Ilya, Genomics Facility, ilya.fradlin@rwth-aachen.de
+date: "Last compiled on `r format(Sys.time(), '%d %B, %Y')`"
+output:
+  html_document:
+    df_print: paged
+    toc: true
+    toc_float:
+      toc_collapsed: true
+    toc_depth: 3
+    number_sections: false
+    theme: lumen
+bibliography: <REFERENCES>
+---
+
+```{r conig, echo=FALSE, results="hide", warning=FALSE, message=FALSE}
+# rmarkdown::render('Demultiplexing_Report.Rmd', output_format = 'html_document', output_file ='Demultiplexing_Report.html')
+library(knitr)
+library(kableExtra)
+library(stringr)
+library("readr")
+library(tidyr)
+library(dplyr)
+library(data.table)
+
+options(warn = -1)
+options(knitr.duplicate.label = "allow")
+
+################# Parameters #####################################################
+Fig_width <- 600
+Fig_height <- 400
+CUTOFF_Quantification <- 20
+CUTOFF_ADJP <- 0.05
+```
+
+
+![](<IZKF_LOGO>)
+
+This document is the summary of the bioinformatic analysis done by Genomic Facility in IZKF, RWTH Aachen Uniklinik. Please contact us for any further discussion or collaboration. If these results are used in any poster or publications, please acknowledge our core facility with the text below:
+
+> This work was supported by the Genomics Facility, a core facility of the Interdisciplinary Center for Clinical Research (IZKF) Aachen within the Faculty of Medicine at RWTH Aachen University.
+
+Please refer to our [Publication Policy](https://genomics.rwth-aachen.de/services/publication-policy/).
+
+***
+
+# Download/Browse the files
+
+1. [Raw Data](<EXPORT_DIRECTORY>):
+    * [BCL](<BCL_PATH>) BCL files from the sequencer
+    * [FASTQ](<FASTQ_PATH>) FASTQ files after demultiplexing
+2. [Multiqc Report](<MULTIQC_PATH>)
+3. [Compressed files for download](<TAR_DIRECTORY>):
+    * Three tar files are available for download the above three folders.
+
+Please make sure that you store these data in a lab-wise level. Genomics Facility won't store your data forever and these data should still be accessible even after someone leaves your lab. Please refer to our [Data Management Policy](https://genomics.rwth-aachen.de/services/data-management-policy/).
+
+\textcolor{red}{Your data will be deleted according to this policy automatically. Please download everything.}
+
+# Method description
+
+FASTQ files were generated using bcl2fastq (Illumina).
+
+## Tables used: {.tabset}
+
+### samplesheet used for bcl2fastq
+```{r echo=FALSE, results='asis'}
+sample_sheet <- readLines("samplesheet.csv")
+# Find the index of the [Data] section
+data_start_index <- grep("\\[Data\\]", sample_sheet)
+
+# In case we are dealing with single cell samplesheet.
+if (length(data_start_index) == 0) {
+  data_start_index <- 0
+}
+
+# Extract the [Data] section
+data_section <- read.csv(text = paste(sample_sheet[(data_start_index + 1):length(sample_sheet)], collapse = "\n"), header = FALSE)
+
+kable(data_section, col.names = NULL) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), full_width = FALSE)
+```
+
+## {-}
+
+
+<div id="refs"></div>

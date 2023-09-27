@@ -107,9 +107,29 @@ wget -r -nH -np -nd -P --user USERNAME --password PASSWORD -A '*.tar' GPM_URL_TA
 
 Please make sure that you store these data in a lab-wise level. Genomics Facility won't store your data forever and these data should still be accessible even after someone leaves your lab. Please refer to our [Data Management Policy](https://genomics.rwth-aachen.de/services/data-management-policy/).
 
+```{r, echo=FALSE}
+# Function to run a command and capture its output
+run_command <- function(command) {
+  output <- system(command, intern = TRUE)
+  return(output)
+}
+
+version_yaml_path = '../nfcore/results/pipeline_info/software_versions.yml'
+yaml_data <- yaml::yaml.load_file(version_yaml_path)
+
+r_version <- R.Version()$version.string
+DESeq2_version <- yaml_data$DESEQ2_QC_STAR_SALMON$`bioconductor-deseq2`  # 'v.1.38.0'
+multiMiR_version <- '1.22.0'
+clusterProfiler_version <- yaml_data$SEQCLUSTER_SEQUENCES$seqcluster # '3.17'
+docker_version <- run_command("docker -v") # '24.0.2'
+nf_core_smRNAse_version <-  yaml_data$Workflow$`nf-core/smrnaseq`  # '2.2.1'
+nextflow_version <- yaml_data$Workflow$Nextflow  # '23.04.1'
+```
+
 # Method description
 
-FASTQ files were generated using bcl2fastq (Illumina). To facilitate reproducible analysis, samples were processed using the publicly available nf-core/smRNAseq pipeline version 1.1.0 [@ewels2020nf] implemented in Nextflow 21.10.6 [@di2017nextflow] using Docker 20.10.12 [@merkel2014docker] with the minimal command. All analysis was performed using custom scripts in R version 4.1.1 using the DESeq2 v.1.32.0 framework [@love2014moderated].
+In this study, the analysis of small RNA sequencing data was performed using a standardized and reproducible workflow. The FASTQ files, obtained from the Illumina bcl2fastq software, served as the input data for downstream analysis. The analysis pipeline utilized the nf-core/smRNAseq pipeline version `r nf_core_smRNAse_version`  implemented in Nextflow `r nextflow_version` , executed using Docker `r docker_version`.
+Differential expression analysis was conducted using the DESeq2 `r DESeq2_version` framework. miRNA targets were predicted using R package multiMiR (version `r multiMiR_version`) with the option for validated targets. The predicted targets were further analyzed for gene ontology using R package clusterProfiler (version `r clusterProfiler_version`).
 
 # Differential Expression Analysis
 

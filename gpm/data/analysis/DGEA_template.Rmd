@@ -43,7 +43,7 @@ if (organism == "hsapiens") {
   library(org.Hs.eg.db)
 } else if (organism == "mmusculus") {
   library(org.Mm.eg.db)
-} else if (organism == "rattus") {
+} else if (organism == "rnorvegicus") {
   library(org.Rn.eg.db)
 }
 
@@ -159,7 +159,7 @@ if (organism == "hsapiens") {
   genenames <- select(org.Hs.eg.db, keys=ensemblkeys, columns=cols, keytype="ENSEMBL")
 } else if (organism == "mmusculus") {
   genenames <- select(org.Mm.eg.db, keys=ensemblkeys, columns=cols, keytype="ENSEMBL")
-} else if (organism == "rattus"){
+} else if (organism == "rnorvegicus"){
   genenames <- select(org.Rn.eg.db, keys=ensemblkeys, columns=cols, keytype="ENSEMBL")
 }
 genenames <- genenames[match(ensemblkeys, genenames$ENSEMBL), ]

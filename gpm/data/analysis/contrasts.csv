@@ -1,6 +1,6 @@
-id,variable,reference,target,blocking
+id,variable,paired,reference,target,blocking
 e.g.:
-condition_control_treated,condition,control,treated,
-condition_control_treated_blockrep,condition,control,treated,replicate;batch
+condition_control_treated,condition,FALSE,control,treated,
+condition_control_treated_blockrep,TRUE,condition,control,treated,batch
 
 

@@ -1,3 +1,3 @@
 
-version_info = (1,0,0)
+version_info = (0,4,2)
 version = ".".join([str(c) for c in version_info])
