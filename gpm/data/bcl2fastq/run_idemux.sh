@@ -19,4 +19,4 @@ find ./demux/* -maxdepth 1 -name "*.fastq.gz" | parallel -j 30 "fastqc {} -o ./f
 
 ###### Running MultiQC #####################################
 mkdir -p multiqc
-multiqc -f . -o ./multiqc
+multiqc -f ./fastqc -o ./multiqc
