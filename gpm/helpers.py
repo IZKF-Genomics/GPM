@@ -316,8 +316,8 @@ def write_file_run_cellranger_merge_lanes(rawfolder, targetfolder):
 
 def write_file_run_idemux(rawfolder, targetfolder):
     data_dir = os.path.join(os.path.dirname(__file__), "data", "bcl2fastq")
-    original = os.path.join(data_dir, "run_bcl2fastq.sh")
-    target = os.path.join(targetfolder, "run_bcl2fastq.sh")
+    original = os.path.join(data_dir, "run_idemux.sh")
+    target = os.path.join(targetfolder, "run_idemux.sh")
     fastq_folder_full_path = os.path.join("/data/fastq", targetfolder)
     with open(original) as f1:
         contents = [le.strip() for le in f1.readlines()]
