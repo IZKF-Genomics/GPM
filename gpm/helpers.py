@@ -51,7 +51,7 @@ class DisplayablePath(object):
                                if criteria(path)),
                           key=lambda s: str(s).lower())
 
-        ignore_paths = ["nfcore/results/", "nfcore/work/", "nfcore/.nextflow/"]
+        ignore_paths = get_gpmconfig("GPM", "file_tree_ignore")
         new_children = []
         for child in children:
             # print(child)
