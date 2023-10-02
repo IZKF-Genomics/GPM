@@ -49,11 +49,11 @@ salmon index -t ${FASTA_transcripts} -i $salmon_index --gencode -p ${Num_cores} 
 
 # FASTA
 cat $FASTA_Genome $ERCC_FASTA > ${FOLDER}/${NAME}_ERCC.fasta
-cat $FASTA_transcripts $ERCC_FASTA > ${FOLDER}/${NAME}_ERCC_transcripts.fasta
+# cat $FASTA_transcripts $ERCC_FASTA > ${FOLDER}/${NAME}_ERCC_transcripts.fasta
 # GTF
 cat $GTF $ERCC_GTF > ${FOLDER}/${NAME}_ERCC.gtf
 # Transcripts
-gffread -w ${FOLDER}/${NAME}_ERCC_transcripts.gtf -g ${FOLDER}/${NAME}_ERCC.fasta ${FOLDER}/${NAME}_ERCC.gtf 2>&1 | tee -a "$log_file"
+gffread -w ${FOLDER}/${NAME}_ERCC_transcripts.fasta -g ${FOLDER}/${NAME}_ERCC.fasta ${FOLDER}/${NAME}_ERCC.gtf 2>&1 | tee -a "$log_file"
 # Run STAR index
 STAR --runThreadN ${Num_cores} --runMode genomeGenerate --genomeDir ${STAR_INDEX}_ERCC --genomeFastaFiles ${FOLDER}/${NAME}_ERCC.fasta 2>&1 | tee -a "$log_file"
 # Run Salmon index
@@ -73,7 +73,7 @@ echo "'${NAME}' {
 echo "'${NAME}_ERCC' {
       fasta  = '${FOLDER}/${NAME}_ERCC.fasta'
       gtf = '${FOLDER}/${NAME}_ERCC.gtf'
-      transcript_fasta = '${FOLDER}/${NAME}_ERCC_transcripts.gtf'
+      transcript_fasta = '${FOLDER}/${NAME}_ERCC_transcripts.fasta'
       star = '${STAR_INDEX}_ERCC'
       salmon = '${salmon_index}_ERCC'
       gencode = true
