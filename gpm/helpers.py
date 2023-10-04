@@ -236,7 +236,7 @@ def generate_samples_16s(FASTQ_DIR, SAMPLESHEET_FILE):
     )
 
 def write_file_run_bcl2fastq(rawfolder, targetfolder):
-    data_dir = os.path.join(os.path.dirname(__file__), "data", "bcl2fastq")
+    data_dir = os.path.join(os.path.dirname(__file__), "data", "demultiplex/bcl2fastq")
     original = os.path.join(data_dir, "run_bcl2fastq.sh")
     target = os.path.join(targetfolder, "run_bcl2fastq.sh")
     with open(original) as f1:
@@ -255,7 +255,7 @@ def write_file_run_bcl2fastq(rawfolder, targetfolder):
 
 
 def write_file_run_qc(rawfolder, targetfolder):
-    data_dir = os.path.join(os.path.dirname(__file__), "data", "bcl2fastq")
+    data_dir = os.path.join(os.path.dirname(__file__), "data", "demultiplex/bcl2fastq")
     original = os.path.join(data_dir, "run_qc.sh")
     target = os.path.join(targetfolder, "run_qc.sh")
     raw_folder_extended = os.path.join(rawfolder, "Alignment_1" , "*" , "Fastq")
@@ -275,7 +275,7 @@ def write_file_run_qc(rawfolder, targetfolder):
 
 
 def write_file_run_cellranger_mkfastq(rawfolder, targetfolder):
-    data_dir = os.path.join(os.path.dirname(__file__), "data", "cellranger")
+    data_dir = os.path.join(os.path.dirname(__file__), "data", "demultiplex/cellranger")
     original = os.path.join(data_dir, "run_cellranger_mkfastq.sh")
     target = os.path.join(targetfolder, "run_cellranger_mkfastq.sh")
     with open(original) as f1:
@@ -294,7 +294,7 @@ def write_file_run_cellranger_mkfastq(rawfolder, targetfolder):
 
 
 def write_file_run_cellranger_merge_lanes(rawfolder, targetfolder):
-    data_dir = os.path.join(os.path.dirname(__file__), "data", "cellranger")
+    data_dir = os.path.join(os.path.dirname(__file__), "data", "demultiplex/cellranger")
     original = os.path.join(data_dir, "run_merge_lanes.sh")
     target = os.path.join(targetfolder, "run_merge_lanes.sh")
     with open(original) as f1:
@@ -315,7 +315,7 @@ def write_file_run_cellranger_merge_lanes(rawfolder, targetfolder):
             print(line, file=f2)
 
 def write_file_run_idemux(rawfolder, targetfolder):
-    data_dir = os.path.join(os.path.dirname(__file__), "data", "bcl2fastq")
+    data_dir = os.path.join(os.path.dirname(__file__), "data", "demultiplex/bcl2fastq")
     original = os.path.join(data_dir, "run_idemux.sh")
     target = os.path.join(targetfolder, "run_idemux.sh")
     fastq_folder_full_path = os.path.join("/data/fastq", targetfolder)
