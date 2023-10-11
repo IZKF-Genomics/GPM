@@ -31,10 +31,13 @@ library(kableExtra)
 
 if (organism == "hsapiens") {
   library(org.Hs.eg.db)
+  OrgDb = org.Hs.eg.db
 } else if (organism == "mmusculus") {
   library(org.Mm.eg.db)
+  OrgDb = org.Mm.eg.db
 } else if (organism == "rnorvegicus") {
   library(org.Rn.eg.db)
+  OrgDb = org.Rn.eg.db
 }
 
 table_gostres <- function(gostres_table) {
@@ -112,7 +115,7 @@ run_GO <- function(label, direction) {
   ego <- enrichGO(gene = gene_list,	
                   # universe = names(geneList),
                   keyType = "ENSEMBL",
-                  OrgDb = org.Rn.eg.db,
+                  OrgDb = OrgDb,
                   ont = "ALL",
                   pAdjustMethod = "fdr",
                   pvalueCutoff = pvalueCutoff_GO,
