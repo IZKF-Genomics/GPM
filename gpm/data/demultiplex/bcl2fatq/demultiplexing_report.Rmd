@@ -63,7 +63,7 @@ Please make sure that you store these data in a lab-wise level. Genomics Facilit
 
 # Method description
 
-FASTQ files were generated using bcl2fastq (Illumina).
+<METHOD_DESCRIPTION>
 
 ## Tables used: {.tabset}
 
