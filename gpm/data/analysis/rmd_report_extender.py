@@ -151,8 +151,8 @@ for comparison in comparisons:
     current_section = GO_ANALYSIS_TEMPLATE
     label = comparison['id']
     label_no_underscore = comparison['id'].replace('_'," ")
-    current_section = current_section.replace('CONTRAST_HEADER', label)
-    current_section = current_section.replace('CONTRAST', label_no_underscore)
+    current_section = current_section.replace('CONTRAST_HEADER', label_no_underscore)
+    current_section = current_section.replace('CONTRAST', label)
 
     go_section_content += current_section
 
@@ -164,9 +164,8 @@ for comparison in comparisons:
     current_section = GSEA_ANALYSIS_TEMPLATE
     label = comparison['id']
     label_no_underscore = comparison['id'].replace('_'," ")
-    current_section = current_section.replace('CONTRAST_HEADER', label)
-    current_section = current_section.replace('CONTRAST', label_no_underscore)
-
+    current_section = current_section.replace('CONTRAST_HEADER', label_no_underscore)
+    current_section = current_section.replace('CONTRAST', label)
     
     current_section += "\n\n"
 
