@@ -57,11 +57,11 @@ gpm --help
 gpm demultiplex --raw PATH_TO_BCL --output OUTPUT_DIR
 ```
 This command will prepare two files for you:
-- samplesheet.csv
+- samplesheet_bcl2fastq.csv
 - run_bcl2fastq.sh
 - config.ini
 
-You will have to modify samplesheet.csv with your sample information and indeces, then run run_bcl2fastq.sh by the following command:
+You will have to modify samplesheet_bcl2fastq.csv with your sample information and indeces, then run run_bcl2fastq.sh by the following command:
 ```bash
 screen -S fastq
 bash run_bcl2fastq.sh
@@ -72,7 +72,7 @@ bash run_bcl2fastq.sh
 gpm demultiplex --raw PATH_TO_BCL --output OUTPUT_DIR -sc
 ```
 This command will prepare two files for you:
-- samplesheet.csv
+- samplesheet_cellranger.csv
 - run_cellranger.sh
 
 ## Initialize a project

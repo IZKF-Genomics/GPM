@@ -47,8 +47,8 @@ setup(
     packages = find_packages(),
     # packages=['mypkg'],
     package_dir = {'gpm': 'gpm'},
-    package_data = {'gpm': ['data/*', 'data/bcl2fastq/*', 'data/nfcore/*', 'data/cellranger/*',
-                            'data/export/*', 'data/analysis/*', 'data/analysis/ERCC/*', 'configs/*']},
+    package_data = {'gpm': ['data/*', 'data/demultiplex/bcl2fastq/*', 'data/nfcore/*', 'data/demultiplex/cellranger/*',
+                            'data/export/*', 'data/analysis/*', 'data/analysis/cellranger/*', 'data/analysis/ERCC/*', 'configs/*']},
     py_modules = ['gpm'],
     install_requires=[
         'Click',
