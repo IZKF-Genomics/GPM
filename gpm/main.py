@@ -91,7 +91,7 @@ def demultiplex(raw, output, sc, miseq, idemux):
     if sc:
         write_file_run_cellranger_mkfastq(raw, output)
         write_file_run_cellranger_merge_lanes(raw, output)
-        copyfromdata("demultiplex/cellranger/samplesheet.csv", output)
+        copyfromdata("demultiplex/cellranger/samplesheet_cellranger.csv", output)
         # If MiSeq was used as the sequencer the data is already demultiplexed!
         if miseq:
             write_file_run_qc(raw, output)
@@ -107,7 +107,7 @@ def demultiplex(raw, output, sc, miseq, idemux):
 
     else:
         write_file_run_bcl2fastq(raw, output)
-        copyfromdata("demultiplex/bcl2fastq/samplesheet.csv", output)
+        copyfromdata("demultiplex/bcl2fastq/samplesheet_bcl2fastq.csv", output)
         if miseq:
             write_file_run_qc(raw, output)
 

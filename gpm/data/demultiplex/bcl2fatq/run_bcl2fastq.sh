@@ -9,7 +9,7 @@ bcl2fastq \
   --runfolder-dir FLOWCELL_DIR \
   --output-dir . \
   --interop-dir ./InterOp/ \
-  --sample-sheet ./samplesheet.csv \
+  --sample-sheet ./samplesheet_bcl2fastq.csv \
   --processing-threads 30
 
 
