@@ -108,6 +108,7 @@ Download the full table: [`r paste0(Tag_this_analysis, "_", label,"_res.csv")`](
 rmd_analysis_report_file = "Analysis_Report_RNAseq.Rmd"
 rmd_go_report_file = "GO_analyses.Rmd"
 rmd_gsea_report_file = "GSEA.Rmd"
+functions_file = "functions.R"
 
 group_comparison_marker = "# GROUP_COMPARISON_POINTER"
 
@@ -151,8 +152,8 @@ for comparison in comparisons:
     current_section = GO_ANALYSIS_TEMPLATE
     label = comparison['id']
     label_no_underscore = comparison['id'].replace('_'," ")
-    current_section = current_section.replace('CONTRAST_HEADER', label)
-    current_section = current_section.replace('CONTRAST', label_no_underscore)
+    current_section = current_section.replace('CONTRAST_HEADER', label_no_underscore)
+    current_section = current_section.replace('CONTRAST', label)
 
     go_section_content += current_section
 
@@ -164,9 +165,8 @@ for comparison in comparisons:
     current_section = GSEA_ANALYSIS_TEMPLATE
     label = comparison['id']
     label_no_underscore = comparison['id'].replace('_'," ")
-    current_section = current_section.replace('CONTRAST_HEADER', label)
-    current_section = current_section.replace('CONTRAST', label_no_underscore)
-
+    current_section = current_section.replace('CONTRAST_HEADER', label_no_underscore)
+    current_section = current_section.replace('CONTRAST', label)
     
     current_section += "\n\n"
 
@@ -213,4 +213,21 @@ updated_gsea_rmd_contents = gsea_rmd_contents.replace(group_comparison_marker, g
 
 # Write the updated contents back to the R Markdown file
 with open(rmd_gsea_report_file, 'w') as file:
+    file.write(updated_gsea_rmd_contents)
+
+# ------------------------------ For functions.R ------------------------------
+
+with open(functions_file, 'r') as file:
+    functions_contents = file.read()
+
+# Replace the 'batch' marker with the blocking column's name
+with open('samplesheet.csv', 'r') as csvfile:
+    reader = csv.reader(csvfile)
+    header_row = next(reader)
+    blocking_name = header_row[-1]
+
+updated_functions_content = functions_contents.replace("batch", blocking_name, 1)
+
+# Write the updated contents back to the R Markdown file
+with open(functions_file, 'w') as file:
     file.write(updated_gsea_rmd_contents)
