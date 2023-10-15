@@ -331,10 +331,16 @@ class GPM():
         multiqc_export_path = os.path.join(export_URL, "FASTQ/multiqc/multiqc_report.html")
         # shutil.copyfile(original, gpm_logo_image)
 
-        demultiplexing_report_path  = os.path.join(data_dir, 'bcl2fastq/demultiplexing_report.Rmd')
+        demultiplexing_report_path  = os.path.join(data_dir, 'demultiplex/bcl2fastq/demultiplexing_report.Rmd')
         with open(demultiplexing_report_path, "rb") as f1:
             demultiplexing_report_template = [le.decode('utf8', 'ignore').rstrip() 
                         for le in f1.readlines()]
+        
+        seq_type = self.name.split("_")[-1]
+        if seq_type.startswith("sc"):
+            method_description = "FASTQ files were generated using cellranger mkfastq (10x Genomics)."
+        else:
+            method_description = "FASTQ files were generated using bcl2fastq (Illumina)."
 
         modifier = { "<TITLE>": self.name,
                     "<REFERENCES>": references,
@@ -343,7 +349,8 @@ class GPM():
                     "<MULTIQC_PATH>": multiqc_export_path,
                     "<BCL_PATH>": bcl_path,
                     "<FASTQ_PATH>":fastq_path,
-                    "<IZKF_LOGO>": gpm_logo_image_path
+                    "<IZKF_LOGO>": gpm_logo_image_path,
+                    "<METHOD_DESCRIPTION>": method_description
                     }
         
         for i, line in enumerate(demultiplexing_report_template):

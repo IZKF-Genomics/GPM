@@ -6,6 +6,6 @@
 # Please execute this command in the directory OUTPUT_DIR
 cellranger mkfastq --id=mkfastq --localcores=30 \
                    --run=FLOWCELL_DIR \
-                   --csv=./samplesheet.csv
+                   --csv=./samplesheet_cellranger.csv
 
 bash run_merge_lanes.sh

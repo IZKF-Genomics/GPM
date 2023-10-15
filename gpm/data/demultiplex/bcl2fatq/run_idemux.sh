@@ -8,13 +8,15 @@
 # Demultiplexing with bcl2fastq to generated reads pool:
 bcl2fastq -R FLOWCELL_DIR -o FASTQ_DIR -l WARNING --no-lane-splitting --sample-sheet blank_sample.csv --barcode-mismatches 0 --mask-short-adapter-reads 10
 
+rm 1_S1_R1_001.fastq.gz
+
 # use iDemux for demultiplexing with error correction
 idemuxCPP --r1 FASTQ_DIR/Undetermined_S0_R1_001.fastq.gz  --sample-sheet samplesheet_idemux.csv --out ./demux
 
 ###### Running FASTQC ######################################
 mkdir -p ./fastqc
-find * -maxdepth 1 -name "*.fastq.gz" | parallel -j 30 "fastqc {} -o ./fastqc"
+find ./demux/* -maxdepth 1 -name "*.fastq.gz" | parallel -j 30 "fastqc {} -o ./fastqc"
 
 ###### Running MultiQC #####################################
 mkdir -p multiqc
-multiqc -f . -o ./multiqc
+multiqc -f ./fastqc -o ./multiqc

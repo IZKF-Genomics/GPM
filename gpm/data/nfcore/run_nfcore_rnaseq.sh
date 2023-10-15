@@ -1,17 +1,13 @@
 ################## test script ##################
-# nextflow run nf-core/rnaseq -r 3.8.1 -profile test,docker --outdir results
+# nextflow run nf-core/rnaseq -r 3.12.0 -profile test,docker --outdir results
 
 ################## GPM samplesheet #####################
-# gpm samplesheet -st 'reverse' -sn true -si  samplesheet.csv FASTQ_DIR
+# gpm samplesheet -st 'auto' -sn true -si  samplesheet.csv FASTQ_DIR
 
-nextflow run nf-core/rnaseq -r 3.8.1 -profile docker \
+nextflow run nf-core/rnaseq -r 3.12.0 -profile docker -c nextflow.config \
      --input samplesheet.csv --outdir results \
-     # --genome gencode_GRCh38 \
-     # --genome gencode_GRCm39 \
-     --gencode --featurecounts_group_type gene_type --star_index false --save_reference \
-     # --additional_fasta /data/genomes/spikein/ERCC_ExFold_RNA_SpikeIn_Mixes/ERCC92.fa  
+     --genome GENCODE_GRCh38_v44  \
+     --max_cpus 45 --gencode --featurecounts_group_type gene_type
 
-
-# Options for --genome:
-# gencode_GRCh38, gencode_GRCm39, hg38, mm10
-# Useful options: --removeRiboRNA
+# For rerun the pipeline, use: -resume
+# Options for genome: GENCODE_GRCh38_v44, GENCODE_GRCh38_v44_ERCC

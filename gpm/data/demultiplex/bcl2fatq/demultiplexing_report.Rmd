@@ -63,13 +63,20 @@ Please make sure that you store these data in a lab-wise level. Genomics Facilit
 
 # Method description
 
-FASTQ files were generated using bcl2fastq (Illumina).
+<METHOD_DESCRIPTION>
 
 ## Tables used: {.tabset}
 
 ### samplesheet used for bcl2fastq
 ```{r echo=FALSE, results='asis'}
-sample_sheet <- readLines("samplesheet.csv")
+# List all files that match the pattern "samplesheet_*.csv" in your directory
+matching_files <- list.files(pattern = "^samplesheet.*.csv$")
+if (length(matching_files) > 0) {
+  sample_sheet <- readLines(matching_files[1])
+} else {
+  cat("No matching samplesheet found.")
+}
+
 # Find the index of the [Data] section
 data_start_index <- grep("\\[Data\\]", sample_sheet)
 
