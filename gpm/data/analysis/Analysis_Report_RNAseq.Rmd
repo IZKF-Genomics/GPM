@@ -68,7 +68,7 @@ spikein_method <- spikein_ERCC2method(spikein_ERCC)
 execute_go_analyses <- config$default$GO_analysis
 execute_gsea_integration <- config$default$GSEA_analysis
 
-re_render <- FALSE
+render_sub_reports <- TRUE
 ```
 
 ```{r, echo=FALSE, results="hide", warning=FALSE, message=FALSE}
