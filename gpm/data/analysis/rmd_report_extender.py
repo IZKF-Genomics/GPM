@@ -16,7 +16,7 @@ samples2 <- samples
 samples2$VARIABLE <- factor(samples2$VARIABLE, levels = c("GROUP_B","GROUP_A"))
 add_DGEA(description, filetag, samples2, paired=PAIRED)
 
-if ( re_render == FALSE ) {
+if ( render_sub_reports == TRUE) {
     rmarkdown::render(paste0('DGEA_',filetag,'.Rmd'), output_format = 'html_document',
                     output_file = paste0('DGEA_',filetag,'.html'))
 }

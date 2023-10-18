@@ -71,7 +71,7 @@ corr_figure_btw2samples <- function(title, sample1, sample2) {
    fig
 }
 # https://assets.thermofisher.com/TFS-Assets/LSG/manuals/cms_095046.txt
-ercc_groups <- read.csv("thermofisher_LSG_manuals_cms_095046.txt", sep="\t")
+ercc_groups <- read.csv("Thermofisher_ERCC_cms_095046.txt", sep="\t")
 ct <- fread(paste0(DIR_salmon, "salmon.merged.gene_counts_length_scaled.tsv"))
 ERCC_ct <- ct[startsWith(ct$gene_id, "ERCC"),]
 ERCC_ct$gene_id <- gsub("_gene","",as.character(ERCC_ct$gene_id))
