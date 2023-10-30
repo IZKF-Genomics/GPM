@@ -26,6 +26,7 @@ library(DOSE)
 library(curl)
 library(DT)
 library(ggplot2)
+library('openxlsx')
 
 if (organism == "hsapiens") {
   library(org.Hs.eg.db)
@@ -86,11 +87,15 @@ run_GSEA <- function(label) {
                pAdjustMethod = "none")
 
   write.table(gse, file = paste0(Tag_this_analysis, "_", label,"_res.csv"))
+  wb <- createWorkbook()
+  addWorksheet(wb, "GSEA_stats")
+  writeData(wb, "GSEA_stats", gse)
+  saveWorkbook(wb, file = paste0(Tag_this_analysis, "_", label,"_res.xlsx"), overwrite = TRUE)
   return(gse)
 }
 
 fnames <- list.files(pattern = "*genes_stats.csv")
-fnames <- fnames[fnames !="DGEA_All_samples_genes_stats.csv"]
+fnames <- fnames[fnames !="DGEA_All_Samples_genes_stats.csv"]
 labels <- gsub("DGEA_", "", fnames)
 labels <- gsub("_genes_stats.csv", "", labels)
 

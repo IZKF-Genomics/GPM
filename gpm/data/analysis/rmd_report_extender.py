@@ -100,7 +100,10 @@ DT::datatable(as.data.frame(GSEAres), extensions = c("FixedColumns"), filter = '
              rownames = FALSE) %>% formatRound(c("enrichmentScore", "NES", "pvalue", "p.adjust", "qvalue"), 4)
 ```
 
-Download the full table: [`r paste0(Tag_this_analysis, "_", label,"_res.csv")`](`r paste0(Tag_this_analysis, "_", label,"_res.csv")`)
+Download the full table:
+
+* [`r paste0(Tag_this_analysis, "_", label,"_res.csv")`](`r paste0(Tag_this_analysis, "_", label,"_res.csv")`)
+* [`r paste0(Tag_this_analysis, "_", label,"_res.xlsx")`](`r paste0(Tag_this_analysis, "_", label,"_res.xlsx")`)
 
 """
 
