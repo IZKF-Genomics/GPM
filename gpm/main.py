@@ -235,13 +235,23 @@ def samplesheet(samplesheet, fastq_dir, st, r1, r2, se,
 ###################################################################
 @main.command()
 @click.argument('config_file')
-def analysis(config_file):
+@click.argument('-ls', '--list', required=False,
+                help="List all the analysis templates in GPM.")
+@click.argument('-a', '--add', required=False, default="",
+                help="Add the defined analysis template into the project.")
+def analysis(config_file, ls, add):
     """Prepare the Rmd templates for basic analysis"""
     path_config = os.path.join(os.getcwd(), config_file)
     gpm = GPM(load_config=path_config, seqdate=None, application=None, 
               provider=None, piname=None, institute=None,
               fastq=None, name=None)
-    gpm.analysis()
+    if (not ls) and (add ==""):
+        gpm.analysis()
+    elif ls:
+        gpm.analysis_show_templates()
+    elif add:
+        gpm.analysis_add(label)
+        
     gpm.show_tree()
 
     click.echo()

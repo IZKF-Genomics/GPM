@@ -15,7 +15,8 @@ from .helpers import (
     get_gpmconfig,
     get_gpmdata_path,
     get_config,
-    tar_exports)
+    tar_exports,
+    load_analysis_config)
 
 import pandas as pd
 from pathlib import Path
@@ -241,6 +242,12 @@ class GPM():
         self.generate_analysis_samplesheet()
         self.update_config("gpm analysis")
 
+    def analysis_show_templates(self):
+        self.load_structure()
+        self.populate_files(command="analysis")
+        self.generate_analysis_samplesheet()
+        self.update_config("gpm analysis")
+        
     def generate_analysis_samplesheet(self):
         cwd = os.getcwd()
         nfcore_folder_path = os.path.join(cwd, 'nfcore')
@@ -459,4 +466,30 @@ class GPM():
                os.path.join(compressed_folder,
                             self.name+"_3_Reports.tar"))
         
+    def show_analysis_templates(self):
+        file_analysis_config = get_config(config_name="analysis.config")
+        analysis_dict = OrderedDict()
+        with open(file_analysis_config) as f:
+            for line in f:
+                if line.startswith("#"):
+                    continue
+                elif len(line.split(",")) == 3:
+                    l = [x.strip() for x in line.split(",")]
+                    analysis_dict[l[0]][l[1]] = l[2]
+                    # audo create dict
+        for group in analysis_dict.keys():
+            click.echo(click.style(group, fg='bright_green'))
+            for label in analysis_dict[group].keys():
+                click.echo("\t" + label)
+                for file in analysis_dict[group][label].keys():
+                    click.echo("\t\t" + file.split("/")[2])
+            click.echo("")
 
+    def analysis_add(self, label):
+        analysis_dict = load_analysis_config()
+        for group in analysis_dict.keys():
+            
+            for label in analysis_dict[group].keys():
+                
+                for file in analysis_dict[group][label].keys():
+                    
