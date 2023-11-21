@@ -56,7 +56,10 @@ setup(
                             'data/export/*', 
                             'data/analysis/*',
                             'data/analysis/cellranger/*', 
-                            'data/analysis/ERCC/*', 
+                            'data/analysis/ERCC/*',
+                            'data/analysis/functional_analyses/*',
+                            'data/analysis/networks/*',
+                            'data/analysis/visualization/*',
                             'configs/*']},
     py_modules = ['gpm'],
     install_requires=[
