@@ -582,19 +582,3 @@ def update_config_with_name(name, Config):
     Config.set("Project", "Application", application)
 
     return Config
-
-
-def load_analysis_config():
-    """Load the analysis config file from GPM into a dictionary."""
-    file_analysis_config = get_config(config_name="analysis.config")
-    analysis_dict = OrderedDict()
-    with open(file_analysis_config) as f:
-        for line in f:
-            if line.startswith("#"):
-                continue
-            elif len(line.split(",")) == 3:
-                l = [x.strip() for x in line.split(",")]
-                analysis_dict[l[0]][l[1]] = l[2]
-                # audo create dict
-    return analysis_dict
-
