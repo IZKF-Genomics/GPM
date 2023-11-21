@@ -233,4 +233,4 @@ updated_functions_content = functions_contents.replace("batch", blocking_name, 1
 
 # Write the updated contents back to the R Markdown file
 with open(functions_file, 'w') as file:
-    file.write(updated_gsea_rmd_contents)
+    file.write(updated_functions_content)
