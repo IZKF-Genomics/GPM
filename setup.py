@@ -47,6 +47,7 @@ setup(
     packages = find_packages(),
     # packages=['mypkg'],
     package_dir = {'gpm': 'gpm'},
+    include_package_data=True,
     package_data = {'gpm': ['data/*',
                             'data/demultiplex/*',
                             'data/demultiplex/bcl2fastq/*', 
