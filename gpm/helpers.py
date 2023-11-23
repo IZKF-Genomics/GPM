@@ -15,6 +15,7 @@ import configparser
 import getpass
 from datetime import date, datetime
 from gpm import version
+from collections import OrderedDict
 
 
 class DisplayablePath(object):

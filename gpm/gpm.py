@@ -8,6 +8,7 @@ import shutil
 import click
 import glob
 import subprocess
+from collections import OrderedDict
 from .helpers import (
     DisplayablePath,
     tardir,
@@ -240,7 +241,7 @@ class GPM():
         self.populate_files(command="analysis")
         self.generate_analysis_samplesheet()
         self.update_config("gpm analysis")
-
+        
     def generate_analysis_samplesheet(self):
         cwd = os.getcwd()
         nfcore_folder_path = os.path.join(cwd, 'nfcore')
@@ -458,5 +459,42 @@ class GPM():
         tardir(os.path.join(export_dir, "3_Reports"),
                os.path.join(compressed_folder,
                             self.name+"_3_Reports.tar"))
-        
+    
+    def load_analysis_config(self):
+        """Load the analysis config file from GPM into a dictionary."""
+        file_analysis_config = get_config(config_name="analysis.config")
+        self.analysis_dict = OrderedDict()
+        with open(file_analysis_config) as f:
+            for line in f:
+                if line.startswith("#"):
+                    continue
+                elif len(line.split(",")) == 3:
+                    l = [x.strip() for x in line.split(",")]
+                    if l[0] not in self.analysis_dict:
+                        self.analysis_dict[l[0]] = OrderedDict()
+                    if l[1] not in self.analysis_dict[l[0]]:
+                        self.analysis_dict[l[0]][l[1]] = []
+                    self.analysis_dict[l[0]][l[1]].append(l[2])
 
+    def analysis_show_templates(self):
+        for group in self.analysis_dict.keys():
+            click.echo(click.style(group, fg='bright_green'))
+            for label in self.analysis_dict[group].keys():
+                click.echo("  <<< " + label + " >>>")
+                for file in self.analysis_dict[group][label]:
+                    click.echo("    " + file.split("/")[2])
+            click.echo("")
+
+    def analysis_add(self, target_label):
+        dir_analysis = os.path.join(os.path.dirname(__file__), "data")
+        # dir_analysis = os.path.join(data_dir, "analysis")
+        for group in self.analysis_dict.keys():
+            for label in self.analysis_dict[group].keys():
+                if label == target_label:
+                    group_dir = os.path.join(self.base, "analysis", group)
+                    if not os.path.exists(group_dir):
+                        os.makedirs(group_dir)
+                    for template in self.analysis_dict[group][label]:
+                        click.echo("  "+template)
+                        self.copy_file_replace_vairalbles(os.path.join(dir_analysis, template),
+                                                          os.path.join(self.base, template))

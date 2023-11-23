@@ -235,22 +235,39 @@ def samplesheet(samplesheet, fastq_dir, st, r1, r2, se,
 ###################################################################
 @main.command()
 @click.argument('config_file')
-def analysis(config_file):
+@click.option('-ls', '--list', "show_list", required=False, default=False,
+              is_flag=True,
+              help="List all the analysis templates in GPM.")
+@click.option('-a', '--add', "add_template", required=False, default="", 
+              help="Add the defined analysis template into the project.")
+def analysis(config_file, show_list, add_template):
     """Prepare the Rmd templates for basic analysis"""
     path_config = os.path.join(os.getcwd(), config_file)
     gpm = GPM(load_config=path_config, seqdate=None, application=None, 
               provider=None, piname=None, institute=None,
               fastq=None, name=None)
-    gpm.analysis()
-    gpm.show_tree()
+    if (not show_list) and (add_template == ""):
+        gpm.analysis()
+        gpm.show_tree()
+        click.echo()
+        click.echo(click.style("Next steps (in the analysis folder):", fg='bright_green'))
+        click.echo("1. Adjust config.yml with the appropriate parameters for your project.")
+        click.echo("2. In the samplesheet.csv file rename the generated columns accordingly to your experimental structure.")
+        click.echo("3. Add your comparisons to the contrasts.csv file.")
+        click.echo("4. Run run_analysis.sh in a screen session.")
+    elif show_list:
+        gpm.load_analysis_config()
+        gpm.analysis_show_templates()
+        click.echo()
+        click.echo("Please ues the following command to add the analysis templates you need:")
+        click.echo("Example: gpm analysis config.ini --add GSEA")
+    elif add_template:
+        gpm.load_analysis_config()
+        click.echo("Following files are added:")
+        gpm.analysis_add(add_template)
+    
 
-    click.echo()
-    click.echo(click.style("Next steps (in the analysis folder):", fg='bright_green'))
-    click.echo("1. Adjust config.yml with the appropriate parameters for your project.")
-    click.echo("2. In the samplesheet.csv file rename the generated columns accordingly to your experimental structure.")
-    click.echo("3. Add your comparisons to the contrasts.csv file.")
-    click.echo("4. Run run_analysis.sh in a screen session.")
-
+    
 ###################################################################
 # export_raw
 ###################################################################
