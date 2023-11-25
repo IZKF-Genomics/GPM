@@ -113,7 +113,20 @@ Once the data has been processed, you can perform downstream analysis using the 
 gpm analysis config.ini
 ```
 
-This command will generate several Rmd files in the analysis folder, with all the parameters properly defined based on the project information.
+This command will generate several folders and Rmd files in the analysis folder, with all the parameters properly defined based on the project information.
+
+For showing all the analysis templates, you can do:
+
+```bash
+gpm analysis config.ini --list
+```
+
+This command will show all the available scripts for your analysis. After identifying the analysis you need, you can copy the files by: (DGEA as an example)
+
+```bash
+gpm analysis config.ini --add DGEA
+```
+
 In the analysis folder, there are key files that require further inspection and adjustments:
 
 1. **config.yml**: This file contains project-specific parameters. Ensure that you adjust the default settings correctly. Here is an example of the structure:
