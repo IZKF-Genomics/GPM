@@ -18,8 +18,11 @@ for AP in $APP; do
     cd ${formatted_date}_Contact_PI_TEST_${AP}
 
     gpm analysis config.ini
-    gpm analysis config.ini --list
-    gpm analysis config.ini --add DGEA_RNAseq
+    # gpm analysis config.ini --list
+    # gpm analysis config.ini --add DGEA_RNAseq
+    cd analysis
+    Rscript -e "rmarkdown::render('Analysis_Report_RNAseq.Rmd')"
+
 
 # gpm export export_folder -config config.ini -user auser -bcl BCLPath -fastq FASTQPath
 cd ..

@@ -64,7 +64,7 @@ setup(
                             'configs/*']},
     py_modules = ['gpm'],
     install_requires=[
-        'Click',
+        'Click','pandas'
     ],
     entry_points='''
         [console_scripts]
