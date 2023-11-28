@@ -110,9 +110,10 @@ class GPM():
                         self.copy_file_replace_vairalbles(original, target)
 
             else:  # directory
-                target = os.path.join(self.base, s[3])
-                if not os.path.exists(target):
-                    os.makedirs(target)
+                if s[1] == command and (s[0] == "all" or s[0] == self.app): 
+                    target = os.path.join(self.base, s[3])
+                    if not os.path.exists(target):
+                        os.makedirs(target)
             
     def write_project_config(self):
         if not os.path.isfile(self.config_path):
@@ -175,8 +176,9 @@ class GPM():
             parent_dir = os.path.dirname(current_dir)
             if parent_dir == current_dir:
                 # Reached the root directory without finding the config file
-                click.echo("***** config.ini file doesn't exist in the fastq folder or it's parent directories.\
-                            unable to add bcl path to the config file")
+                click.echo("***** config.ini file doesn't exist in the fastq "
+                           "folder or its parent directories. GPM is unable to"
+                           "add bcl path to the config file")
                 sys.exit()
             current_dir = parent_dir
 
