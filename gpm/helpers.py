@@ -225,13 +225,13 @@ def generate_samples_scrna(fastq_dir, samplesheet_file):
         sc=True,
     )
 
-def generate_samples_16s(FASTQ_DIR, SAMPLESHEET_FILE):
+def generate_samples_16s(fastq_dir, samplesheet_file):
     """
     Reads must be Must be aligned with: "[Sample Name]_S1_L00[Lane Number]_[Read Type]_001.fastq.gz". column "run" is not defined yet.
     """
     fastq_dir_to_samplesheet(
-        fastq_dir=FASTQ_DIR,
-        samplesheet_file=SAMPLESHEET_FILE,
+        fastq_dir=fastq_dir,
+        samplesheet_file=samplesheet_file,
         sanitise_name=True,
         r16s=True
     )
