@@ -143,15 +143,15 @@ class GPM():
             Config.write(cfgfile)
             cfgfile.close()
         else:
-            click.echo("""***** config.ini file exists already. Please remove 
-                       it if you want to create a new config.ini.""")
+            click.echo("***** config.ini file exists already. Please remove"
+                       "it if you want to create a new config.ini.")
             sys.exit()
     
     def update_config(self, action):
         if not os.path.isfile(self.config_path):
-            click.echo("""***** config.ini file doesn't exist. Please make 
-                       sure that you have initiated this project with 
-                       gpm init""")
+            click.echo("***** config.ini file doesn't exist. Please make"
+                       "sure that you have initiated this project with"
+                       "gpm init")
             sys.exit()
         else:
             Config = configparser.ConfigParser(strict=False)
@@ -262,7 +262,7 @@ class GPM():
             analysis_samplesheet_df[column_names] = partial_names
 
             analysis_folder_path = os.path.join(cwd, 'analysis')
-            output_file_path = os.path.join(os.path.join(analysis_folder_path,'samplesheet.csv'))
+            output_file_path = os.path.join(os.path.join(analysis_folder_path,"DGEA",'samplesheet.csv'))
 
             with open(output_file_path, "w") as file:
                 analysis_samplesheet_df.to_csv(file, index=False)
