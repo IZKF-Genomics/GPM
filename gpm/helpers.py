@@ -547,8 +547,8 @@ def generate_config_file(fastq, output, raw):
         Config.write(cfgfile)
         cfgfile.close()
     else:
-        click.echo("""***** config.ini file exists already. Please remove it 
-                   if you want to create a new config.ini.""")
+        click.echo("***** config.ini file exists already. Please remove it" 
+                   "if you want to create a new config.ini.")
         sys.exit()
 
 

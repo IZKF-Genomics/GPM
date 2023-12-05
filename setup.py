@@ -55,7 +55,8 @@ setup(
                             'data/nfcore/*', 
                             'data/export/*', 
                             'data/analysis/*',
-                            'data/analysis/cellranger/*', 
+                            'data/analysis/cellranger/*',
+                            'data/analysis/DGEA/*',
                             'data/analysis/ERCC/*',
                             'data/analysis/functional_analyses/*',
                             'data/analysis/networks/*',
@@ -63,7 +64,7 @@ setup(
                             'configs/*']},
     py_modules = ['gpm'],
     install_requires=[
-        'Click',
+        'Click','pandas'
     ],
     entry_points='''
         [console_scripts]

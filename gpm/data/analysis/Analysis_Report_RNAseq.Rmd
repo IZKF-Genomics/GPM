@@ -42,6 +42,7 @@ DIR_salmon <- paste0(DIR_base, "nfcore/results/star_salmon/")
 
 FILE_tx2gene <- paste0(DIR_salmon, "salmon_tx2gene.tsv")
 source(paste0(DIR_project, "functions.R"))
+source(paste0(DIR_project, "DGEA/DGEA_RNAseq_functions.R"))
 
 ################# Parameters #####################################################
 Fig_width <- 600
@@ -54,10 +55,11 @@ project_name <- project_name[length(project_name)]
 rna_seq_type <- strsplit(project_name, "_")[[1]]
 rna_seq_type <- rna_seq_type[length(rna_seq_type)]
 
-config <- yaml::yaml.load_file("config.yml")
+config <- yaml::yaml.load_file(file.path(DIR_base,"/analysis/DGEA/config.yml"))
 
 spikein_ERCC <- config$default$spikein_ERCC
 organism <- config$default$organism
+genome_assembly <- config$default$genome_assembly
 
 countsFromAbundance <- config[[rna_seq_type]]$countsFromAbundance
 lengthcorrection <- config[[rna_seq_type]]$lengthcorrection
@@ -74,7 +76,7 @@ render_sub_reports <- TRUE
 ```{r, echo=FALSE, results="hide", warning=FALSE, message=FALSE}
 ################# Loading samples ################################################
 ## Load sample sheets (originated from the nf-core pipeline run configuration)
-samples <- read.table(file.path(DIR_base,"/analysis/samplesheet.csv"), header=TRUE, sep = ",")
+samples <- read.table(file.path(DIR_base,"/analysis/DGEA/samplesheet.csv"), header=TRUE, sep = ",")
 rownames(samples) <- samples$sample
 # samples$VARIABLE <- labels_group
 # d <- samples %>% separate(sample, c("group", "batch"), sep = "_")
@@ -140,7 +142,7 @@ nfcore_version <-  yaml_data$Workflow$`nf-core/rnaseq`  # '3.8.1'
 
 # Method description
 
-FASTQ files were generated using bcl2fastq (Illumina). To facilitate reproducible analysis, samples were processed using the publicly available nf-core/RNA-seq pipeline version `r nfcore_version`  (Ewels et al. 2020) implemented in Nextflow `r nextflow_version` (Di Tommaso et al. 2017) using `r docker_version` (Merkel 2014) with the minimal command. In brief, lane-level reads were trimmed using Trim Galore `r trimgalore_version` (Krueger et al. 2021) and aligned to the `r organism` genome: `r genome_type`, using STAR `r star_version` (Dobin et al. 2013). Gene-level and transcript-level quantification was done by Salmon `r salmon_version` (Patro et al. 2017). All analysis was performed using custom scripts in R version `r r_version` using the DESeq2 `r DESeq2_version` framework (Love, Huber, and Anders 2014) with default parameters.
+FASTQ files were generated using bcl2fastq (Illumina). To facilitate reproducible analysis, samples were processed using the publicly available nf-core/RNA-seq pipeline version `r nfcore_version`  (Ewels et al. 2020) implemented in Nextflow `r nextflow_version` (Di Tommaso et al. 2017) using `r docker_version` (Merkel 2014) with the minimal command. In brief, lane-level reads were trimmed using Trim Galore `r trimgalore_version` (Krueger et al. 2021) and aligned to the `r organism` genome: `r genome_assembly`, using STAR `r star_version` (Dobin et al. 2013). Gene-level and transcript-level quantification was done by Salmon `r salmon_version` (Patro et al. 2017). All analysis was performed using custom scripts in R version `r r_version` using the DESeq2 `r DESeq2_version` framework (Love, Huber, and Anders 2014) with default parameters.
 
 ```{r saveobjects, echo=FALSE, results="hide", warning=FALSE, message=FALSE}
 save(DIR_base,DIR_project,DIR_salmon,
@@ -159,6 +161,7 @@ save(DIR_base,DIR_project,DIR_salmon,
 ```{r, echo=FALSE, results="asis", warning=FALSE, message=FALSE, dpi=600, fig.width=6, fig.height=4}
 description <- "All samples"
 filtered_samples <- samples[complete.cases(samples$group),]
+
 deseq_output <- run_deseq_salmon(filtered_samples, spikein=spikein_ERCC, paired=FALSE,
                                  countsFromAbundance=countsFromAbundance,
                                  lengthcorrection=lengthcorrection)
@@ -181,13 +184,10 @@ cols <- c("ENSEMBL", "SYMBOL", "GENENAME")
 ensemblkeys <- gsub("\\.[0-9]*$", "", deseq_output$deseq2res$gene_id)
 if (organism == "hsapiens") {
   genenames <- select(org.Hs.eg.db, keys=ensemblkeys, columns=cols, keytype="ENSEMBL")
-  genome_type <- "GRCh38"
 } else if (organism == "mmusculus") {
   genenames <- select(org.Mm.eg.db, keys=ensemblkeys, columns=cols, keytype="ENSEMBL")
-  genome_type <- "GRCm39"
 } else if (organism == "rnorvegicus") {
   genenames <- select(org.Rn.eg.db, keys=ensemblkeys, columns=cols, keytype="ENSEMBL")
-  genome_type<- "mRatBN7"
 }
 genenames <- genenames[match(ensemblkeys, genenames$ENSEMBL), ]
 deseq_output$deseq2res <- cbind(deseq_output$deseq2res, genenames)

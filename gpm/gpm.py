@@ -110,9 +110,10 @@ class GPM():
                         self.copy_file_replace_vairalbles(original, target)
 
             else:  # directory
-                target = os.path.join(self.base, s[3])
-                if not os.path.exists(target):
-                    os.makedirs(target)
+                if s[1] == command and (s[0] == "all" or s[0] == self.app): 
+                    target = os.path.join(self.base, s[3])
+                    if not os.path.exists(target):
+                        os.makedirs(target)
             
     def write_project_config(self):
         if not os.path.isfile(self.config_path):
@@ -142,15 +143,15 @@ class GPM():
             Config.write(cfgfile)
             cfgfile.close()
         else:
-            click.echo("""***** config.ini file exists already. Please remove 
-                       it if you want to create a new config.ini.""")
+            click.echo("***** config.ini file exists already. Please remove"
+                       "it if you want to create a new config.ini.")
             sys.exit()
     
     def update_config(self, action):
         if not os.path.isfile(self.config_path):
-            click.echo("""***** config.ini file doesn't exist. Please make 
-                       sure that you have initiated this project with 
-                       gpm init""")
+            click.echo("***** config.ini file doesn't exist. Please make"
+                       "sure that you have initiated this project with"
+                       "gpm init")
             sys.exit()
         else:
             Config = configparser.ConfigParser(strict=False)
@@ -175,8 +176,9 @@ class GPM():
             parent_dir = os.path.dirname(current_dir)
             if parent_dir == current_dir:
                 # Reached the root directory without finding the config file
-                click.echo("***** config.ini file doesn't exist in the fastq folder or it's parent directories.\
-                            unable to add bcl path to the config file")
+                click.echo("***** config.ini file doesn't exist in the fastq "
+                           "folder or its parent directories. GPM is unable to"
+                           "add bcl path to the config file")
                 sys.exit()
             current_dir = parent_dir
 
@@ -260,7 +262,7 @@ class GPM():
             analysis_samplesheet_df[column_names] = partial_names
 
             analysis_folder_path = os.path.join(cwd, 'analysis')
-            output_file_path = os.path.join(os.path.join(analysis_folder_path,'samplesheet.csv'))
+            output_file_path = os.path.join(os.path.join(analysis_folder_path,"DGEA",'samplesheet.csv'))
 
             with open(output_file_path, "w") as file:
                 analysis_samplesheet_df.to_csv(file, index=False)

@@ -250,21 +250,24 @@ def analysis(config_file, show_list, add_template):
         gpm.analysis()
         gpm.show_tree()
         click.echo()
-        click.echo(click.style("Next steps (in the analysis folder):", fg='bright_green'))
-        click.echo("1. Adjust config.yml with the appropriate parameters for your project.")
-        click.echo("2. In the samplesheet.csv file rename the generated columns accordingly to your experimental structure.")
-        click.echo("3. Add your comparisons to the contrasts.csv file.")
-        click.echo("4. Run run_analysis.sh in a screen session.")
+        click.echo("Please ues the following command to list the available analyses templates:")
+        click.echo("gpm analysis config.ini --list")
     elif show_list:
         gpm.load_analysis_config()
         gpm.analysis_show_templates()
         click.echo()
         click.echo("Please ues the following command to add the analysis templates you need:")
-        click.echo("Example: gpm analysis config.ini --add GSEA")
+        click.echo("Example: gpm analysis config.ini --add DGEA_RNAseq")
     elif add_template:
         gpm.load_analysis_config()
         click.echo("Following files are added:")
         gpm.analysis_add(add_template)
+        if add_template in ["DGEA_RNAseq"]:
+            click.echo(click.style("Next steps (in the DGEA folder):", fg='bright_green'))
+            click.echo("1. Adjust config.yml with the appropriate parameters for your project.")
+            click.echo("2. In the samplesheet.csv file rename the generated columns accordingly to your experimental structure.")
+            click.echo("3. Add your comparisons to the contrasts.csv file.")
+            click.echo("4. Run run_analysis.sh in a screen session.")
     
 
     
