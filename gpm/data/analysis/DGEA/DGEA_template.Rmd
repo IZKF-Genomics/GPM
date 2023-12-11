@@ -12,7 +12,7 @@ output:
     toc_depth: 3
     number_sections: false
     theme: lumen
-bibliography: references.bib
+bibliography: ../references.bib
 ---
 
 ```{r, echo=FALSE, results="hide", warning=FALSE, message=FALSE}
@@ -48,10 +48,10 @@ if (organism == "hsapiens") {
 }
 
 Tag_this_analysis <- "FILETAG"
-File_stats <- paste0('DGEA_',Tag_this_analysis,'_genes_stats.csv')
-File_norm_expression <- paste0('DGEA_',Tag_this_analysis,'_norm_exp_quant.csv')
+File_stats <- paste0(DIR_DGEA, 'DGEA_',Tag_this_analysis,'_genes_stats.csv')
+File_norm_expression <- paste0(DIR_DGEA, 'DGEA_',Tag_this_analysis,'_norm_exp_quant.csv')
 
-File_xlsx_res <- paste0('DGEA_',Tag_this_analysis,'_res.xlsx')
+File_xlsx_res <- paste0(DIR_DGEA, 'DGEA_',Tag_this_analysis,'_res.xlsx')
 ```
 
 ### [Back to front page](Analysis_Report_RNAseq.html)
@@ -165,8 +165,8 @@ if (organism == "hsapiens") {
 genenames <- genenames[match(ensemblkeys, genenames$ENSEMBL), ]
 deseq_output$deseq2res <- cbind(deseq_output$deseq2res, genenames)
 
-write.csv(deseq_output$deseq2res,paste0(DIR_project, File_stats))
-write.csv(deseq_output$norm_count,paste0(DIR_project, File_norm_expression))
+write.csv(deseq_output$deseq2res,paste0(DIR_DGEA, File_stats))
+write.csv(deseq_output$norm_count,paste0(DIR_DGEA, File_norm_expression))
 
 wb <- createWorkbook()
 addWorksheet(wb, "DGEA_stats")
@@ -174,7 +174,7 @@ writeData(wb, "DGEA_stats", deseq_output$deseq2res)
 addWorksheet(wb, "norm_exp_quant")
 writeData(wb, "norm_exp_quant", deseq_output$norm_count)
 ## Save workbook to working directory
-saveWorkbook(wb, file = File_xlsx_res, overwrite = TRUE)
+saveWorkbook(wb, file = paste0(DIR_DGEA, File_xlsx_res), overwrite = TRUE)
 ```
 
 # Download statistics
