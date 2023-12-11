@@ -108,16 +108,16 @@ Download the full table:
 """
 
 # marker string in the markdown file
-rmd_analysis_report_file = "Analysis_Report_RNAseq.Rmd"
+rmd_analysis_report_file = "../Analysis_Report_RNAseq.Rmd"
 rmd_go_report_file = "GO_analyses.Rmd"
 rmd_gsea_report_file = "GSEA.Rmd"
-functions_file = "functions.R"
+functions_file = "DGEA_RNAseq_functions.R"
 
 group_comparison_marker = "# GROUP_COMPARISON_POINTER"
 
 # Specify the path to the CSV file
 contrasts_file = "contrasts.csv"
-samplesheet_file = "samplesheet.csv"
+samplesheet_file = "../samplesheet.csv"
 comparisons = []
 
 

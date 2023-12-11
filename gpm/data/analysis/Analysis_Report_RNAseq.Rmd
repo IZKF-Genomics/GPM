@@ -38,6 +38,7 @@ options(knitr.duplicate.label = "allow")
 ################# File paths #####################################################
 DIR_base <- "GPM_DIR_BASE/"
 DIR_project <- paste0(DIR_base, "analysis/")
+DIR_DGEA <- paste0(DIR_base, "analysis/DGEA/")
 DIR_salmon <- paste0(DIR_base, "nfcore/results/star_salmon/")
 
 FILE_tx2gene <- paste0(DIR_salmon, "salmon_tx2gene.tsv")
@@ -76,7 +77,7 @@ render_sub_reports <- TRUE
 ```{r, echo=FALSE, results="hide", warning=FALSE, message=FALSE}
 ################# Loading samples ################################################
 ## Load sample sheets (originated from the nf-core pipeline run configuration)
-samples <- read.table(file.path(DIR_base,"/analysis/DGEA/samplesheet.csv"), header=TRUE, sep = ",")
+samples <- read.table(file.path(DIR_base,"/analysis/samplesheet.csv"), header=TRUE, sep = ",")
 rownames(samples) <- samples$sample
 # samples$VARIABLE <- labels_group
 # d <- samples %>% separate(sample, c("group", "batch"), sep = "_")
@@ -222,7 +223,7 @@ kable(samplesheet_file) %>%
 
 ### contrasts
 ```{r echo=FALSE, results='asis'}
-contrasts_file <- read.csv("contrasts.csv")
+contrasts_file <- read.csv("DGEA/contrasts.csv")
 kable(contrasts_file) %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), full_width = FALSE)
 ```
