@@ -7,7 +7,7 @@ import os
 def parse_multiqc_files(fastq_folder_name):
     multiqc_bcl2fastq_bysample_path = os.path.join("..", "fastq", fastq_folder_name, "multiqc", "multiqc_data", "multiqc_bcl2fastq_bysample.txt")
     if not os.path.exists(multiqc_bcl2fastq_bysample_path):
-        return [None, None, None, None]
+        return [None, None, None, None, None]
     df_by_sample = pd.read_csv(multiqc_bcl2fastq_bysample_path, sep='\t')
     
     count_total_reads = df_by_sample['total'].sum()
@@ -23,7 +23,7 @@ def parse_multiqc_files(fastq_folder_name):
     percentages = np.round((read_counts / total_counts) * 100, decimals=1)
     distribution_string = '-'.join(map(str, percentages))
 
-    return [std_deviation, cv_percentage, undertermined_read_percentage, distribution_string]
+    return [std_deviation, cv_percentage, undertermined_read_percentage, distribution_string, count_total_reads]
 
 
 def parse_fastq_stats_folder(fastq_folder_name):
