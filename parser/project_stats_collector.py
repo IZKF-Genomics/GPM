@@ -38,6 +38,35 @@ sequencing_kit_to_clusters = {
     'novaseq 6000 sp 100 cycles': '650–800 million',
     }
 
+sequencing_kit_to_max_clusters = {
+    'nextseq 500/550 high output kit v2.5 (75 cycles)': 400000000,
+    'nextseq 500/550 high output kit v2.5 (150 cycles)': 400000000,
+    'nextseq 500/550 mid output kit v2.5 (300 cycles)': 130000000,
+    'nextseq 500/550 mid output kit v2.5 (150 cycles)': 130000000,
+    'miseq reagent kit v3 (150-cycle)': 25000000,
+    'miseq reagent kit v3 (600-cycles)': 25000000,
+    'miseq reagent kit v2 (50-cycles)': 15000000,
+    'miseq reagent kit v2 (300-cycles)': 15000000,
+    'miseq reagent kit v2 (500-cycles)': 15000000,
+    'miseq reagent micro kit v2 (300-cycles)': 4000000,
+    'miseq reagent nano kit v2 (300-cycles)': 1000000,
+    'miseq reagent nano kit v2 (500-cycles)': 1000000,
+    'novaseq 6000 s4 reagent kit v1.5 (300 cycles)': 10000000000,
+    'novaseq 6000 s4 reagent kit v1.5 (200 cycles)': 10000000000,
+    'novaseq 6000 s4 reagent kit v1.5 (35 cycles)': 10000000000,
+    'novaseq 6000 s2 reagent kit v1.5 (300 cycles)': 4100000000,
+    'novaseq 6000 s2 reagent kit v1.5 (200 cycles)': 4100000000,
+    'novaseq 6000 s2 reagent kit v1.5 (100 cycles)': 4100000000,
+    'novaseq 6000 s1 reagent kit v1.5 (300 cycles)': 1600000000,
+    'novaseq 6000 s1 reagent kit v1.5 (200 cycles)': 1600000000,
+    'novaseq 6000 s1 reagent kit v1.5 (100 cycles)': 1600000000,
+    'novaseq 6000 sp 500 cycles': 800000000, 
+    'novaseq 6000 sp 300 cycles': 800000000,
+    'novaseq 6000 sp 200 cycles)': 800000000,
+    'novaseq 6000 sp 100 cycles': 800000000,
+    }
+
+
 fastq_folder_path = os.path.join("..", "fastq")
 bcl_folder_path = os.path.join("..", "fastq")
 sciebo_folder_path = os.path.join("..", "statistics","sciebo","2023")
@@ -53,9 +82,9 @@ def main():
         "Sequencer": fastq_sequencers,
         "std": [None] * len(fastq_folders),
         "cv": [None] * len(fastq_folders),
-        "undetermined reads percentage (%)": [None] * len(fastq_folders),
+        "undetermined reads percentage": [None] * len(fastq_folders),
         "most common undetermined barcode": [None] * len(fastq_folders),
-        "most common undetermined barcode percentage (%)": [None] * len(fastq_folders),
+        "most common undetermined barcode percentage": [None] * len(fastq_folders),
         "undetermined distribution string": [None] * len(fastq_folders),
         "read distribution": [None] * len(fastq_folders),
         "sequencing_kit": [None] * len(fastq_folders),
@@ -65,10 +94,11 @@ def main():
         "cycles_index_2": [None] * len(fastq_folders),
         "density": [None] * len(fastq_folders),
         "clusters_pf": [None] * len(fastq_folders),
-        "yields (Gb)": [None] * len(fastq_folders),
+        "yields": [None] * len(fastq_folders),
         "q_30": [None] * len(fastq_folders),
         "project_name": [None] * len(fastq_folders),
         "total read count": [None] * len(fastq_folders),
+        "max_cluster": [None] * len(fastq_folders),
     }
     
     df = pd.DataFrame(data)
@@ -81,17 +111,19 @@ def main():
         if re.match(r'^\d{6}', folder) is None:
             print("The folder is not in the expected fastq project format")
             continue
-        df.loc[folder,'std'] , df.loc[folder,'cv'], df.loc[folder,'undetermined reads percentage (%)'], df.loc[folder,'read distribution'], df.loc[folder,'total read count']  = parse_multiqc_files(folder)
-        df.loc[folder,'most common undetermined barcode'], df.loc[folder,'undetermined distribution string'], df.loc[folder,'most common undetermined barcode percentage (%)'] =  parse_fastq_stats_folder(folder)
+        df.loc[folder,'std'] , df.loc[folder,'cv'], df.loc[folder,'undetermined reads percentage'], df.loc[folder,'read distribution'], df.loc[folder,'total read count']  = parse_multiqc_files(folder)
+        df.loc[folder,'most common undetermined barcode'], df.loc[folder,'undetermined distribution string'], df.loc[folder,'most common undetermined barcode percentage'] =  parse_fastq_stats_folder(folder)
         sciebo_report_path = find_corresponding_sciebo(folder)
         if sciebo_report_path is not None:
             sciebo_report_path = os.path.join(sciebo_folder_path, sciebo_report_path)
-            df.loc[folder,'sequencing_kit'], df.loc[folder,'cycles_read_1'], df.loc[folder,'cycles_index_1'], df.loc[folder,'cycles_read_2'], df.loc[folder,'cycles_index_2'], df.loc[folder,'density'], df.loc[folder,'clusters_pf'], df.loc[folder,'yields (Gb)'], df.loc[folder,'q_30'], df.loc[folder,'project_name'] = parse_sciebo_report(sciebo_report_path) 
+            df.loc[folder,'sequencing_kit'], df.loc[folder,'cycles_read_1'], df.loc[folder,'cycles_index_1'], df.loc[folder,'cycles_read_2'], df.loc[folder,'cycles_index_2'], df.loc[folder,'density'], df.loc[folder,'clusters_pf'], df.loc[folder,'yields'], df.loc[folder,'q_30'], df.loc[folder,'project_name'] = parse_sciebo_report(sciebo_report_path) 
         # TODO: Add BCL data
             
     df['sequencing_kit'] = df['sequencing_kit'].str.lower()
     df['Expected Clusters'] = df['sequencing_kit'].map(sequencing_kit_to_clusters)
-    df['total read count'] = df['total read count'].map(format_with_commas)
+    # df['maximal expected clusters'] = df['sequencing_kit'].map(sequencing_kit_to_max_clusters)
+    df['ratio_totalReadCount_expectedCluster'] = pd.to_numeric(df['total read count'], errors='coerce') / df['sequencing_kit'].map(sequencing_kit_to_max_clusters)
+    # df['total read count'] = df['total read count'].map(format_with_commas)
  
     return df
 
